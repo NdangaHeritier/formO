@@ -4,24 +4,6 @@ import "./globals.css";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 
-// Load JetBrains Mono with all weights and italic for 400
-const jetBrainsMono = JetBrains_Mono({
-  weight: ['100', '200', '300', '400', '500', '600', '700', '800'],
-  style: ['normal', 'italic'], // Include italic for all weights, but we'll use for 400
-  subsets: ['latin'],
-  variable: '--font-jetbrains-mono',
-  display: 'swap', // Prevent layout shift
-});
-
-// Load Inter with all weights and italic for 400
-const inter = Inter({
-  weight: ['100', '200', '300', '400', '500', '600', '700', '800', '900'],
-  style: ['normal', 'italic'], // Include italic for all weights, but we'll use for 400
-  subsets: ['latin'],
-  variable: '--font-inter',
-  display: 'swap',
-});
-
 export const metadata: Metadata = {
   title: 'FormO — Effortless Form Submission and Email Handling',
   authors: [

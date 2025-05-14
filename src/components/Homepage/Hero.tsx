@@ -6,14 +6,14 @@ import { Icon } from "../Icon";
 export const Hero : React.FC = () => {
     return(
         <section className="hero-section relative p-20 bg-zinc-950 rounded-4xl flex flex-col items-center justify-center w-full bg-right-bottom bg-no-repeat" style={{backgroundImage: "url('./Assets/mail.png')"}}>
-            <h2 className="text-zinc-300 uppercase text-xl mb-3">
+            <h2 className="text-zinc-500 uppercase text-lg mb-3">
                 <span className="text-zinc-00 animate-bounce">
                     <Icon name="Send" className="text-yellow-400/70" />
                 </span>
                      — Effortless Form Submission and Email Handling
             </h2>
             <h1 className="text-6xl font-extrabold text-zinc-300 pb-5 tracking-tight text-center">
-                <span className="stroke text-transparent pb-10">Streamline Your Workflow</span>
+                <span className="stroke text-transparent pb-10 text-7xl">Streamline Your Workflow</span>
                 <br/> with Our Effortless Emailing Solution.
             </h1>
             <p className="text-lg text-zinc-400 py-6 text-center">
