@@ -2,7 +2,7 @@ type Props = {
     parLength: number;
     cols: number;
 };
-export const Squares = ({parLength, cols}: Props) => {
+export const Squares = ({parLength}: Props) => {
     
     return (
         <div className={`bg-yellow-600/10 w-full h-full absolute right-0 top-0 gap-0.5 z-0 grid grid-cols-12 max-sm:grid-cols-4 p-0 overflow-hidden`}>
