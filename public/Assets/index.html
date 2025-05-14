@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FormO - Make your Coding faster ant enjoyful with our emailing solution.</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&family=Space+Grotesk:wght@300..700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="src/output.css">
+
+    <style>
+        .text-shadow {
+            text-shadow: 0 0px 0px rgb(20 20 20 / 0.8);
+        }
+        .stroke {
+            -webkit-text-stroke: 1px rgb(20 20 20 / 0.8);
+            font-family: "Inter", sans-serif;
+            font-optical-sizing: auto;
+            font-weight: 900;
+            font-style: normal;
+        }
+    </style>
+</head>
+<body class="font-['Inter', sans-serif]">
+    <header class="h-1/8 w-full p-3 bg-zinc-200 flex items-center justify-between gap-5">
+        <div class="">
+            <img src="./formo-coloured.png" alt="logo" height="50" width="50">
+        </div>
+        <div class="links flex items-center justify-end gap-8">
+            <ul class="nav-links list-none flex items-center justify-end gap-5">
+                <li class="list-item px-1">
+                    <a href="/#about" class="text-zinc-700 font-medium">Home</a>
+                </li>
+                <li class="list-item px-1">
+                    <a href="/#start" class="text-zinc-700 font-medium">Docs</a>
+                </li>
+                <li class="list-item px-1">
+                    <a href="/#company" class="text-zinc-700 font-medium">Team</a>
+                </li>
+                <li class="list-item px-1">
+                    <a href="/#start" class="text-zinc-700 font-medium">Plans</a>
+                </li>
+                <li class="list-item px-1">
+                    <a href="/#start" class="text-zinc-700 font-medium">Careers</a>
+                </li>
+            </ul>
+            <div class="ctas flex items-center justify-center gap-3">
+                <a href="" class="bg-zinc-900 px-4 py-2 text-sm rounded-md text-zinc-100 font-semibold">Get Api</a>
+                <a href="" class="bg-gradient-to-r from-zinc-900/70 from-0% to-50% to-zinc-900 px-4 text-sm py-2 rounded-full text-zinc-100 font-semibold  border-2 border-zinc-900">
+                    Send Emails
+                </a>
+            </div>
+        </div>
+        <div class="navbar-toogle hidden max-sm:block">
+            <button type="button" class="toggleNav rounded-md bg-gradient-to-r from-transparent to-zinc-300 border shadow border-zinc-400/70 px-4 py-1 hover:bg-zinc-400/50 duration-300">
+                toggle
+            </button>
+        </div>
+    </header>
+    <main class="h-6/8 w-full flex flex-col justify-start gap-5">
+
+        <!-- Hero Section -->
+        <section class="hero-section p-10 flex flex-col items-center justify-center h-full w-full bg-right-bottom bg-no-repeat" style="background-image: url('./mail.png');">
+            <h1 class="text-6xl font-extrabold text-zinc-900 w-2/3 py-10">
+                <span class="stroke text-zinc-300">Make your Coding faster</span>
+                <br> and enjoyable with our emailing solution.
+            </h1>
+            <p class="text-lg text-zinc-600 py-6">FormO is a powerful email integration solution that makes sending emails easy and efficient.</p>
+            <a href="/#start" class="bg-zinc-900/10 border border-zinc-400 font-semibold px-4 py-2 rounded-xl text-sm text-zinc-900">Get Started</a>
+            <div class="relative flex border border-zinc-800 rounded-md self-start content-start px-5 py-1 font-medium text-lg items-center justify-center gap-x-2">
+                <span class="h-32 absolute mx-auto w-32 flex bg-yellow-700/40 rounded-full animate-ping"></span>
+                <span class="text-dark">FormO</span>
+            </div>
+        </section>
+
+        <!-- End of Hero Section -->
+        <div class="about-section p-10 h-full w-full bg-zinc-200/10">
+            <h2 class="text-4xl font-bold text-zinc-900 pb-5">About FormO</h2>
+            <p class="text-lg text-zinc-700">FormO is a powerful email integration solution that makes sending emails easy and efficient.</p>
+            <p class="text-lg text-zinc-700">We provide a simple API that allows you to send emails with just a few lines of code.</p>
+            <p class="text-lg text-zinc-700">Our goal is to make your coding experience faster and more enjoyable.</p>
+            <p class="text-lg text-zinc-700">With FormO, you can send emails in just a few lines of code, making your coding experience faster and more enjoyable.</p>
+        </div>
+        <div class="company-section p-10 h-full w-full bg-zinc-300/10">
+            <h2 class="text-4xl font-bold text-zinc-900 pb-5">Our Team</h2>
+            <p class="text-lg text-zinc-700">We are a team of passionate developers who love coding and building amazing products.</p>
+            <p class="text-lg text-zinc-700">We believe that coding should be fun and enjoyable, and we strive to make that a reality with FormO.</p>
+            <p class="text-lg text-zinc-700">Our team is dedicated to providing the best email integration solution for developers.</p>
+            <p class="text-lg text-zinc-700">We are constantly working to improve our API and make it even easier to use.</p>
+            <p class="text-lg text-zinc-700">We are always looking for feedback and suggestions from our users, so please feel free to reach out to us.</p>
+        </div>
+    </main>
+    <footer class="h-1/8 w-full p-10">
+        <div class="footer-row grid grid-cols-4 p-3 gap-8">
+            <div class="logo-and-desc-about-formo flex flex-col items-center justify-start gap-3 px-5">
+                <img src="./formo-dark.png" alt="logo" height="50" width="50" class="w-1/4 opacity-60">
+                <h2 class="text-2xl font-semibold text-zinc-700">FormO</h2>
+                <p class="text-sm text-zinc-600">FormO is a powerful email integration solution that makes sending emails easy and efficient.</p>
+                <p class="text-sm text-zinc-600">We provide a simple API that allows you to send emails with just a few lines of code.</p>
+                <p class="text-sm text-zinc-600">Our goal is to make your coding experience faster and more enjoyable.</p>
+            </div>
+            <div class="quick-links flex flex-col justify-start items-start gap-3">
+            <h3 class="text-lg font-semibold text-zinc-700">Quick Links</h3>
+            <ul class="list-none flex flex-col gap-2 text-sm text-zinc-600">
+                <li><a href="/#start" class="hover:underline">Documentation</a></li>
+                <li><a href="/#start" class="hover:underline">API Reference</a></li>
+                <li><a href="/#start" class="hover:underline">Support</a></li>
+                <li><a href="/#start" class="hover:underline">Contact Us</a></li>
+                <li><a href="/#start" class="hover:underline">Privacy Policy</a></li>
+                <li><a href="/#start" class="hover:underline">Terms of Service</a></li>
+                <li><a href="/#start" class="hover:underline">Blog</a></li>
+                
+                <li><a href="/#start" class="hover:underline">Pricing</a></li>
+            </ul>
+            </div>
+            <div class="get-started-and-reach-out flex flex-col justify-start items-start gap-3">
+                <h3 class="text-lg font-semibold text-zinc-700">Our Community</h3>
+                <ul class="list-none flex flex-col gap-2 text-sm text-zinc-600">
+                    <li><a href="/#start" class="hover:underline">Community</a></li>
+                    <li><a href="/#start" class="hover:underline">API Status</a></li>
+                    <li><a href="/#start" class="hover:underline">Changelog</a></li>
+                    <li><a href="/#start" class="hover:underline">FAQ</a></li>
+                    <li><a href="/#start" class="hover:underline">Feedback</a></li>
+                    <li><a href="/#start" class="hover:underline">Careers</a></li>
+                    <li><a href="/#start" class="hover:underline">Press</a></li>
+                    <li><a href="/#start" class="hover:underline">Partners</a></li>
+                    <li><a href="/#company" class="hover:underline">Our Team</a></li>
+                </ul>
+                
+            </div>
+            <div class="reach-out-through-our-social-media-account flex flex-col justify-start items-start gap-3 px-5">
+                <h3 class="text-lg font-semibold text-zinc-700">Follow Us</h3>
+                <ul class="list-none flex gap-3 text-zinc-600">
+                    <li><a href="https://facebook.com" target="_blank" class="hover:underline text-sm">Facebook</a></li>
+                    <li><a href="https://twitter.com" target="_blank" class="hover:underline">Twitter</a></li>
+                    <li><a href="https://linkedin.com" target="_blank" class="hover:underline">LinkedIn</a></li>
+                    <li><a href="https://instagram.com" target="_blank" class="hover:underline">Instagram</a></li>
+                </ul>
+                <h3 class="text-lg font-semibold text-zinc-700">Get Started</h3>
+                <p class="text-sm text-zinc-600">Ready to start sending emails with FormO? <a href="#" class="text-zinc-900 hover:underline font-medium">Sign up</a> now and get started!</p>
+                <p class="text-sm text-zinc-600">Our API is easy to use and well-documented, so you can start sending emails in no time.</p>
+                <p class="text-sm text-zinc-600">Kickstart your journey with FormO today!</p>
+                <a href="/#start" class="bg-zinc-900/10 border border-zinc-400 font-semibold px-4 py-2 rounded-xl text-sm text-zinc-900">Sign Up</a>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>
