@@ -1,17 +1,19 @@
 import Image from "next/image"
 import Link from "next/link";
 import React from "react";
-import { Icon } from "../Icon";
-import { Squares } from "../Squares";
+import { Icon } from "../Global/Icon";
+import { Squares } from "../Global/Squares";
+import YellowBorderedSpan from "../Global/YellowBorderedSpan";
 
 export const Hero : React.FC = () => {
     return(
         <section className="hero-section relative p-5 bg-gradient-to-l from-yellow-950/50 from-50% to-50% to-zinc-950">
             <Squares parLength={240} />
             <div className="contain border shadow-2xl border-zinc-900 relative bg-black/90 rounded-3xl p-20 flex flex-col items-center justify-center w-full bg-right-bottom bg-no-repeat" style={{backgroundImage: "url('./Assets/mail.png')"}}>
+                <YellowBorderedSpan title="Get Started, It's free forever!" showIcon={true} />
                 <h2 className="text-zinc-500 uppercase text-lg mb-3">
                     <span className="text-zinc-00 animate-bounce">
-                        <Icon name="Send" className="text-yellow-400/70" />
+                        <Icon name="Send" className="text-yellow-600/70" />
                     </span>
                         — Effortless Form Submission and Email Handling
                 </h2>

@@ -1,5 +1,5 @@
 import { Sun, Moon, ScreenShare } from "lucide-react";
-import { Icon } from "./Icon";
+import { Icon } from "./Global/Icon";
 import Link from "next/link";
 import Image from "next/image";
 

@@ -1,10 +1,10 @@
 import Image from "next/image";
-import { Icon } from "./Icon";
+import { Icon } from "./Global/Icon";
 import Link from "next/link";
 
 export default function Header() {
   return (
-    <header className="h-1/8 w-full p-5 px-10 flex items-center justify-between gap-5">
+    <header className="h-1/8 w-full sticky top-0 left-0 right-0 z-50 border-b border-zinc-200 dark:border-zinc-800 p-5 px-10 flex items-center justify-between gap-5 zinc-50/70 dark:bg-zinc-950/80 backdrop-blur-2xl">
         <div className="">
             <Image src="/Assets/formo-coloured.png" alt="logo" height="50" width="50" />
         </div>
