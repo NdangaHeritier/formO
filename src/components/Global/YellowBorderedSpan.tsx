@@ -1,10 +1,10 @@
 import { Icon } from "./Icon";
 
 type Props = {
-    showIcon?: boolean,
+    // showIcon?: boolean,
     title: string
 }
-const YellowBorderedSpan = ({showIcon, title}: Props) => {
+const YellowBorderedSpan = ({title}: Props) => {
     return (
         <>
             <div className="bg-gradient-to-l from-yellow-700 from-20% to-yellow-700/5 rounded-full p-[0.5px]">
