@@ -5,6 +5,7 @@ import { Icon } from "../Global/Icon";
 import { Squares } from "../Global/Squares";
 import YellowBorderedSpan from "../Global/YellowBorderedSpan";
 
+
 export const Hero : React.FC = () => {
     return(
         <section className="hero-section relative p-5 bg-gradient-to-l from-yellow-950/50 from-50% to-50% to-zinc-950">
@@ -86,7 +87,7 @@ export const Hero : React.FC = () => {
                     <p className="py-4 text-zinc-200">
                         No further setup to bore you. Just your name and where to send. Start customizing and sending with FormO now!
                     </p>
-                    <Link href="/#start" className="font-light bg-black hover:bg-zinc-200/5 text-zinc-200 border border-zinc-700 px-4 py-2 rounded-xl text-sm backdrop-blur-md flex items-center justify-center gap-2">
+                    <Link href="/NonDev" className="font-light bg-black hover:bg-zinc-200/5 text-zinc-200 border border-zinc-700 px-4 py-2 rounded-xl text-sm backdrop-blur-md flex items-center justify-center gap-2">
                         Get Started
                         <Icon name={`ChevronRight`} className="text-zinc-200" />
                     </Link>

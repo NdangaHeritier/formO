@@ -9,12 +9,13 @@ import QuickActionSection from "@/components/Homepage/QuickActionSection";
 import UseCase from "@/components/Homepage/UseCases";
 import WhyChooseFormo from "@/components/Homepage/WhyChooseFormo";
 
+
 export default function Home() {
   return (
     <div className="w-full flex flex-col justify-start gap-5">
 
         <div className="px-5">
-          <Hero />
+          <Hero  />
           <WhyChooseFormo />
           <DeveloperSolutions />
           <NonDevSolutions />
