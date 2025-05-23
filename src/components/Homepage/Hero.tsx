@@ -4,6 +4,7 @@ import React from "react";
 import { Icon } from "../Global/Icon";
 import { Squares } from "../Global/Squares";
 import YellowBorderedSpan from "../Global/YellowBorderedSpan";
+import LinkButton from "../Global/LinkButton";
 
 export const Hero : React.FC = () => {
     return(
@@ -47,10 +48,10 @@ export const Hero : React.FC = () => {
                         , and let FormO handle the rest.
                     </div>
                     <p className="text-base text-zinc-400">With FormO, you can focus on building your application while we take care of the email integration, making your development process faster and more efficient.</p>
-                    <Link href="/#start" className="font-semibold bg-white hover:bg-white/70 duration-300 text-zinc-900 px-4 py-2 rounded-xl text-sm flex items-center justify-center gap-2">
+                    <LinkButton href="/developer" variant="secondary">
                         <Icon name={`CodeXml`} className="text-zinc-700" size={16} />
                         Generate Endpoint                    
-                    </Link>
+                    </LinkButton>
             </div>
                 
             <div className="flex items-center">
@@ -86,10 +87,10 @@ export const Hero : React.FC = () => {
                     <p className="py-4 text-zinc-200">
                         No further setup to bore you. Just your name and where to send. Start customizing and sending with FormO now!
                     </p>
-                    <Link href="/#start" className="font-light bg-black hover:bg-zinc-200/5 text-zinc-200 border border-zinc-700 px-4 py-2 rounded-xl text-sm backdrop-blur-md flex items-center justify-center gap-2">
+                    <LinkButton href="/non-dev" variant="secondary">
                         Get Started
                         <Icon name={`ChevronRight`} className="text-zinc-200" />
-                    </Link>
+                    </LinkButton>
                 </div>
             </div>
                 <div className="absolute mx-auto my-auto flex items-center justify-center -z-0">
