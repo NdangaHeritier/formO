@@ -10,7 +10,7 @@ type formProps = {
 }
 export default function Test () {
 
-    const [formData, setFormData] = useState({
+    const [formData, setFormData] = useState<formProps>({
         fullname: '',
         email: '',
         subject: '',
@@ -18,13 +18,20 @@ export default function Test () {
 
     });
 
-    // const handleChanges = (e:any) =>
-    // {
-    //     e.preventDefault();
-    //     setFormData(...formData, [e.target.name]: e.target.value,);
-    // }
-    const handleSubmit = (e:any) => {
-        e.preventDefult();
+    const handleChanges = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) =>
+    {
+        e.preventDefault();
+        setFormData({...formData, [e.target.name]: e.target.value,});
+    }
+    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+        console.log("Form Data is", FormData);
+        setFormData({
+            fullname: '',
+            email: '',
+            subject: '',
+            quote: '',
+        });
     }
     return(
         <section className="flex items-center justify-center bg-gradient-to-br from-zinc-800 to-black">
@@ -42,12 +49,16 @@ export default function Test () {
                     <input
                      type="text"
                      name="fullname"
+                     value={formData.fullname}
+                     onChange={handleChanges}
                      placeholder="Fullname"
                      className="border border-zinc-700 bg-zinc-800/50 py-2 px-4 rounded-xl w-full outline-0 focus:ring-2 focus:ring-yellow-700"
                     />
                     <input
                      type="email"
                      name="email"
+                     value={formData.email}
+                     onChange={handleChanges}
                      placeholder="Your Email address"
                      className="border border-zinc-700 bg-zinc-800/50 py-2 px-4 rounded-xl w-full outline-0 focus:ring-2 focus:ring-yellow-700"
                     />
@@ -55,6 +66,8 @@ export default function Test () {
                     <input
                      type="text"
                      name="Subject"
+                     value={formData.subject}
+                     onChange={handleChanges}
                      placeholder="Reason/ Subject"
                      className="border border-zinc-700 bg-zinc-800/50 py-2 px-4 rounded-xl w-full outline-0 focus:ring-2 focus:ring-yellow-700"
                     />
@@ -62,6 +75,8 @@ export default function Test () {
                     <textarea
                      cols={10}
                      name="quote"
+                     value={formData.quote}
+                     onChange={handleChanges}
                      placeholder="Explain your quote details here!"
                      className="border border-zinc-700 bg-zinc-800/50 py-2 px-4 rounded-xl w-full outline-0 focus:ring-2 focus:ring-yellow-700"
                     >
