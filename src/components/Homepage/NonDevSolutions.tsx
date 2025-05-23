@@ -36,7 +36,7 @@ const NonDevSolutions: React.FC = () => {
         <section className="relative overflow-hidden border border-t-0 border-zinc-900 ">
             <Squares parLength={300} />
         {/* Background Mockups */}
-        <div className="absolute right-0 top-10 hidden lg:flex flex-col gap-8 w-[40%] pointer-events-none z-0">
+        <div className="absolute right-10 top-10 hidden lg:flex flex-col gap-8 w-[35%] pointer-events-none z-0">
             <div className="bg-zinc-100 dark:bg-zinc-800 rounded-xl shadow-xl border border-zinc-300 dark:border-zinc-700 p-4">
             <div className="flex items-center justify-between mb-2">
                 <div className="flex gap-2">
@@ -47,23 +47,26 @@ const NonDevSolutions: React.FC = () => {
                 <span className="text-sm text-zinc-400">Template Preview</span>
             </div>
             <div className="h-40 bg-white dark:bg-zinc-950 rounded-lg p-4">
-                <div className="theme overflow-x-hidden max-h-32 w-full border rounded-t-lg">
-                    <div className="image h-14 w-full bg-zinc-900 border-b border-zinc-800 flex items-end justify-start">
-                        <Icon name="Layout" className="text-green-500" size={16} />
+                <div className="theme overflow-hidden max-h-32 w-full border border-zinc-700 shadow rounded-t-lg">
+                    <div className="image h-14 p-2 gap-2 text-zinc-200 w-full bg-zinc-900 text-xs border-b border-zinc-800 flex items-end justify-between">
+                        <div className="flex items-center gap-1">
+                            <Icon name="Layout" className="text-green-500" size={16} /> 10X
+                        </div>
+                        <div className="flex items-center justify-between">
+                            <span className="text-xs text-zinc-400">Choose Theme</span>
+                            <div className="flex gap-1 p-3">
+                                <div className="w-4 h-4 bg-blue-500 rounded-full"></div>
+                                <div className="w-4 h-4 bg-pink-500 rounded-full"></div>
+                                <div className="w-4 h-4 bg-zinc-950 border border-zinc-800 rounded-full"></div>
+                            </div>
+                        </div>
                     </div>
                     <div className="p-2">
                         <h2 className="text-zinc-200 font-bold text-lg pb-1">NewsLetter Today</h2>
                         <p className="text-zinc-500">Start editing your template today with esase.</p>
                     </div>
                 </div>
-                <div className="mt-2 flex items-center justify-between p-2 border-t border-t-zinc-700">
-                    <span className="text-xs text-zinc-400">Choose Theme</span>
-                    <div className="flex gap-1 p-3">
-                        <div className="w-4 h-4 bg-blue-500 rounded-full"></div>
-                        <div className="w-4 h-4 bg-pink-500 rounded-full"></div>
-                        <div className="w-4 h-4 bg-zinc-950 border border-zinc-800 rounded-full"></div>
-                    </div>
-                </div>
+                
             </div>
             </div>
 
@@ -78,8 +81,8 @@ const NonDevSolutions: React.FC = () => {
             </div>
             <div className="h-40 bg-white dark:bg-zinc-950/80 rounded-lg p-4 flex flex-col justify-between">
                 <div>
-                <p className="text-sm text-zinc-700 dark:text-zinc-300 font-medium">Campaign Stats</p>
-                <p className="text-xs text-zinc-400">Open rate: 65% • Clicks: 24%</p>
+                <p className="text-sm text-zinc-700 dark:text-zinc-300 font-bold">Campaign Stats</p>
+                <p className="text-xs text-zinc-400">Open rate: <span className="text-green-600">65%</span> • Clicks: <span className="text-red-500">24%</span></p>
                 </div>
                 <LinkButton variant="primary" href="#">
                     View Full Report
@@ -112,7 +115,7 @@ const NonDevSolutions: React.FC = () => {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-10">
                 {nonDevFeatures.map(({ icon, title, desc }) => (
-                    <div key={title} className="flex items-start gap-4 border border-zinc-200 dark:border-zinc-900 rounded-xl p-4 bg-gradient-to-tr from-white to-yellow-200 dark:from-zinc-950 dark:to-yellow-950">
+                    <div key={title} className="flex items-start gap-4 border border-zinc-200 dark:border-zinc-900 rounded-xl p-4 bg-gradient-to-tr from-white from-70% to-20% to-yellow-200/30 dark:from-zinc-950 dark:to-yellow-950/30">
                         <div className="bg-yellow-100 dark:bg-yellow-950/30 text-yellow-700 p-2 rounded-full">
                             <Icon name={icon as any} size={20} className="text-yellow-700" />
                         </div>
