@@ -1,6 +1,7 @@
 import { HeroSection } from "@/components/Global/HeroSection";
 import Solutions from "@/components/Global/Solutions";
 import Features from "@/components/Global/Features";
+import WhyChooseus from "@/components/Global/WhyChooseus";
 
 
 
@@ -10,8 +11,9 @@ export default function NonDev() {
 
         <div className="px-5">
           <HeroSection  />
-          <Solutions />
           <Features />
+          <Solutions />
+          <WhyChooseus />
           
         </div>
     </div>

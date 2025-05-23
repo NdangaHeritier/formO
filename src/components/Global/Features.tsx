@@ -1,8 +1,5 @@
-import Image from "next/image"
-import Link from "next/link";
-import React from "react";
-import { Icon } from "./Icon";
 
+import React from "react";
 const Features: React.FC = () =>{
 return(
       <>

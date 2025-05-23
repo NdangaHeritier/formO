@@ -1,15 +1,12 @@
-import Image from "next/image"
-import Link from "next/link";
+
 import React from "react";
 import { Icon } from "./Icon";
-import * as LucideIcons from "lucide-react";
-import { Squares } from "./Squares";
 import DetailCard from "./DetailCard";
 
 const Solutions: React.FC = () =>{
 return(
       <>
-            <section className="relative bg-zinc-50 dark:bg-zinc-950 p-10">
+            <section className="relative bg-zinc-50 dark:bg-zinc-950 p-5">
 
 
             <div className="contain border shadow-2xl border-zinc-900 relative bg-black/90 rounded-3xl p-20 flex flex-col items-center justify-center w-full " >
@@ -37,6 +34,7 @@ return(
                     </div>
                     </div>
             </section>
+            
         </>
 );
 }
