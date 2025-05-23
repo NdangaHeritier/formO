@@ -42,7 +42,7 @@ export default function Test () {
                         <h2 className="text-xl text-zinc-100 font-bold">
                             Submit your Quaote Request.
                         </h2>
-                        <p className="text-zinc-500 py-2">Share us What you're planning to buy from us. anything you want we deliver!</p>
+                        <p className="text-zinc-500 py-2">Share us What you are planning to buy from us. anything you want we deliver!</p>
                    </div>
                 </div>
                 <form method="post" onSubmit={handleSubmit} className="text-zinc-200 grid grid-cols-1 gap-3 p-10">

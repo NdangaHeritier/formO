@@ -2,8 +2,14 @@ import { Icon } from "../Global/Icon";
 import { Squares } from "../Global/Squares";
 import YellowBorderedSpan from "../Global/YellowBorderedSpan";
 import LinkButton from "../Global/LinkButton";
+import { IconType } from "@/types/Icon";
 
-const nonDevFeatures = [
+type feature ={
+        icon: IconType,
+        title: string,
+        desc: string,
+    }
+const nonDevFeatures:feature[] = [
     {
       icon: "Mail",
       title: "Email Templates",
@@ -104,7 +110,7 @@ const NonDevSolutions: React.FC = () => {
                     Easy for Everyone
                 </h1>
                 <p className="text-lg md:text-xl text-zinc-600 dark:text-zinc-400">
-                    Whether you're a marketer, teacher, or business owner—Formo is made for you.
+                    Whether you&rsquo;re a marketer, teacher, or business owner—Formo is made for you.
                 </p>
                 </div>
 
@@ -121,7 +127,7 @@ const NonDevSolutions: React.FC = () => {
                 {nonDevFeatures.map(({ icon, title, desc }) => (
                     <div key={title} className="flex items-start gap-4 border border-zinc-200 dark:border-zinc-900 rounded-xl p-4 bg-gradient-to-tr from-white to-20% to-yellow-200/90 dark:from-zinc-950 dark:to-yellow-950/90">
                         <div className="bg-yellow-100 dark:bg-yellow-950/30 text-yellow-700 p-2 rounded-full">
-                            <Icon name={icon as any} size={20} className="text-yellow-700" />
+                            <Icon name={icon} size={20} className="text-yellow-700" />
                         </div>
                         <div>
                             <h3 className="font-semibold text-zinc-900 dark:text-zinc-100 text-base mb-1">{title}</h3>
