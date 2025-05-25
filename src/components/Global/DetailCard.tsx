@@ -23,7 +23,7 @@ const DetailCard = ({title, icon, desc}: Props) => {
                     
                   <h1 className="font-semibold text-lg py-3 text-zinc-950 dark:text-zinc-200 ">{title}</h1>
                   </div>
-                    <div className="text-base  justify-center px-3">
+                    <div className="text-base  justify-center mx-auto">
                 <p className="pb-2 text-zinc-700 dark:text-zinc-500 text-base">
                         {desc}
                     </p>
