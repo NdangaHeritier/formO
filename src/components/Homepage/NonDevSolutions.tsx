@@ -39,8 +39,8 @@ const nonDevFeatures:feature[] = [
 
 const NonDevSolutions: React.FC = () => {
     return (
-        <section className="relative overflow-hidden border border-t-0 border-zinc-900 ">
-            <Squares parLength={200} />
+        <section className="relative overflow-hidden border border-t-0 border-zinc-300 dark:border-zinc-900 ">
+            <Squares parLength={120} />
         {/* Background Mockups */}
         <div className="absolute right-10 top-10 hidden lg:flex flex-col gap-8 w-[35%] pointer-events-none z-0">
             <div className="bg-zinc-100 dark:bg-zinc-900/80 rounded-xl shadow-xl border border-zinc-300 dark:border-zinc-700 p-4">
@@ -53,26 +53,27 @@ const NonDevSolutions: React.FC = () => {
                 <span className="text-sm text-zinc-400 font-semibold">Template Preview</span>
             </div>
             <div className="h-40 bg-white dark:bg-zinc-950 rounded-lg p-4">
-                <div className="theme overflow-hidden max-h-32 w-full border border-zinc-700 shadow rounded-t-lg">
-                    <div className="image h-14 p-2 gap-2 text-zinc-200 w-full bg-zinc-900 text-xs border-b border-zinc-800 flex items-end justify-between">
+                <div className="theme overflow-hidden max-h-32 w-full border border-zinc-400 dark:border-zinc-700 shadow rounded-t-lg">
+                    <div className="image h-10 p-2 gap-2 text-zinc-800 dark:text-zinc-200 w-full bg-zinc-100 dark:bg-zinc-900 text-xs border-b border-zinc-200 dark:border-zinc-800 flex items-end justify-between">
                         <div className="flex items-center gap-1">
-                            <Icon name="Layout" className="text-green-500" size={16} /> 10X
+                            <Icon name="Layout" className="text-green-600" size={16} /> 10X
                         </div>
                         <div className="flex items-center justify-between">
-                            <span className="text-xs text-zinc-400">Choose Theme</span>
-                            <div className="flex gap-1 p-3">
+                            <span className="text-xs text-zinc-700 dark:text-zinc-400">Choose Theme</span>
+                            <div className="flex gap-1 p-1">
                                 <div className="w-4 h-4 bg-blue-500 rounded-full"></div>
                                 <div className="w-4 h-4 bg-pink-500 rounded-full"></div>
                                 <div className="w-4 h-4 bg-zinc-950 border border-zinc-300 rounded-full"></div>
                             </div>
                         </div>
                     </div>
-                    <div className="p-2 m-2 bg-green-600/20 border border-zinc-700 rounded-t-lg">
-                        <h2 className="text-green-600 font-bold text-base pb-1">NewsLetter Today</h2>
-                        <p className="text-zinc-500 text-sm">
-                            Start editing your template today with esase. 
-                            Start editing your template today with esase. 
-                            Start editing your template today with esase.
+                    <div className="p-2 m-2 bg-green-600/8 border border-zinc-300 dark:border-zinc-700 rounded-t-lg">
+                        <h2 className="text-green-600 font-bold text-base pb-1 flex items-center jujustify-between gap-x-2">
+                            Introduce Formo Editor
+                            <span className="bg-green-600 text-xs text-white rounded-full px-2 py-0.5">New</span>
+                        </h2>
+                        <p className="dark:text-zinc-400 text-zinc-700 text-xs">
+                            Formo is here to introduce new template email editor that help marketers to send beautifull and engaging emails for free with ease.
                         </p>
                     </div>
                 </div>
@@ -102,7 +103,7 @@ const NonDevSolutions: React.FC = () => {
         </div>
 
         {/* Foreground Content */}
-        <div className="relative grid grid-cols-2 z-10 bg-gradient-to-r from-zinc-50 to-transparent dark:from-zinc-950/80 dark:to-black/30 p-10 py-20">
+        <div className="relative grid grid-cols-2 z-10 bg-gradient-to-r from-zinc-50 to-white/30 dark:from-zinc-950/80 dark:to-black/30 p-10 py-20">
            <div className="flex flex-col items-start justiffy-start gap-5">
                 <YellowBorderedSpan title="For Non-Developers Who Need Speed" />
                 <div className="w-full md:w-2/3 mb-10">
@@ -116,7 +117,7 @@ const NonDevSolutions: React.FC = () => {
 
                 <div className="flex flex-wrap gap-3 mb-6">
                 {['Marketers', 'Influencers', 'Teachers', 'Business Owners'].map((role) => (
-                    <div key={role} className="bg-zinc-100 flex items-center justify-center gap-1 dark:bg-zinc-900/40 border border-zinc-800 pl-1 pe-3 py-1 rounded-full text-sm text-zinc-600 dark:text-zinc-300">
+                    <div key={role} className="bg-zinc-100 flex items-center justify-center gap-1 dark:bg-zinc-900/40 border border-zinc-300 dark:border-zinc-800 pl-1 pe-3 py-1 rounded-full text-sm text-zinc-600 dark:text-zinc-300">
                         <Icon name="User" size={20} className="border border-yellow-600 text-yellow-600 rounded-full p-1 shadow-2xl" />
                         <span className="">{role}</span>
                     </div>
@@ -125,8 +126,8 @@ const NonDevSolutions: React.FC = () => {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-10">
                 {nonDevFeatures.map(({ icon, title, desc }) => (
-                    <div key={title} className="flex items-start gap-4 border border-zinc-200 dark:border-zinc-900 rounded-xl p-4 bg-gradient-to-tr from-white to-20% to-yellow-200/90 dark:from-zinc-950 dark:to-yellow-950/90">
-                        <div className="bg-yellow-100 dark:bg-yellow-950/30 text-yellow-700 p-2 rounded-full">
+                    <div key={title} className="flex items-start gap-4 border border-zinc-200 dark:border-zinc-900 rounded-xl p-4 bg-gradient-to-tr from-yellow-600/20 to-30% to-white dark:from-yellow-950/90 dark:to-zinc-950">
+                        <div className="bg-yellow-600/20 dark:bg-yellow-950/30 text-yellow-700 p-2 rounded-full">
                             <Icon name={icon} size={20} className="text-yellow-700" />
                         </div>
                         <div>

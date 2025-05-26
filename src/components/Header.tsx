@@ -1,6 +1,7 @@
 import Image from "next/image";
 import { Icon } from "./Global/Icon";
 import Link from "next/link";
+import LinkButton from "./Global/LinkButton";
 
 export default function Header() {
   return (
@@ -27,14 +28,14 @@ export default function Header() {
                 </li>
             </ul>
             <div className="ctas flex items-center justify-center gap-3">
-                <Link href="" className="bg-zinc-900 px-4 py-2 text-sm rounded-md text-zinc-100 font-semibold flex items-center gap-2">
-                    <Icon name="Webhook" size={15} className="text-zinc-400" />
+                <LinkButton href="/test" variant="primary">
+                    <Icon name="Webhook" size={15} className="text-zinc-500" />
                     Get API
-                </Link>
-                <Link href="" className="bg-zinc-900 px-4 py-2 text-sm rounded-md text-zinc-100 font-semibold flex items-center gap-2">
-                    <Icon name="Text" size={15} className="text-zinc-400" />
+                </LinkButton>
+                <LinkButton href="/non-dev" variant="secondary">
+                    <Icon name="Text" size={15} className="text-zinc-500" />
                     Send Emails
-                </Link>
+                </LinkButton>
             </div>
         </div>
         <div className="navbar-toogle hidden max-sm:block">
