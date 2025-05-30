@@ -23,7 +23,7 @@ export default function DeveloperSubMenu({
       <nav className="flex gap-2">        
         {navs.map((nav, i) => (
           <Link
-            key={nav.href}
+            key={i}
             href={nav.href}
             className="px-3 py-1 rounded-lg border border-transparent text-zinc-700 dark:text-zinc-200 font-medium hover:bg-zinc-500/10 transition"
           >

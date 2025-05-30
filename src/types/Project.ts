@@ -35,7 +35,7 @@ export type FormSubmissionType = {
   id: string;
   form?: FormType; // if expanded
   submitted_at: string;
-  data: Record<string, any>;
+  data: Record<string, string | number | boolean>;
   created: string;
   updated: string;
 };
