@@ -5,9 +5,7 @@ import { useState } from "react";
     
 
 export default function DeveloperBreadcrumb({
-  navs,
-  onCreate,
-  createLabel = "Create",
+  navs
 }: {
   navs: { label: string; href?: string }[];
   onCreate?: () => void;
@@ -47,6 +45,22 @@ export default function DeveloperBreadcrumb({
           // else route to create form if needed
         }}
       />
+      {showModal && (
+        <div className="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-center justify-center z-50">
+          <div className="bg-white dark:bg-zinc-800 p-6 rounded-lg shadow-lg max-w-md w-full">
+            <h2 className="text-lg font-semibold mb-4">Create New Project</h2>
+            <p className="text-sm text-zinc-600 dark:text-zinc-400 mb-6">
+              Coming soon! This feature is under development.
+            </p>
+            <button
+              onClick={() => setShowModal(false)}
+              className="w-full bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 hover:bg-zinc-800 dark:hover:bg-zinc-200 rounded-lg px-4 py-2"
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

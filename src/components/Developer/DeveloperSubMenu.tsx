@@ -47,7 +47,7 @@ export default function DeveloperSubMenu({
                 className="flex items-center justify-start gap-2 w-full text-left px-3 py-2 hover:bg-zinc-200 dark:hover:bg-zinc-900 transition text-zinc-700 dark:text-zinc-200 text-sm"
                 onClick={() => {
                     setOpen(false);
-                    onSelect && onSelect(opt.value);
+                    onSelect?.(opt.value);
                 }}
                 >
                 <Icon name={opt.icon} className="w-4 h-4 text-zinc-600 dark:text-zinc-500" strokeWidth={2} />
