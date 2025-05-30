@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { JetBrains_Mono, Inter } from 'next/font/google';
 import "./globals.css";
-import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 
 export const metadata: Metadata = {
@@ -86,8 +85,7 @@ export default function RootLayout({
             </div>
         </div>
         <main className="max-md:hidden">
-          <Header />
-          <section className="flex flex-col items-center justify-center min-h-screen p-0 pb-20 gap-16">
+          <section className="min-h-screen p-0 pb-20">
             {children}
           </section>
           <Footer />

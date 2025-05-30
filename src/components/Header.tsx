@@ -2,10 +2,10 @@ import Image from "next/image";
 import { Icon } from "./Global/Icon";
 import Link from "next/link";
 import LinkButton from "./Global/LinkButton";
-
-export default function Header() {
+type prop={border?: string; py?: string};
+export default function Header({border="border-b", py="py-auto"}:prop) {
   return (
-    <header className="h-1/8 w-full sticky top-0 left-0 right-0 z-50 border-b border-zinc-200 dark:border-zinc-800 p-5 px-10 flex items-center justify-between gap-5 zinc-50/70 dark:bg-zinc-950/80 backdrop-blur-2xl">
+    <header className={`h-1/8 w-full sticky top-0 left-0 right-0 z-50 ${border} border-zinc-200 dark:border-zinc-800 p-5 ${py} px-10 flex items-center justify-between gap-5 zinc-50/70 dark:bg-zinc-950 backdrop-blur-2xl`}>
         <div className="">
             <Image src="/Assets/formo-coloured.png" alt="logo" height="50" width="50" />
         </div>
@@ -28,7 +28,7 @@ export default function Header() {
                 </li>
             </ul>
             <div className="ctas flex items-center justify-center gap-3">
-                <LinkButton href="/test" variant="primary">
+                <LinkButton href="/developer" variant="primary">
                     <Icon name="Webhook" size={15} className="text-zinc-500" />
                     Get API
                 </LinkButton>

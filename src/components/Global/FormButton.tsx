@@ -1,10 +1,11 @@
 type Props = {
     type?: "button" | "submit",
     variant?: "primary" | "secondary",
+    onClick?: () => void,
     children: React.ReactNode,
 };
 
-const FormButton = ({variant="primary",type="button", children}:Props) => {
+const FormButton = ({variant="primary",type="button",onClick, children}:Props) => {
     const variation ={
         primary:"bg-white hover:bg-white/70 text-zinc-900",
         secondary: "bg-black hover:bg-zinc-200/5 text-zinc-200 border border-zinc-700"
@@ -12,7 +13,8 @@ const FormButton = ({variant="primary",type="button", children}:Props) => {
     return(
         <button
             type={type}
-            className={`${variation[variant]} font-semibold duration-300 px-4 py-2 rounded-xl text-sm flex items-center justify-center gap-2`}
+            onClick={onClick}
+            className={`${variation[variant]} font-semibold duration-300 px-4 py-2 rounded-md text-sm flex items-center justify-center gap-4 cursor-pointer`}
         >
             {children}                    
         </button>

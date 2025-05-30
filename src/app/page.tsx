@@ -1,3 +1,4 @@
+import Header from "@/components/Header";
 import MeetTeam from "@/components/Homepage/Contributors";
 import CustomizeTemplates from "@/components/Homepage/CustomizeTemplate";
 import DeveloperSolutions from "@/components/Homepage/DeveloperSolution";
@@ -11,6 +12,8 @@ import WhyChooseFormo from "@/components/Homepage/WhyChooseFormo";
 
 export default function Home() {
   return (
+    <>
+    <Header />
     <div className="w-full flex flex-col justify-start gap-5">
 
         <div className="px-5">
@@ -26,5 +29,6 @@ export default function Home() {
           <QuickActionSection />
         </div>
     </div>
+    </>
   );
 }

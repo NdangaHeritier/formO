@@ -1,5 +1,6 @@
 "use client";
 import { Icon } from "@/components/Global/Icon";
+import Header from "@/components/Header";
 import { useState } from "react"
 
 type formProps = {
@@ -23,17 +24,25 @@ export default function Test () {
         e.preventDefault();
         setFormData({...formData, [e.target.name]: e.target.value,});
     }
-    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        console.log("Form Data is", FormData);
-        setFormData({
-            fullname: '',
-            email: '',
-            subject: '',
-            quote: '',
+        console.log(formData);
+
+        // Sending the formData to The API
+        const response = await fetch('/api/send-emails', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(formData),
         });
+        const result = await response.json();
+        console.log(result);
     }
     return(
+        <>
+        <Header />
         <section className="flex items-center justify-center bg-gradient-to-br from-zinc-800 to-black">
             <div className="border overflow-hidden border-zinc-700 rounded-2xl bg-zinc-950 shadow-2xl flex flex-col gap-5">
                 <div className="head bg-zinc-900/50 w-full flex p-10 items-start justify-start border-b border-b-zinc-700 gap-5">
@@ -85,5 +94,6 @@ export default function Test () {
                 </form>
             </div>
         </section>
+        </>
     )
 }
