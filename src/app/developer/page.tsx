@@ -13,6 +13,7 @@ import { ProjectType } from '@/types/Project';
 import { Squares } from '@/components/Global/Squares';
 // import FeatureCard from '@/components/Global/FeatureCard';
 import GuideCard from '@/components/Global/GuideCard';
+import NewDeveloperForm from '@/components/Developer/Modals/Forms/NewDeveloper';
 
 type AnalyticType= {
   title: string,
@@ -139,6 +140,9 @@ const Developer= () => {
       setProjects(demoProjects);
     }, []);
 
+    // trigger to show create new project model..
+    const [isCreateProjectModelOpen, setIsCreateProjectModelOpen] = useState(false);
+
   return (
     <>
       <Header border='border-0' py='py-3'/>
@@ -148,6 +152,10 @@ const Developer= () => {
           { label: "Developer", href: "/developer" },
         ]}
       />
+      {/* display createProjectModel */}
+      {isCreateProjectModelOpen && (
+        <NewDeveloperForm onClick={() => setIsCreateProjectModelOpen(false)} />
+      )}
       <section className="dashboard bg-white dark:bg-black text-zinc-900 dark:text-zinc-100 p-5 grid grid-cols-1 gap-y-10">
         {/* Analytics section */}
         <div className="analytics grid grid-cols-3 gap-5 p-3">
@@ -162,13 +170,9 @@ const Developer= () => {
           <div className="projects relative z-10 grid grid-cols-1 gap-5 bg-gradient-to-tr from-zinc-950 from-80% to-20% to-zinc-950/50 rounded-lg p-8">
             <div className="flex items-center justify-between">
               <div className="title text-xl font-bold">Projects</div>
-              <FormButton type='button' variant='primary' onClick={() => {
-                // Handle project creation logic here
-                console.log("Create Project button clicked");
-              }
-              }>
+              <FormButton type='button' variant='primary' onClick={() => setIsCreateProjectModelOpen(true)}>
                 <Icon name="Plus" size={15} className="text-zinc-200 dark:text-zinc-800" />
-                Create Project
+                  Create Project
               </FormButton>
             </div>
 
