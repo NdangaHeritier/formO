@@ -1,9 +1,9 @@
-import Image from "next/image"
-import Link from "next/link";
+// import Image from "next/image"
+// import Link from "next/link";
 import React from "react";
 import { Icon } from "./Icon";
-import * as LucideIcons from "lucide-react";
-import { Squares } from "./Squares";
+// import * as LucideIcons from "lucide-react";
+// import { Squares } from "./Squares";
 import DetailCard from "./DetailCard";
 
 const WhyChooseus: React.FC = () =>{
