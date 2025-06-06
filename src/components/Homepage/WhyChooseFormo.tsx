@@ -4,11 +4,11 @@ import YellowBorderedSpan from "../Global/YellowBorderedSpan";
 const WhyChooseFormo: React.FC = () => {
     return (
         <>
-            <section className="relative bg-zinc-50 dark:bg-zinc-950/20 border border-zinc-900 border-t-0 p-10">
+            <section className="relative bg-zinc-50 dark:bg-zinc-950/20 border border-zinc-300 dark:border-zinc-900 border-t-0 p-10">
                 <div className="flex items-center justify-center flex-col gap-y-6">
                     <YellowBorderedSpan title="Why Formo Can keep You a company in you journey?" />
                     <div className="min-md:w-2/3">
-                        <h1 className="text-6xl font-extrabold text-zinc-300 pb-5 tracking-tight text-center">
+                        <h1 className="text-6xl font-extrabold text-zinc-900 dark:text-zinc-300 pb-5 tracking-tight text-center">
                             Why Go with Formo ?
                         </h1>
                         <p className="text-zinc-600 dark:text-zinc-400 text-xl py-7">
