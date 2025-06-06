@@ -44,13 +44,13 @@ export default function DeveloperBreadcrumb({
           { label: "Settings", href: "/developer/settings" },
         ]}
         onSelect={(value) => {
-          {value === "project" ? (
-              setShowProjectModal(true),
-              setShowFormModal(false)
-            ):(
-              setShowProjectModal(false),
-              setShowFormModal(true)
-          )}
+          if (value === "project") {
+            setShowProjectModal(true);
+            setShowFormModal(false);
+          } else {
+            setShowProjectModal(false);
+            setShowFormModal(true);
+          }
         }}
       />
       {showProjectModal && (        

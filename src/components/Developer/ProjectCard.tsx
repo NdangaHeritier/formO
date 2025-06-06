@@ -1,7 +1,6 @@
 import { FormType, ProjectType } from "@/types/Project";
 import FormButton from "../Global/FormButton";
 import { Icon } from "../Global/Icon";
-import { useState } from "react";
 
 type cardProps = {
     id: ProjectType['id'];

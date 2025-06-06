@@ -1,4 +1,4 @@
-import { ChangeEventHandler } from "react"
+import React from 'react';
 
 type InputXTics= {
     type: string,

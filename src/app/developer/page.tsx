@@ -16,7 +16,6 @@ import GuideCard from '@/components/Global/GuideCard';
 import NewDeveloperForm from '@/components/Developer/Modals/Forms/NewDeveloper';
 import NewForm from '@/components/Developer/Modals/Forms/NewForm';
 import { FormsDisplayModel } from '@/components/Developer/Modals/Displays/DisplayProjectForms';
-import { title } from 'process';
 
 type AnalyticType= {
   title: string,

@@ -1,4 +1,3 @@
-import { ChangeEventHandler, ReactNode } from "react"
 
 type InputXTics= {
     name: string,

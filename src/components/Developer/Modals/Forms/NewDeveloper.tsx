@@ -34,11 +34,11 @@ export default function NewDeveloperForm ({onClick}:onClick) {
             <div className="bg-white dark:bg-zinc-950 border border-zinc-400 dark:border-zinc-700 p-6 rounded-lg shadow-lg max-w-md w-full">
                 <h2 className="text-lg font-semibold mb-4 text-black dark:text-white">Create New Project</h2>
                 <p className="text-sm text-zinc-600 dark:text-zinc-400 mb-6">
-                Projects Let's you organize your forms well based on your real project for which you're adding forms to.
+                Projects Let&apos;s you organize your forms well based on your real project for which you&apos;re adding forms to.
                 </p>
 
                 {/* form goes here */}
-                <form action="" method="post" className="pt-5 grid grid-cols-1 gap-5">
+                <form onSubmit={handleSubmit} method="post" className="pt-5 grid grid-cols-1 gap-5">
                     <InputField
                         type="text"
                         name="name"
