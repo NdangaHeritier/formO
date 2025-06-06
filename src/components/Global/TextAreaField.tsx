@@ -7,7 +7,7 @@ type InputXTics= {
     placeholder: string,
     cols?: number,
     rows?: number,
-    onChange: ChangeEventHandler<HTMLTextAreaElement>,
+    onChange: (e: React.ChangeEvent<HTMLTextAreaElement>) => void,
     label?: string
 }
 

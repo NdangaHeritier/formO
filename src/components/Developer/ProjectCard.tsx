@@ -1,6 +1,7 @@
 import { FormType, ProjectType } from "@/types/Project";
 import FormButton from "../Global/FormButton";
 import { Icon } from "../Global/Icon";
+import { useState } from "react";
 
 type cardProps = {
     id: ProjectType['id'];
@@ -11,8 +12,10 @@ type cardProps = {
     user?: ProjectType['user'];
     forms?: FormType[]; // Array of form IDs or titles
     status: 'active' | 'archived';
+    openForm: () => void;
+    showForms: () => void
 }
-export default function ProjectCard ({name, description, user, forms, status, id}:cardProps) {
+export default function ProjectCard ({name, description, user, forms, status, id, openForm, showForms}:cardProps) {
     return (
         <div className="project-card p-5 bg-black border border-zinc-700 rounded-lg shadow-lg grid grid-cols-1 gap-3">
             <div className="flex items-start justify-between">
@@ -50,17 +53,11 @@ export default function ProjectCard ({name, description, user, forms, status, id
                 </p>
             </div>
             <div className="mt-3 grid grid-cols-2 gap-3">
-                <FormButton type='button' variant='secondary' onClick={() => {
-                    // Handle project details logic here
-                    console.log(`View details for project: ${name}`);
-                }}>
+                <FormButton type='button' variant='secondary' onClick={showForms}>
                     <Icon name="SquareArrowUpRight" size={15} className="text-zinc-600 dark:text-zinc-500" />
                     View Forms
                 </FormButton>
-                <FormButton type='button' variant='secondary' onClick={() => {
-                    // Handle project details logic here
-                    console.log(`View details for project: ${name}`);
-                }}>
+                <FormButton type='button' variant='secondary' onClick={openForm}>
                     <Icon name="Plus" size={15} className="text-zinc-600 dark:text-zinc-500" />
                     Add Form
                 </FormButton>

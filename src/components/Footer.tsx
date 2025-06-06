@@ -30,15 +30,26 @@ export default function Footer() {
             <div className="get-started-and-reach-out flex flex-col justify-start items-start gap-3">
                 <h3 className="text-lg font-semibold text-zinc-700 dark:text-zinc-400">Our Community</h3>
                 <ul className="list-none flex flex-col gap-2 text-sm text-zinc-600 dark:text-zinc-500">
-                    <li><Link href="/#start" className="hover:underline">Community</Link></li>
-                    <li><Link href="/#start" className="hover:underline">API Status</Link></li>
-                    <li><Link href="/#start" className="hover:underline">Changelog</Link></li>
-                    <li><Link href="/#start" className="hover:underline">FAQ</Link></li>
-                    <li><Link href="/#start" className="hover:underline">Feedback</Link></li>
-                    <li><Link href="/#start" className="hover:underline">Careers</Link></li>
-                    <li><Link href="/#start" className="hover:underline">Press</Link></li>
-                    <li><Link href="/#start" className="hover:underline">Partners</Link></li>
-                    <li><Link href="/#company" className="hover:underline">Our Team</Link></li>
+                    {
+                        [
+                            {href: "/#community", title: "Community"},
+                            {href: "/#ApiStatus", title: "API Status"},
+                            {href: "/#Changelog", title: "Changelog"},
+                            {href: "/#FAQ", title: "FAQ"},
+                            {href: "/#Feedback", title: "Feedback"},
+                            {href: "/#Careers", title: "Careers"},
+                            {href: "/#press", title: "Press"},
+                            {href: "/#Partners", title: "Partners"},
+                            {href: "/#team", title: "Our Team"},
+                        ].map(({href, title}, index)=> (
+                            <li key={index}>
+                                <Link href={href} className="hover:underline text-zinc-700 dark:text-zinc-400 flex items-center justify-start gap-1">
+                                    {title}
+                                    <Icon name="ArrowUpRight" className="text-zinc-500 dark:text-zinc-600" size={14} strokeWidth={2} />
+                                </Link>
+                            </li>
+                        ))
+                    }
                 </ul>
                 
             </div>
@@ -46,20 +57,20 @@ export default function Footer() {
                 <h3 className="text-lg font-semibold text-zinc-700 dark:text-zinc-400">Follow Us</h3>
                 <ul className="list-none grid grid-cols-2 gap-3 text-zinc-600 dark:text-zinc-500">
                     <li className="flex items-center justify-start"><Link href="https://facebook.com" target="_blank" className="hover:underline text-sm flex items-center justify-center gap-2">
-                        <Icon name="Facebook" size={15} className="text-zinc-200 dark:text-zinc-900 bg-zinc-900 dark:bg-zinc-100 rounded-md h-8 w-8 p-2 flex items-center justify-center"/>
+                        <Icon name="Facebook" size={15} strokeWidth={2} className="text-zinc-700 dark:text-zinc-400 bg-zinc-200/40 dark:bg-zinc-900/50 border-2 border-white dark:border-black ring-2 ring-zinc-100 dark:ring-zinc-900 rounded-md h-8 w-8 p-1 flex items-center justify-center"/>
                         Facebook
                     </Link></li>
                     <li className="flex items-center justify-start"><Link href="https://twitter.com" target="_blank" className="hover:underline text-sm flex items-center justify-center gap-2">
-                        <Icon name="Twitter" size={15} className="text-zinc-200 dark:text-zinc-900 bg-zinc-900 dark:bg-zinc-100 rounded-md h-8 w-8 p-2 flex items-center justify-center"/>
+                        <Icon name="Twitter" size={15} strokeWidth={2} className="text-zinc-700 dark:text-zinc-400 bg-zinc-200/40 dark:bg-zinc-900/50 border-2 border-white dark:border-black ring-2 ring-zinc-100 dark:ring-zinc-900 rounded-md h-8 w-8 p-1 flex items-center justify-center"/>
                         Twitter
                     </Link></li>
                     <li className="flex items-center justify-start"><Link href="https://linkedin.com" target="_blank" className="hover:underline text-sm flex items-center justify-center gap-2">
-                        <Icon name="Linkedin" size={15} className="text-zinc-200 dark:text-zinc-900 bg-zinc-900 dark:bg-zinc-100 rounded-md h-8 w-8 p-2 flex items-center justify-center"/>
+                        <Icon name="Linkedin" size={15} strokeWidth={2} className="text-zinc-700 dark:text-zinc-400 bg-zinc-200/40 dark:bg-zinc-900/50 border-2 border-white dark:border-black ring-2 ring-zinc-100 dark:ring-zinc-900 rounded-md h-8 w-8 p-1 flex items-center justify-center"/>
                         LinkedIn
                     </Link></li>
                     <li className="flex items-center justify-start">
                         <Link href="https://instagram.com" target="_blank" className="hover:underline text-sm flex items-center justify-center gap-2">
-                        <Icon name="Instagram" size={15} className="text-zinc-200 dark:text-zinc-900 dark:bg-zinc-100 bg-zinc-900 rounded-md h-8 w-8 p-2 flex items-center justify-center"/>
+                        <Icon name="Instagram" size={15} strokeWidth={2} className="text-zinc-700 dark:text-zinc-400 bg-zinc-200/40 dark:bg-zinc-900/50 border-2 border-white dark:border-black ring-2 ring-zinc-100 dark:ring-zinc-900 rounded-md h-8 w-8 p-1 flex items-center justify-center"/>
                         Instagram
                         </Link>
                     </li>

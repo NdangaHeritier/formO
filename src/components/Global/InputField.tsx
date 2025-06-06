@@ -7,7 +7,7 @@ type InputXTics= {
     value: string | number,
     placeholder: string,
     autoComplete?: string,
-    onChange: ChangeEventHandler<HTMLInputElement>,
+    onChange: (e: React.ChangeEvent<HTMLInputElement>)=>void,
     label?: string
 }
 

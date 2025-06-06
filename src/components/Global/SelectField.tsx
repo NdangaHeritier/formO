@@ -4,12 +4,12 @@ type InputXTics= {
     name: string,
     id?: string,
     value: string | number,
-    options: ReactNode,
-    onChange: ChangeEventHandler<HTMLSelectElement>,
+    children: React.ReactNode,
+    onChange: (e: React.ChangeEvent<HTMLSelectElement>)=> void,
     label?: string,
 }
 
-export const SelectField = ({name, id, value, options, onChange, label}:InputXTics) =>{
+export const SelectField = ({name, id, value, children, onChange, label}:InputXTics) =>{
     return (
         <div className="grid grid-cols-1 gap-1">
             {label && (
@@ -23,7 +23,7 @@ export const SelectField = ({name, id, value, options, onChange, label}:InputXTi
             value={value}
             onChange={onChange}
             >
-                {options}
+                {children}
             </select>
         </div>
     )
