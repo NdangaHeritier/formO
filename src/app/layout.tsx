@@ -17,8 +17,8 @@ export const metadata: Metadata = {
   applicationName: 'FormO',
   icons: [
     { rel: 'icon', type: 'image/png', sizes: '96x96', url: '/favicon-96x96.png' },
-    { rel: 'icon', type: 'image/svg+xml', url: '/favicon.svg' },
-    { rel: 'shortcut icon', url: '/favicon.svg' },
+    { rel: 'icon', type: 'image/svg+xml', url: '/favicon.png' },
+    { rel: 'shortcut icon', url: '/favicon.png' },
     { rel: 'apple-touch-icon', sizes: '180x180', url: '/apple-touch-icon.png' },
     { rel: 'manifest', url: '/site.webmanifest' },
   ],
