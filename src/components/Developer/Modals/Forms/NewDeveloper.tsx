@@ -16,7 +16,7 @@ export default function NewDeveloperForm ({onClick}:onClick) {
     });
     const [error, setError] = useState("");
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
         setFormData({ ...FormData, [e.target.name]: e.target.value });
     };
 
@@ -45,7 +45,7 @@ export default function NewDeveloperForm ({onClick}:onClick) {
                         id="name"
                         value={FormData.name}
                         placeholder="Project name"
-                        onChange={() => handleChange}
+                        onChange={handleChange}
                         label="Project Name"
                      />
 
@@ -56,7 +56,7 @@ export default function NewDeveloperForm ({onClick}:onClick) {
                         label="Description"
                         placeholder="Description.."
                         value={FormData.description}
-                        onChange={() => handleChange}
+                        onChange={handleChange}
                     />
                      {error && (
                         <div className="text-red-500 text-xs">{error}</div>
