@@ -10,7 +10,7 @@ export const FormsDisplayModel = ({project, closeModal}:DisplayType) => {
     const {name, description, forms, status, user}: ProjectType = project;
     return(
         <Layout onClick={closeModal}>
-            <div className="bg-white dark:bg-zinc-950 border border-zinc-400 dark:border-zinc-700 p-6 rounded-lg shadow-lg max-w-md w-full">
+            <div className="bg-white dark:bg-zinc-950 border border-zinc-300 dark:border-zinc-700 p-6 rounded-lg shadow-lg max-w-md w-full">
                 <h2 className="text-lg font-semibold mb-4 text-black dark:text-white">Forms</h2>
                 <p className="text-sm text-zinc-600 dark:text-zinc-400 mb-6">
                 Projects Let&apos;s you organize your forms well based on your real project for which you&apos;re adding forms to.
