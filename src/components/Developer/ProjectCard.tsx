@@ -65,7 +65,7 @@ export default function ProjectCard ({name, description, user, forms, status, id
             <div className="latest-endpoint border-t border-zinc-300 dark:border-zinc-800 py-3">
                 <div className="title-and-copy-endpoint-icon flex items-center justify-between py-3">
                     <h4 className="text-sm font-semibold text-zinc-800 dark:text-zinc-200">Latest Endpoint</h4>
-                    <button className="flex items-center justify-center h-10 w-10 cursor-pointer rounded-full hover:bg-zinc-900/50 transition">
+                    <button className="flex items-center justify-center h-10 w-10 cursor-pointer rounded-full hover:bg-zinc-100 dark:hover:bg-zinc-900/50 transition">
                         <Icon name="Copy" size={16} className="text-zinc-600 hover:text-zinc-800 dark:text-zinc-500 dark:hover:text-zinc-300 transition" onClick={() => {
                             navigator.clipboard.writeText(`https://api.formo.com/project/${id}/endpoint`);
                             alert('Endpoint copied to clipboard!');
