@@ -37,7 +37,7 @@ export default function DeveloperSubMenu({
             variant="primary"
             onClick={() => setOpen((v) => !v)}
           >
-              <Icon name="ChevronDown" className="w-4 h-4" /> Create
+              Create <Icon name="ChevronDown" className="w-4 h-4" />
           </FormButton>
           {open && (
             <div className="absolute overflow-hidden right-0 mt-2 w-40 p-1 gap-0.5 bg-zinc-100 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-xl shadow-lg z-10">
