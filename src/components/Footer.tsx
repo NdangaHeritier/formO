@@ -2,6 +2,7 @@ import { Sun, Moon, ScreenShare } from "lucide-react";
 import { Icon } from "./Global/Icon";
 import Link from "next/link";
 import Image from "next/image";
+import LinkButton from "./Global/LinkButton";
 
 export default function Footer() {
   return (
@@ -78,7 +79,7 @@ export default function Footer() {
                 <h3 className="text-lg font-semibold text-zinc-700 dark:text-zinc-400">Get Started</h3>
                 <p className="text-sm text-zinc-600 dark:text-zinc-500">Ready to start sending emails with FormO? <Link href="#" className="text-zinc-900 dark:text-zinc-200 hover:underline font-medium">Sign up</Link> now and get started!</p>
                 <p className="text-sm text-zinc-600 dark:text-zinc-500">Kickstart your journey with FormO today!</p>
-                <Link href="/#start" className="bg-zinc-900/10 dark:bg-black border border-zinc-400 dark:border-zinc-700 font-semibold px-4 py-2 rounded-xl text-sm text-zinc-900 dark:text-zinc-200">Sign Up</Link>
+                <LinkButton variant="secondary" href="/sign-up">Sign Up</LinkButton>
             </div>
         </div>
         {/* Copyright */}
