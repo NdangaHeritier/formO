@@ -3,6 +3,7 @@ import { JetBrains_Mono, Inter } from 'next/font/google';
 import "./globals.css";
 import Footer from "@/components/Footer";
 import Image from "next/image";
+import { Analytics } from "@vercel/analytics/next";
 
 export const metadata: Metadata = {
   title: 'FormO — Effortless Form Submission and Email Handling',
@@ -73,7 +74,8 @@ export default function RootLayout({
     <html lang="en">
       <body
         className={`${geistSans.variable} ${geistMono.variable} font-sans antialiased dark:bg-black`}
-      >        
+      >   
+        <Analytics />
         <div className="min-md:hidden p-8">
             <header className="flex items-center justify-start gap-2 font-semibold text-lg text-zinc-800 dark:text-zinc-200">
               <Image src="/Assets/formo-coloured.png" alt="FormO Logo" className="h-10 w-auto" height={60} width={60}/>
