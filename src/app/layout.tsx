@@ -16,11 +16,11 @@ export const metadata: Metadata = {
   creator: 'Ndanga Heritier',
   applicationName: 'FormO',
   icons: [
-    { rel: 'icon', type: 'image/png', sizes: '96x96', url: '/Assets/favicon-96x96.png' },
-    { rel: 'icon', type: 'image/svg+xml', url: '/Assets/favicon.svg' },
-    { rel: 'shortcut icon', url: '/Assets/favicon.ico' },
-    { rel: 'apple-touch-icon', sizes: '180x180', url: '/Assets/apple-touch-icon.png' },
-    { rel: 'manifest', url: '/Assets/site.webmanifest' },
+    { rel: 'icon', type: 'image/png', sizes: '96x96', url: '/favicon-96x96.png' },
+    { rel: 'icon', type: 'image/svg+xml', url: '/favicon.svg' },
+    { rel: 'shortcut icon', url: '/favicon.svg' },
+    { rel: 'apple-touch-icon', sizes: '180x180', url: '/apple-touch-icon.png' },
+    { rel: 'manifest', url: '/site.webmanifest' },
   ],
   description:
     'FormO lets developers and non-developers collect form data and send styled emails with ease. Built with Next.js, Tailwind CSS, and PocketBase.',
@@ -39,11 +39,11 @@ export const metadata: Metadata = {
     title: 'FormO — Effortless Form Submission and Email Handling',
     description:
       'Collect form data and send beautiful emails instantly. Whether you’re a dev or not, FormO makes it simple.',
-    url: 'https://formo.io',
+    url: 'https://withformo.vercel.app',
     siteName: 'FormO',
     images: [
       {
-        url: '/Assets/twitter-card.png', // <-- Use your local image
+        url: '/Twitter-card.png', 
         width: 1200,
         height: 630,
         alt: 'FormO – Simplified Form Submission',
@@ -56,8 +56,8 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'FormO — Send Emails from Forms with Ease',
     description: 'Build forms, send emails, and track data effortlessly.',
-    images: ['/Assets/twitter-card.png'], // <-- Use your local image
-    creator: '@your_twitter',
+    images: ['/Twitter-card.png'], // <-- Use your local image
+    creator: '@ndanga_dev',
   },
   metadataBase: new URL('https://withformo.vercel.app'),
   other: {
