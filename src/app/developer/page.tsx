@@ -144,7 +144,7 @@ const Developer= () => {
 
     // trigger to show create new project model..
     const [isCreateProjectModelOpen, setIsCreateProjectModelOpen] = useState(false);
-    const [createNewForm, setCreateNewForm] = useState(true);
+    const [createNewForm, setCreateNewForm] = useState(false);
 
     // set a project id for which each form can go with..
     const [projectID, setProjectID] = useState<string| undefined>(undefined);
@@ -196,7 +196,7 @@ const Developer= () => {
         {/* Projects Section */}
         <div className="relative rounded-lg">
           <Squares parLength={100} />
-          <div className="projects relative z-10 grid grid-cols-1 gap-5 bg-gradient-to-tr from-zinc-950 from-80% to-20% to-zinc-950/50 rounded-lg p-8">
+          <div className="projects relative z-10 grid grid-cols-1 gap-5 bg-gradient-to-tr from-zinc-100 to-zinc-100/50 dark:from-zinc-950 from-80% to-20% dark:to-zinc-950/50 rounded-lg p-8">
             <div className="flex items-center justify-between">
               <div className="title text-xl font-bold">Projects</div>
               <FormButton type='button' variant='primary' onClick={() => setIsCreateProjectModelOpen(true)}>
@@ -286,7 +286,7 @@ const Developer= () => {
             // Handle quick start logic here
             console.log("Quick Start button clicked");
           }}>
-            <Icon name="Rocket" size={15} className="text-zinc-500" />
+            <Icon name="Rocket" size={15} className="text-zinc-400 dark:text-zinc-700" />
             Quick Start
           </FormButton>
         </div>

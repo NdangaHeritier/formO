@@ -23,7 +23,7 @@ const GuideCard = ({title, icon, desc, subDesc, color="yellow" }: Props) => {
     return (
         <div className="relative border shadow-2xs dark:border-zinc-800 border-zinc-200 overflow-hidden rounded-xl">
             <CircleBlur color={picked.bg} angle="top-0 right-0" />
-            <div className="h-full backdrop-blur-2xl card-content relative z-10 bg-gradient-to-br to-30% from-transparent to-white dark:to-black  pt-10 flex items-center justify-center flex-col gap-10">
+            <div className="h-full backdrop-blur-2xl card-content relative z-10 bg-gradient-to-br to-30% from-transparent to-zinc-50 dark:to-black  pt-10 flex items-center justify-center flex-col gap-10">
                 <div className={`icon h-20 w-20 border border-zinc-500/30 bg-${color}/10 text-${color} rounded-full flex items-center justify-center`}>
                     <Icon name={icon} size={30} className={picked.text} />
                 </div>

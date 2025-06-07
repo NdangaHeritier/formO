@@ -1,7 +1,7 @@
-import { HeroSection } from "@/components/Global/HeroSection";
-import Solutions from "@/components/Global/Solutions";
+import { HeroSection } from "@/components/Non-Developer/HeroSection";
+import Solutions from "@/components/Non-Developer/Solutions";
 import Features from "@/components/Global/Features";
-import WhyChooseus from "@/components/Global/WhyChooseus";
+import WhyChooseus from "@/components/Non-Developer/WhyChooseus";
 import Header from "@/components/Header";
 
 

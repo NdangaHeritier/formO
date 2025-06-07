@@ -60,7 +60,7 @@ export const Hero : React.FC = () => {
                         </div>
                         <p className="text-base text-zinc-700 dark:text-zinc-400">With FormO, you can focus on building your application while we take care of the email integration, making your development process faster and more efficient.</p>
                         <LinkButton href="/test" variant="primary">
-                            <Icon name={`CodeXml`} className="text-zinc-500" size={16} />
+                            <Icon name={`CodeXml`} className="text-zinc-300 dark:text-zinc-700" size={16} />
                             Generate Endpoint                    
                         </LinkButton>
                     </div>
@@ -100,7 +100,7 @@ export const Hero : React.FC = () => {
                         </p>
                         <LinkButton href="/non-dev" variant="secondary">
                             Get Started
-                            <Icon name={`ChevronRight`} className="text-zinc-800 dark:text-zinc-200" />
+                            <Icon name={`ChevronRight`} className="text-zinc-700 dark:text-zinc-300" />
                         </LinkButton>
                     </div>
                 </div>

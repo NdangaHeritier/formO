@@ -29,11 +29,11 @@ export default function Header({border="border-b", py="py-auto"}:prop) {
             </ul>
             <div className="ctas flex items-center justify-center gap-3">
                 <LinkButton href="/developer" variant="primary">
-                    <Icon name="Webhook" size={15} className="text-zinc-500" />
+                    <Icon name="Webhook" size={15} className="text-zinc-300 dark:text-zinc-700" />
                     Get API
                 </LinkButton>
                 <LinkButton href="/non-dev" variant="secondary">
-                    <Icon name="Text" size={15} className="text-zinc-500" />
+                    <Icon name="Text" size={15} className="text-zinc-700 dark:text-zinc-300" />
                     Send Emails
                 </LinkButton>
             </div>

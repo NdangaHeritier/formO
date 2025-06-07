@@ -1,7 +1,7 @@
 
 import Link from "next/link";
 import React from "react";
-import { Icon } from "./Icon";
+import { Icon } from "../Global/Icon";
 
 
 export const HeroSection : React.FC = () => {

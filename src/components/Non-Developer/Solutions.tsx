@@ -1,7 +1,8 @@
 
 import React from "react";
-import { Icon } from "./Icon";
-import DetailCard from "./DetailCard";
+import { Icon } from "../Global/Icon";
+import DetailCard from "../Global/DetailCard";
+// import * as LucideIcons from "lucide-react";
 
 const Solutions: React.FC = () =>{
 return(
