@@ -201,7 +201,7 @@ const Developer= () => {
               <div className="title text-xl font-bold">Projects</div>
               <FormButton type='button' variant='primary' onClick={() => setIsCreateProjectModelOpen(true)}>
                 <Icon name="Plus" size={15} className="text-zinc-200 dark:text-zinc-800" />
-                  Create Project
+                  Add Project
               </FormButton>
             </div>
 
