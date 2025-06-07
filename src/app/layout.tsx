@@ -15,7 +15,13 @@ export const metadata: Metadata = {
   ],
   creator: 'Ndanga Heritier',
   applicationName: 'FormO',
-  icons: {icon: '/Assets/favicon.png',},
+  icons: [
+    { rel: 'icon', type: 'image/png', sizes: '96x96', url: '/Assets/favicon-96x96.png' },
+    { rel: 'icon', type: 'image/svg+xml', url: '/Assets/favicon.svg' },
+    { rel: 'shortcut icon', url: '/Assets/favicon.ico' },
+    { rel: 'apple-touch-icon', sizes: '180x180', url: '/Assets/apple-touch-icon.png' },
+    { rel: 'manifest', url: '/Assets/site.webmanifest' },
+  ],
   description:
     'FormO lets developers and non-developers collect form data and send styled emails with ease. Built with Next.js, Tailwind CSS, and PocketBase.',
   keywords: [
@@ -33,11 +39,11 @@ export const metadata: Metadata = {
     title: 'FormO — Effortless Form Submission and Email Handling',
     description:
       'Collect form data and send beautiful emails instantly. Whether you’re a dev or not, FormO makes it simple.',
-    url: 'https://formo.io', // Replace with your actual URL
+    url: 'https://formo.io',
     siteName: 'FormO',
     images: [
       {
-        url: 'https://formo.io/og-image.png', // Replace with your OpenGraph image URL
+        url: '/Assets/twitter-card.png', // <-- Use your local image
         width: 1200,
         height: 630,
         alt: 'FormO – Simplified Form Submission',
@@ -50,10 +56,13 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'FormO — Send Emails from Forms with Ease',
     description: 'Build forms, send emails, and track data effortlessly.',
-    images: ['https://formo.app/twitter-card.png'], // Replace if you have one
-    creator: '@your_twitter', // Optional
+    images: ['/Assets/twitter-card.png'], // <-- Use your local image
+    creator: '@your_twitter',
   },
-  metadataBase: new URL('https://formo.io'),
+  metadataBase: new URL('https://withformo.vercel.app'),
+  other: {
+    'apple-mobile-web-app-title': 'Formo',
+  },
 };
 
 const geistSans = Inter({
