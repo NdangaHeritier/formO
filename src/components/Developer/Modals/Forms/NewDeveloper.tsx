@@ -5,6 +5,7 @@ import { Icon } from "@/components/Global/Icon";
 import { InputField } from "@/components/Global/InputField";
 import React, { useState } from "react";
 import { TextAreaField } from "@/components/Global/TextAreaField";
+import pb from "@/lib/pocketbase";
 
 // declare types
 type onClick= {onClick : () => void};
@@ -15,22 +16,48 @@ export default function NewDeveloperForm ({onClick}:onClick) {
         description: ''
     });
     const [error, setError] = useState("");
+    const [notification, setNotification] = useState<String>('');
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
         setFormData({ ...FormData, [e.target.name]: e.target.value });
     };
 
-    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         if (!FormData.name || !FormData.description) {
             setError("Please fill in all fields.");
             return;
         }
-        // TODO: Add authentication logic here
-        alert("Email/Password sign-in not implemented. Connect your auth provider here.");
+        try {
+            const addedData = await pb.collection('projects').create(FormData);
+            if (addedData){
+                setNotification("Project Created Succesfully!");
+                setFormData({
+                    name: '',
+                    description: ''
+                });
+            }
+            else{
+                setError("can not create project. check connection.");
+            }
+        } catch(error){
+            console.error('error', error);
+        }
+        
     };
     return(
         <Layout onClick={onClick}>
+
+            {notification && (
+                <div className="fixed top-5 z-50 p-3 rounded-lg right-5 inline-flex justify-start items-center gap-2 bg-white border border-zinc-300 shadow-lg dark:bg-black backdrop-blur-2xl dark:border-green-800">
+                    <span className="" onClick={() => setNotification('')}>
+                        <Icon name="CheckCircle" size={16} className="inline-flex self-center text-green-500"/>
+                    </span>
+                    <div className="text-green-500">
+                        {notification}
+                    </div>
+                </div>
+            )}
             <div className="bg-white dark:bg-zinc-950 border border-zinc-300 dark:border-zinc-700 p-6 rounded-lg shadow-lg max-w-md w-full">
                 <h2 className="text-lg font-semibold mb-4 text-black dark:text-white">Create New Project</h2>
                 <p className="text-sm text-zinc-600 dark:text-zinc-400 mb-6">
@@ -68,7 +95,7 @@ export default function NewDeveloperForm ({onClick}:onClick) {
                         >
                             Close
                         </FormButton>
-                        <FormButton variant="primary">
+                        <FormButton type="submit" variant="primary">
                             <Icon name="Plus" size={16} strokeWidth={2} />
                             Add Project
                         </FormButton>
