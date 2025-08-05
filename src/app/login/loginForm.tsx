@@ -149,12 +149,12 @@ export default function LoginForm() {
                     </form>
                     <div className="grid grid-cols-2 gap-3 border-t border-b border-zinc-700 p-4">
                         <div className="flex items-center text-xs justify-center gap-1 text-zinc-500">
-                            <Link href="/register" className="text-gray-300 hover:underline">Sign Up for free</Link>
+                            <Link href="/signup" className="text-gray-300 hover:underline">Sign Up for free</Link>
                         </div>
 
                         {/* forgot password */}
                         <div className="flex items-center text-xs justify-center gap-1 text-zinc-500 border-l pl-3 border-l-zinc-700">
-                            <Link href="/register" className="text-gray-300 hover:underline">Forgot your password?</Link>
+                            <Link href="/#" className="text-gray-300 hover:underline">Forgot your password?</Link>
                         </div>
                     </div>
 
