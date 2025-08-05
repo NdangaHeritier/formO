@@ -16,6 +16,8 @@ import GuideCard from '@/components/Global/GuideCard';
 import NewDeveloperForm from '@/components/Developer/Modals/Forms/NewDeveloper';
 import NewForm from '@/components/Developer/Modals/Forms/NewForm';
 import { FormsDisplayModel } from '@/components/Developer/Modals/Displays/DisplayProjectForms';
+import LinkButton from '@/components/Global/LinkButton';
+import PrivateRouter from '@/components/Global/privateRouter';
 
 type AnalyticType= {
   title: string,
@@ -77,7 +79,7 @@ const Developer= () => {
     //     const fullProjects = await Promise.all(projectList.map(async (project) => {
     //       const forms = await getFormsByProjectId(project.id);
     //       return { ...project, forms };
-    //     }));
+    //     }))
     //     setProjects(fullProjects);
     //   });
     // }, []);
@@ -161,7 +163,7 @@ const Developer= () => {
     });
 
   return (
-    <>
+    <PrivateRouter>
       <Header border='border-0' py='py-3'/>
       <DeveloperBreadcrumb
         navs={[
@@ -282,17 +284,16 @@ const Developer= () => {
               subDesc="Stay in the loop with actionable, well-designed notifications that keep your workflow efficient and responsive."
               />
             </div>
-          <FormButton type='button' variant='secondary' onClick={() => {
-            // Handle quick start logic here
-            console.log("Quick Start button clicked");
-          }}>
-            <Icon name="Rocket" size={15} className="text-zinc-400 dark:text-zinc-700" />
-            Quick Start
-          </FormButton>
+          <div className='items-start justify-start flex'>
+            <LinkButton href='/login' variant='secondary'>
+              <Icon name="Rocket" size={15} className="text-zinc-400 dark:text-zinc-700" />
+              Quick Start
+            </LinkButton>
+          </div>
         </div>
 
       </section>
-    </>
+    </PrivateRouter>
   );
 }
 

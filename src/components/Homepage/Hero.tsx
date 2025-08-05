@@ -98,7 +98,7 @@ export const Hero : React.FC = () => {
                         <p className="py-4 text-zinc-800 dark:text-zinc-200">
                             No further setup to bore you. Just your name and where to send. Start customizing and sending with FormO now!
                         </p>
-                        <LinkButton href="/non-dev" variant="secondary">
+                        <LinkButton href="/NonDev" variant="secondary">
                             Get Started
                             <Icon name={`ChevronRight`} className="text-zinc-700 dark:text-zinc-300" />
                         </LinkButton>

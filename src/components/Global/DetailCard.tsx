@@ -1,11 +1,12 @@
 import { Icon } from "./Icon";
 import * as LucideIcons from "lucide-react";
 import { Squares } from "./Squares";
+import { IconType } from "@/types/Icon";
 
 type Props = {
     title: string
     desc: string,
-    icon: keyof typeof LucideIcons,
+    icon: IconType,
     
 }
 const DetailCard = ({title, icon, desc}: Props) => {

@@ -4,6 +4,7 @@ import "./globals.css";
 import Footer from "@/components/Footer";
 import Image from "next/image";
 import { Analytics } from "@vercel/analytics/next";
+import { AuthProvider } from "@/lib/Auth_context";
 
 export const metadata: Metadata = {
   title: 'FormO — Effortless Form Submission and Email Handling',
@@ -97,8 +98,10 @@ export default function RootLayout({
             </div>
         </div>
         <main className="max-md:hidden">
-          <section className="min-h-screen p-0 pb-20">
-            {children}
+          <section className="min-h-screen p-0">
+            <AuthProvider>
+              {children}
+            </AuthProvider>
           </section>
           <Footer />
         </main>

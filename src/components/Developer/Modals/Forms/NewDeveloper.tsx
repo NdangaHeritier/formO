@@ -5,7 +5,7 @@ import { Icon } from "@/components/Global/Icon";
 import { InputField } from "@/components/Global/InputField";
 import React, { useState } from "react";
 import { TextAreaField } from "@/components/Global/TextAreaField";
-import pb from "@/lib/pocketbase";
+import pb from "@/lib/firebase";
 
 // declare types
 type onClick= {onClick : () => void};
