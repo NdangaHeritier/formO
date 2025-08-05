@@ -38,7 +38,7 @@ export default function Dashboard() {
             }
         };
         fetchUserPreferences();
-    }, [currentUser]);
+    }, [currentUser, router]);
 
     // Optionally, show aaka loader while processing
     return (

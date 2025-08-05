@@ -17,7 +17,7 @@ export default function NewDeveloperForm ({onClick}:onClick) {
     });
     const [error, setError] = useState("");
     const [notification, setNotification] = useState<string>('');
-
+    setError("null");
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
         setFormData({ ...FormData, [e.target.name]: e.target.value });
     };
