@@ -117,8 +117,8 @@ export default function Header({border="border-b", py="py-auto"}:prop) {
                                 </li>
                                 <li className="list-item">
                                     <a href="#" className="text-zinc-500 p-2 rounded-lg hover:text-zinc-400 flex items-center justify-start gap-2 hover:bg-zinc-900">
-                                        <Icon name="ArrowRight" strokeWidth={1} size={17} />
-                                        Switch to Marketing
+                                        <Icon name="GitCommit" strokeWidth={2} size={17} />
+                                        Integrations
                                     </a>
                                 </li>
                                 <li className="pt-1 grid grid-cols-2 gap-2">
