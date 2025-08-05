@@ -1,5 +1,4 @@
 import { Icon } from "./Icon";
-import * as LucideIcons from "lucide-react";
 import { Squares } from "./Squares";
 import { IconType } from "@/types/Icon";
 

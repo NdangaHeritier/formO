@@ -8,6 +8,7 @@ import Header from "@/components/Header";
 import { useAuth } from "@/lib/Auth_context";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
+import Link from "next/link";
 
 export default function LoginForm() {
     const { signin, currentUser } = useAuth();
@@ -148,17 +149,17 @@ export default function LoginForm() {
                     </form>
                     <div className="grid grid-cols-2 gap-3 border-t border-b border-zinc-700 p-4">
                         <div className="flex items-center text-xs justify-center gap-1 text-zinc-500">
-                            <a href="/register" className="text-gray-300 hover:underline">Sign Up for free</a>
+                            <Link href="/register" className="text-gray-300 hover:underline">Sign Up for free</Link>
                         </div>
 
                         {/* forgot password */}
                         <div className="flex items-center text-xs justify-center gap-1 text-zinc-500 border-l pl-3 border-l-zinc-700">
-                            <a href="/register" className="text-gray-300 hover:underline">Forgot your password?</a>
+                            <Link href="/register" className="text-gray-300 hover:underline">Forgot your password?</Link>
                         </div>
                     </div>
 
                     <div className="text-xs text-zinc-500 text-center pt-5">
-                        By signing in, you agree to our <a href="/terms" className="text-gray-300 hover:underline">Terms of Service</a> and <a href="/privacy" className="text-gray-300 hover:underline">Privacy Policy</a>.
+                        By signing in, you agree to our <Link href="/terms" className="text-gray-300 hover:underline">Terms of Service</Link> and <Link href="/privacy" className="text-gray-300 hover:underline">Privacy Policy</Link>.
                     </div>
                 </div>
                 <div className="hidden sm:block"></div>

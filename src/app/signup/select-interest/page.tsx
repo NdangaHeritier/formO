@@ -11,7 +11,7 @@ import { db } from "@/lib/firebase";
 
 const SelectInterest = () => {
 
-    const { currentUser, updateUser } = useAuth();
+    const { currentUser } = useAuth();
     const [interest, setInterest] = useState(currentUser?.interest || "developer");
     const [updateLoading, setUpdateLoading] = useState(false);
     const router = useRouter();
@@ -115,6 +115,7 @@ const SelectInterest = () => {
                             // For example, redirect to the dashboard or another page
                             router.push("/dashboard");
                         }}
+                        disabled={updateLoading}
                         variant="primary"
                     >
                         Continue

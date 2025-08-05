@@ -5,7 +5,7 @@ import { Icon } from "@/components/Global/Icon";
 import { InputField } from "@/components/Global/InputField";
 import React, { useState } from "react";
 import { TextAreaField } from "@/components/Global/TextAreaField";
-import pb from "@/lib/firebase";
+// import {db} from "@/lib/firebase";
 
 // declare types
 type onClick= {onClick : () => void};
@@ -16,35 +16,35 @@ export default function NewDeveloperForm ({onClick}:onClick) {
         description: ''
     });
     const [error, setError] = useState("");
-    const [notification, setNotification] = useState<String>('');
+    const [notification, setNotification] = useState<string>('');
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
         setFormData({ ...FormData, [e.target.name]: e.target.value });
     };
 
-    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-        e.preventDefault();
-        if (!FormData.name || !FormData.description) {
-            setError("Please fill in all fields.");
-            return;
-        }
-        try {
-            const addedData = await pb.collection('projects').create(FormData);
-            if (addedData){
-                setNotification("Project Created Succesfully!");
-                setFormData({
-                    name: '',
-                    description: ''
-                });
-            }
-            else{
-                setError("can not create project. check connection.");
-            }
-        } catch(error){
-            console.error('error', error);
-        }
+    // const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    //     e.preventDefault();
+    //     if (!FormData.name || !FormData.description) {
+    //         setError("Please fill in all fields.");
+    //         return;
+    //     }
+    //     try {
+    //         const addedData = await pb.collection('projects').create(FormData);
+    //         if (addedData){
+    //             setNotification("Project Created Succesfully!");
+    //             setFormData({
+    //                 name: '',
+    //                 description: ''
+    //             });
+    //         }
+    //         else{
+    //             setError("can not create project. check connection.");
+    //         }
+    //     } catch(error){
+    //         console.error('error', error);
+    //     }
         
-    };
+    // };
     return(
         <Layout onClick={onClick}>
 
@@ -65,7 +65,7 @@ export default function NewDeveloperForm ({onClick}:onClick) {
                 </p>
 
                 {/* form goes here */}
-                <form onSubmit={handleSubmit} method="post" className="pt-5 grid grid-cols-1 gap-5">
+                <form method="post" className="pt-5 grid grid-cols-1 gap-5">
                     <InputField
                         type="text"
                         name="name"

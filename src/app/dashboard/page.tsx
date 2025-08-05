@@ -1,5 +1,5 @@
 'use client';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 
 import { useAuth } from "@/lib/Auth_context";
 import PrivateRouter from '@/components/Global/privateRouter';

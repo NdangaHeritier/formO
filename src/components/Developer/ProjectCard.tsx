@@ -14,7 +14,7 @@ type cardProps = {
     openForm: () => void;
     showForms: () => void
 }
-export default function ProjectCard ({name, description, user, forms, status, id, openForm, showForms}:cardProps) {
+export default function ProjectCard ({name, description, forms, status, id, openForm, showForms}:cardProps) {
     return (
         <div className="project-card p-5 bg-white dark:bg-black border border-zinc-300 dark:border-zinc-800 rounded-lg shadow-lg grid grid-cols-1 gap-3">
             <div className="flex items-start justify-between">

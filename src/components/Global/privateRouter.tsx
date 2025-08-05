@@ -12,7 +12,7 @@ export default function PrivateRouter ({ children }: { children: React.ReactNode
         if (!currentUser && !authLoading) {
         router.push('/login');
         }
-    }, [currentUser, router]);
+    }, [currentUser, authLoading, router]);
     return (
         <>
            {children}

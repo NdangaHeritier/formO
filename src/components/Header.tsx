@@ -14,7 +14,6 @@ export default function Header({border="border-b", py="py-auto"}:prop) {
     // and showing login and signup if not logged in...
     const { currentUser, signout } = useAuth();
     const [isOpeningUserMenu, setIsOpeningUserMenu] = useState(false)
-    const [zIndex, setZIndex] = useState("z-40"); 
     const [mounted, setMounted] = useState(false);
     const router = useRouter();
 
@@ -23,7 +22,7 @@ export default function Header({border="border-b", py="py-auto"}:prop) {
     }, []);
 
   return (
-    <header className={`h-1/8 w-full sticky top-0 left-0 right-0 ${zIndex} ${border} border-zinc-200 dark:border-zinc-800 p-5 ${py} px-10 flex items-center justify-between gap-5 zinc-50/70 dark:bg-zinc-950 bg-zinc-50 backdrop-blur-2xl`}>
+    <header className={`h-1/8 w-full sticky top-0 left-0 right-0 z-40 ${border} border-zinc-200 dark:border-zinc-800 p-5 ${py} px-10 flex items-center justify-between gap-5 zinc-50/70 dark:bg-zinc-950 bg-zinc-50 backdrop-blur-2xl`}>
         <div className="">
             <Image src="/Assets/formo-coloured.png" alt="logo" height="50" width="50" />
         </div>

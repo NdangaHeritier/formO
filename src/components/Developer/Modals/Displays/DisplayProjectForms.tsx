@@ -7,7 +7,7 @@ type DisplayType = {
     closeModal: () => void;
 }
 export const FormsDisplayModel = ({project, closeModal}:DisplayType) => {
-    const {name, description, forms, status, user}: ProjectType = project;
+    const {name, description, forms, status}: ProjectType = project;
     return(
         <Layout onClick={closeModal}>
             <div className="bg-white dark:bg-zinc-950 border sm:min-w-4xl border-zinc-300 dark:border-zinc-800 p-6 rounded-lg shadow-lg max-w-md w-full">

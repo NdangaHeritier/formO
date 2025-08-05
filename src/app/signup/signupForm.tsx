@@ -8,6 +8,7 @@ import Header from "@/components/Header";
 import { useAuth } from "@/lib/Auth_context";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
+import Link from "next/link";
 
 const SignupForm = () => {
 
@@ -175,17 +176,17 @@ const SignupForm = () => {
                     </form>
                     <div className="grid grid-cols-2 gap-3 border-t border-b border-zinc-700 p-4">
                         <div className="flex items-center text-xs justify-center gap-1 text-zinc-500">
-                            <a href="/login" className="text-gray-300 hover:underline">Have Account?</a>
+                            <Link href="/login" className="text-gray-300 hover:underline">Have Account?</Link>
                         </div>
 
                         {/* forgot password */}
                         <div className="flex items-center text-xs justify-center gap-1 text-zinc-500 border-l pl-3 border-l-zinc-700">
-                            <a href="/#" className="text-gray-300 hover:underline">Why choose formo?</a>
+                            <Link href="/#" className="text-gray-300 hover:underline">Why choose formo?</Link>
                         </div>
                     </div>
 
                     <div className="text-xs text-zinc-500 text-center pt-5">
-                        By signing up, you agree to our <a href="/terms" className="text-gray-300 hover:underline">Terms of Service</a> and <a href="/privacy" className="text-gray-300 hover:underline">Privacy Policy</a>.
+                        By signing up, you agree to our <Link href="/terms" className="text-gray-300 hover:underline">Terms of Service</Link> and <Link href="/privacy" className="text-gray-300 hover:underline">Privacy Policy</Link>.
                     </div>
                 </div>
                 <div className="hidden sm:block"></div>
