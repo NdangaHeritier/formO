@@ -7,27 +7,39 @@ import { useAuth } from "@/lib/Auth_context";
 import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import { useRouter } from "next/navigation";
+import SkeletonBox from "./skeleton"
 type prop={border?: string; py?: string};
 export default function Header({border="border-b", py="py-auto"}:prop) {
 
     // changing header links into user profile and settings if user is logged in
     // and showing login and signup if not logged in...
-    const { currentUser, signout } = useAuth();
+    const { currentUser, signout, authLoading } = useAuth();
     const [isOpeningUserMenu, setIsOpeningUserMenu] = useState(false)
     const [mounted, setMounted] = useState(false);
     const router = useRouter();
 
     useEffect(() => {
         setMounted(true);
-    }, []);
+    }, [currentUser, authLoading, signout]);
 
   return (
     <header className={`h-1/8 w-full sticky top-0 left-0 right-0 z-40 ${border} border-zinc-200 dark:border-zinc-800 p-5 ${py} px-10 flex items-center justify-between gap-5 zinc-50/70 dark:bg-zinc-950 bg-zinc-50 backdrop-blur-2xl`}>
         <div className="">
-            <Image src="/Assets/formo-coloured.png" alt="logo" height="50" width="50" />
+            {mounted ? (
+                <Image src="/Assets/formo-coloured.png" alt="logo" height="50" width="50" />
+            ):(
+                <SkeletonBox customStyle="w-10 h-10 rounded-md" />
+            )}
         </div>
         <div className="links flex items-center justify-end gap-8">
-            {currentUser ? `` : (
+            {authLoading ? (
+                <div className="grid grid-cols-4 max-sm:grid-cols-1 gap-2">
+                    <SkeletonBox customStyle="w-20 h-6 rounded-md" shown={authLoading} />
+                    <SkeletonBox customStyle="w-20 h-6 rounded-md" shown={authLoading} />
+                    <SkeletonBox customStyle="w-20 h-6 rounded-md" shown={authLoading} />
+                    <SkeletonBox customStyle="w-20 h-6 rounded-md" shown={authLoading} />
+                </div>
+            ) : !currentUser ? (
                 <ul className="nav-links list-none flex items-center justify-end gap-5">
                     <li className="list-item px-1">
                         <Link href="/#about" className="text-zinc-700 dark:text-zinc-400 font-medium">Home</Link>
@@ -45,7 +57,7 @@ export default function Header({border="border-b", py="py-auto"}:prop) {
                         <Link href="/#start" className="text-zinc-700 dark:text-zinc-400 font-medium">Careers</Link>
                     </li>
                 </ul>
-            )}
+            ) : `` }
             <div className="ctas flex items-center justify-center gap-3 relative">
                 <LinkButton href="/developer" variant="primary">
                     <Icon name="Webhook" size={15} className="text-zinc-300 dark:text-zinc-700" />
