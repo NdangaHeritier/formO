@@ -11,7 +11,7 @@ const DeveloperSolutions: React.FC = () => {
             Developer-First, Always
           </h1>
           <p className="text-zinc-600 dark:text-zinc-400 text-xl py-7 text-center">
-            Formo is built with <span className="text-green-600">developer love</span> in mind. Easily plug-and-play APIs, workspaces designed to reduce backend stress, and tools that scale with your team and project.
+            Formo is built with <span className="text-yellow-200 font-mono">developer love</span> in mind. Easily plug-and-play APIs, workspaces designed to reduce backend stress, and tools that scale with your team and project.
           </p>
         </div>
       </div>

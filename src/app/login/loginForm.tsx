@@ -9,6 +9,7 @@ import { useAuth } from "@/lib/Auth_context";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
+import { BackGraphicsLayout } from "./BackGraphicsLayout";
 
 export default function LoginForm() {
     const { signin, currentUser } = useAuth();
@@ -78,8 +79,11 @@ export default function LoginForm() {
             <title>Login</title>
             <Header />
             <section className="grid grid-cols-1 grid-row-1 sm:grid-cols-3 min-h-screen">
-                <div className="hidden sm:block"></div>
-                <div className="border-r border-l overflow-hidden border-zinc-700 bg-zinc-950 flex-col gap-5 p-5 sm:p-8">
+                <div className="hidden sm:flex relative -z-1">
+                    <div className="absolute inset-0 bg-gradient-to-r from-black to-black via-transparent z-1"></div>
+                    <BackGraphicsLayout />
+                </div>
+                <div className="border-r border-l overflow-hidden border-zinc-800 bg-zinc-950 flex-col gap-5 p-5 sm:p-8">
                     <div className="w-full flex p-5 items-start justify-start border-b-zinc-700 gap-4">
                         <div className="">
                             <Image
@@ -162,7 +166,11 @@ export default function LoginForm() {
                         By signing in, you agree to our <Link href="/terms" className="text-gray-300 hover:underline">Terms of Service</Link> and <Link href="/privacy" className="text-gray-300 hover:underline">Privacy Policy</Link>.
                     </div>
                 </div>
-                <div className="hidden sm:block"></div>
+                <div className="hidden sm:flex items-center justify-center">
+                    <div className="w-full text-7xl text-zinc-700 uppercase font-extralight transform rotate-90 opacity-50">
+                        <span className="text-yellow-200">All</span> Beautful.
+                    </div>
+                </div>
             </section>
         </div>
     );
