@@ -6,7 +6,6 @@ import { useEffect, useState } from "react";
 export default function PrivateRouter ({ children }: { children: React.ReactNode }) {
   const { currentUser, authLoading } = useAuth();
     const router = useRouter();
-    const [checkAuth, setCheckAuth] = useState(true);
 
     // check if user is authenticated
      useEffect(() => {
@@ -17,7 +16,7 @@ export default function PrivateRouter ({ children }: { children: React.ReactNode
     
     return (
         <>
-            {checkAuth && !authLoading ? children : <div className="flex items-center justify-center h-screen">Loading...</div>}
+            {!authLoading ? children : <div className="flex items-center justify-center h-screen">Loading...</div>}
         </>
     );
 }
