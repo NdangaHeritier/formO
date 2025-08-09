@@ -9,22 +9,15 @@ export const Hero : React.FC = () => {
     return(
         <section className="hero-section relative p-5 bg-gradient-to-l from-yellow-600/30 dark:from-yellow-950/50 from-50% to-50% to-zinc-50 dark:to-zinc-950">
             <Squares parLength={240} />
-            <div className="contain border shadow-2xl border-zinc-300 dark:border-zinc-900 relative dark:bg-black/90 bg-white/90 rounded-3xl p-20 flex flex-col items-center justify-center w-full bg-right-bottom bg-no-repeat" style={{backgroundImage: "url('./Assets/mail.png')"}}>
+            <div className="contain border shadow-2xl border-zinc-300 dark:border-zinc-900 relative dark:bg-black/90 bg-white/90 rounded-3xl p-20 flex flex-col items-center justify-center gap-7 w-full bg-right-bottom bg-no-repeat" style={{backgroundImage: "url('./Assets/mail.png')"}}>
                 <YellowBorderedSpan title="Get Started, It's free forever!" />
-                <h2 className="text-zinc-600 dark:text-zinc-500 uppercase text-lg mb-3">
-                    <span className="text-zinc-00 animate-bounce">
-                        <Icon name="Send" className="text-yellow-600/70" />
-                    </span>
+                <h2 className="text-zinc-600 dark:text-zinc-500 uppercase text-lg">
                         — Effortless Form Submission and Email Handling
                 </h2>
                 <h1 className="text-6xl font-extrabold text-zinc-700 dark:text-zinc-300 pb-5 tracking-tight text-center">
                     <span className="stroke text-transparent pb-10 text-7xl">Streamline Your Workflow</span>
                     <br/> with Our Effortless Emailing Solution.
                 </h1>
-                <p className="text-lg text-zinc-700 dark:text-zinc-400 py-6 text-center">
-                    FormO is a powerful email integration solution that makes sending emails easy and efficient. We provide a simple API that allows you to send emails with just a few lines of code. Our goal is to make your coding experience faster and more enjoyable.
-                    With FormO, you can send emails in just a few lines of code, making your coding experience faster and more enjoyable.
-                </p>
             
             {/* feature comparations */}
             <div className="relative pt-10 dark:bg-zinc-900/10 bg-zinc-200/10 w-full">

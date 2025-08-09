@@ -25,12 +25,6 @@ const SelectInterest = () => {
             router.push("/login"); // Redirect to login if no user is logged in..
             return; // Ensure currentUser is defined before proceeding....
         }
-        // check if interst iri alreadt set kumu user....
-        if (interest === newInterest) {
-            console.log("Interest is already set to:", newInterest);
-            setUpdateLoading(false);
-            return
-        };
         try {
             const userRef = collection(db, "user_preferences");
             const userDocQuery = query(userRef, where("userId", "==", currentUser.uid));
@@ -54,6 +48,7 @@ const SelectInterest = () => {
 
             setInterest(newInterest);
             console.log("Interest updated successfully.");
+            setUpdateLoading(false);
         } catch (error) {
             console.error("Failed to update interest in user profile:", error);
         }
