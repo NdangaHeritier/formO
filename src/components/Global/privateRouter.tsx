@@ -1,7 +1,7 @@
 "use client"
 import { useAuth } from "@/lib/Auth_context";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 
 export default function PrivateRouter ({ children }: { children: React.ReactNode }) {
   const { currentUser, authLoading } = useAuth();
