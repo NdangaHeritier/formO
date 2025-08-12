@@ -9,7 +9,7 @@ export default function AnalyticsGroup () {
 
     const { currentUser } = useAuth();
     const [projectCount, setProjectCount] = useState<number>(0);
-    const [formsCount, setFormsCount] = useState<number>(0);
+    // const [formsCount, setFormsCount] = useState<number>(0);
 
     useEffect(() => {
         if (currentUser?.uid) {

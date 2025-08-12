@@ -2,8 +2,8 @@
 import { useEffect, useState } from 'react';
 import DeveloperBreadcrumb from '@/components/Developer/DeveloperBreadcrumb';
 import Header from '@/components/Header';
-import { IconType } from '@/types/Icon';
-import { AnalyticCard } from '@/components/Developer/AnalyticCard';
+// import { IconType } from '@/types/Icon';
+// import { AnalyticCard } from '@/components/Developer/AnalyticCard';
 import FormButton from '@/components/Global/FormButton';
 import { Icon } from '@/components/Global/Icon';
 // import { getProjects } from '@/data/projects';
