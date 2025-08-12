@@ -9,6 +9,7 @@ import { useAuth } from "@/lib/Auth_context";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
+import LoadingSpinner from "@/components/Global/LoadingSpiner";
 
 const SignupForm = () => {
 
@@ -78,9 +79,7 @@ const SignupForm = () => {
 
     if (isLoading) {
         return (
-            <div className="flex items-center justify-center h-screen">
-                <Icon name="Loader" size={50} className="animate-spin text-zinc-500" />
-            </div>
+            <LoadingSpinner />
         );
     }
 

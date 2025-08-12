@@ -1,3 +1,4 @@
+import { IconType } from "./Icon";
 
 export type UserType ={
     name: string;
@@ -39,3 +40,10 @@ export type FormSubmissionType = {
   created: string;
   updated: string;
 };
+
+export type AnalyticType= {
+  title: string,
+  icon: IconType,
+  desc: string,
+  data: {amount: number, period: "Month"|"Day"|"Year", rate: number}
+}

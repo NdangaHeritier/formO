@@ -18,71 +18,13 @@ import NewForm from '@/components/Developer/Modals/Forms/NewForm';
 import { FormsDisplayModel } from '@/components/Developer/Modals/Displays/DisplayProjectForms';
 import LinkButton from '@/components/Global/LinkButton';
 import PrivateRouter from '@/components/Global/privateRouter';
-
-type AnalyticType= {
-  title: string,
-  icon: IconType,
-  desc: string,
-  data: {amount: number, period: "Month"|"Day"|"Year", rate: number}
-}
+import AnalyticsGroup from '@/components/Developer/AnalyticsGroup';
   
 const Developer= () => {
-    // const [isLoading, setIsLoading] = useState(true);
-
-    // useEffect(() => {
-    //     // Simulate a loading delay
-    //     const timer = setTimeout(() => {
-    //         setIsLoading(false);
-    //     }, 1000); // 1 second delay
-
-    //     return () => clearTimeout(timer);
-    // }, []);
-  
-    const Analytics : AnalyticType[] =[
-      {
-        title: "Submissions",
-        icon: "Activity",
-        desc: "Submission analytics for all forms in your project currently.",
-        data: {
-          amount: 200,
-          period: "Month",
-          rate: 1000
-        }
-      },
-      {
-        title: "Forms",
-        icon: "SquareCode",
-        desc: "Forms you have created in every project currently",
-        data: {
-          amount: 10,
-          period: "Month",
-          rate: 20
-        }
-      },
-      {
-        title: "Projects",
-        icon: "Folder",
-        desc: "All projects you have created and added forms to this month.",
-        data: {
-          amount: 4,
-          period: "Year",
-          rate: 5
-        }
-      }
-    ];
-
+ 
     // Fetch projects from PocketBase
 
     const [projects, setProjects] = useState<ProjectType[]>([]);
-    // useEffect(() => {
-    //    getProjects().then(async (projectList) => {
-    //     const fullProjects = await Promise.all(projectList.map(async (project) => {
-    //       const forms = await getFormsByProjectId(project.id);
-    //       return { ...project, forms };
-    //     }))
-    //     setProjects(fullProjects);
-    //   });
-    // }, []);
     useEffect(() => {
       // Demo project data
       const demoProjects: ProjectType[] = [
@@ -189,11 +131,7 @@ const Developer= () => {
       {/* Dashboard */}
       <section className="dashboard bg-white dark:bg-black text-zinc-900 dark:text-zinc-100 p-5 grid grid-cols-1 gap-y-10">
         {/* Analytics section */}
-        <div className="analytics grid grid-cols-3 gap-5 p-3">
-          {Analytics.map((analytic, index)=> {
-            return <AnalyticCard key={index} title={analytic.title} desc={analytic.desc} icon={analytic.icon} data={analytic.data}/>
-          })}
-        </div>
+        <AnalyticsGroup />
 
         {/* Projects Section */}
         <div className="relative rounded-lg">

@@ -5,6 +5,8 @@ import { Icon } from "@/components/Global/Icon";
 import { InputField } from "@/components/Global/InputField";
 import React, { useState } from "react";
 import { TextAreaField } from "@/components/Global/TextAreaField";
+import { useAuth } from "@/lib/Auth_context";
+import { useRouter } from "next/navigation";
 // import {db} from "@/lib/firebase";
 
 // declare types
@@ -22,29 +24,12 @@ export default function NewDeveloperForm ({onClick}:onClick) {
         setFormData({ ...FormData, [e.target.name]: e.target.value });
     };
 
-    // const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    //     e.preventDefault();
-    //     if (!FormData.name || !FormData.description) {
-    //         setError("Please fill in all fields.");
-    //         return;
-    //     }
-    //     try {
-    //         const addedData = await pb.collection('projects').create(FormData);
-    //         if (addedData){
-    //             setNotification("Project Created Succesfully!");
-    //             setFormData({
-    //                 name: '',
-    //                 description: ''
-    //             });
-    //         }
-    //         else{
-    //             setError("can not create project. check connection.");
-    //         }
-    //     } catch(error){
-    //         console.error('error', error);
-    //     }
-        
-    // };
+    const { currentUser, authLogin } = useAuth();
+    const router = useRouter();
+
+    if (!currentUser) {
+        return null;
+    }
     return(
         <Layout onClick={onClick}>
 

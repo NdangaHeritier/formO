@@ -46,7 +46,7 @@ const MeetTeam: React.FC = () => {
                                     Contributions
                                 </div>
                                 <div className="font-bold text-2xl text-white bg-zinc-800 p-3 flex items-center justify-center">
-                                    1200
+                                    50
                                 </div>
                             </div>
                         </div>
@@ -76,7 +76,7 @@ const MeetTeam: React.FC = () => {
                                     Contributions
                                 </div>
                                 <div className="font-bold text-2xl text-white bg-zinc-800 p-3 flex items-center justify-center">
-                                    300
+                                    6
                                 </div>
                             </div>
                         </div>
