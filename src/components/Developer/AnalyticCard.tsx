@@ -11,7 +11,7 @@ type AnalyticProps={
 export const AnalyticCard = ( {title, icon, desc, data}:AnalyticProps) => {
     const dataRate= ((data.amount*100)/data.rate);
     return (
-        <div className="rounded-2xl grid grid-cols-1 gap-5 p-5 border-zinc-300 border dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950 shadow-lg hover:border-zinc-600">
+        <div className="rounded-2xl grid grid-cols-1 gap-5 p-5 border-zinc-300 border dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950 shadow-lg hover:border-zinc-600 transition-all duration-200 ease-in-out hover:shadow-xl">
             <div className="flex items-center justify-between">
               <h1 className="font-bold text-2xl">
                 {title}

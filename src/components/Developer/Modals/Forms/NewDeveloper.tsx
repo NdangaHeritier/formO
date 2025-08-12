@@ -3,7 +3,7 @@ import FormButton from "@/components/Global/FormButton";
 import Layout from "../Layout";
 import { Icon } from "@/components/Global/Icon";
 import { InputField } from "@/components/Global/InputField";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { TextAreaField } from "@/components/Global/TextAreaField";
 import { useAuth } from "@/lib/Auth_context";
 import { useRouter } from "next/navigation";
@@ -19,17 +19,22 @@ export default function NewDeveloperForm ({onClick}:onClick) {
     });
     const [error, setError] = useState("");
     const [notification, setNotification] = useState<string>('');
-    setError("null");
+    // setError("null");
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+        e.preventDefault();
         setFormData({ ...FormData, [e.target.name]: e.target.value });
-    };
+    };    
 
     const { currentUser, authLogin } = useAuth();
     const router = useRouter();
 
-    if (!currentUser) {
-        return null;
+    useEffect(() => {
+        if (!currentUser) {
+            router.push("/login");
+        }
+        setError("");        
     }
+    , [currentUser, authLogin]);
     return(
         <Layout onClick={onClick}>
 
