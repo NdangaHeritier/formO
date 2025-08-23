@@ -27,62 +27,7 @@ const Developer= () => {
     const [projects, setProjects] = useState<ProjectType[]>([]);
     useEffect(() => {
       // Demo project data
-      const demoProjects: ProjectType[] = [
-        {
-          id: "1",
-          name: "Demo Project",
-          description: "This is a demo project for display purposes.",
-          user: {
-            id: "u1",
-            name: "Demo User",
-            email: "demo@example.com",
-            avatar: "https://i.pravatar.cc/150?img=1",
-            created: new Date().toISOString(),
-            updated: new Date().toISOString()
-          },
-          forms: [
-            {
-              id: "form1",
-              title: "Demo Form",
-              description: "A sample form in the demo project.",
-              created: new Date().toISOString(),
-              endpoint: "https://example.com/submit",
-              email_to: "ndanga@hn.b",
-              updated: new Date().toISOString(),
-            }
-          ],
-          created: new Date().toISOString(),
-          updated: new Date().toISOString(),
-          status: "active"
-        },
-        {
-          id: "2",
-          name: "Sample Project",
-          description: "Another example project for demonstration.",
-          user: {
-            id: "u2",
-            name: "Sample User",
-            email: "sample@example.com",
-            avatar: "https://i.pravatar.cc/150?img=2",
-            created: new Date().toISOString(),
-            updated: new Date().toISOString()
-          },
-          forms: [
-            {
-              id: "form2",
-              title: "Sample Form",
-              description: "A sample form in the sample project.",
-              created: new Date().toISOString(),
-              endpoint: "https://example.com/sample-submit",
-              email_to: "sample@hn.b",
-              updated: new Date().toISOString(),
-            }
-          ],
-          created: new Date().toISOString(),
-          updated: new Date().toISOString(),
-          status: "active"
-        }
-      ];
+      const demoProjects: ProjectType[] = [];
       setProjects(demoProjects);
     }, []);
 

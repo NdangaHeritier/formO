@@ -51,7 +51,7 @@ export default function Header({border="border-b", py="py-auto"}:prop) {
                         <Link href="/#company" className="text-zinc-700 dark:text-zinc-400 font-medium">Team</Link>
                     </li>
                     <li className="list-item px-1">
-                        <Link href="/#start" className="text-zinc-700 dark:text-zinc-400 font-medium">Plans</Link>
+                        <Link href="/#integrations" className="text-zinc-700 dark:text-zinc-400 font-medium">Integrations</Link>
                     </li>
                     <li className="list-item px-1">
                         <Link href="/#start" className="text-zinc-700 dark:text-zinc-400 font-medium">Careers</Link>

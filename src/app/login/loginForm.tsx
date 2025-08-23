@@ -6,10 +6,11 @@ import FormButton from "@/components/Global/FormButton";
 import { InputField } from "@/components/Global/InputField";
 import Header from "@/components/Header";
 import { useAuth } from "@/lib/Auth_context";
-import { useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import { BackGraphicsLayout } from "./BackGraphicsLayout";
+import checkInterest from "./checkInterest";
+import { useRouter } from "next/navigation";
 
 export default function LoginForm() {
     const { signin, currentUser } = useAuth();
@@ -17,14 +18,21 @@ export default function LoginForm() {
     const [form, setForm] = useState({ email: "", password: "" });
     const [error, setError] = useState("");
     const [signinLoading, setSigninLoading] = useState(false);
-
+    const [signedIn, setSignedIn] = useState(false);
     const router = useRouter();
+
     // Redirect to dashboard if user is already logged in
     useEffect(() => {
         if (currentUser) {
-            router.push("/dashboard");
+            setSignedIn(true);
+            const run = async () => {
+                const route = await checkInterest(currentUser.uid); // wait for DB result
+                router.push(route);
+            };
+
+            run();
         }
-    }, [currentUser, router]);
+    }, [currentUser]);
 
     // Dummy Google sign-in handler
     const signInWithGoogle = async () => {
@@ -52,11 +60,16 @@ export default function LoginForm() {
         try{
             await signin(form.email, form.password);
             setSigninLoading(false);
+            setSignedIn(true);
+            setError("");
             // Redirect to the dashboard or home page after successful sign-in
-            router.push("/dashboard");            
+            const route = await checkInterest(currentUser.uid); // wait for DB result
+            router.push(route);
+                 
         }
         catch (err) {
             setSigninLoading(false);
+            setSignedIn(false);
             if (err instanceof Error) {
                 setError("Incorrect email or password. Please try again.");
                 console.info(err);
@@ -83,6 +96,13 @@ export default function LoginForm() {
                     <div className="absolute inset-0 bg-gradient-to-r from-black to-black via-transparent z-1"></div>
                     <BackGraphicsLayout />
                 </div>
+                {signedIn ? (
+                    <div className="border-r border-l overflow-hidden border-zinc-800 bg-zinc-950 flex flex-col gap-10 p-5 sm:p-8 pt-10 sm:pt-16 items-center">
+                        <Icon name="Check" className="text-green-200 mx-auto w-20 h-20 rounded-full p-3 bg-green-600 ring-4 ring-green-800/30 border-2 border-zinc-950 flex items-center justify-center" strokeWidth={2.5}/>
+                        <h1 className="text-2xl font-semibold text-zinc-200 text-center">Successfully Signed In!</h1>
+                        <p className="text-zinc-500 text-center font-bold animate-pulse">Redirecting to your dashboard...</p>
+                    </div>
+                ):(
                 <div className="border-r border-l overflow-hidden border-zinc-800 bg-zinc-950 flex-col gap-5 p-5 sm:p-8">
                     <div className="w-full flex p-5 items-start justify-start border-b-zinc-700 gap-4">
                         <div className="">
@@ -166,6 +186,7 @@ export default function LoginForm() {
                         By signing in, you agree to our <Link href="/terms" className="text-gray-300 hover:underline">Terms of Service</Link> and <Link href="/privacy" className="text-gray-300 hover:underline">Privacy Policy</Link>.
                     </div>
                 </div>
+                )}                
                 <div className="hidden sm:flex items-center justify-center">
                     <div className="w-full text-7xl text-zinc-700 uppercase font-extralight transform rotate-90 opacity-50">
                         <span className="text-yellow-200">All</span> Beautful.
