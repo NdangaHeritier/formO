@@ -9,6 +9,7 @@ import { useAuth } from "@/lib/Auth_context";
 import { useRouter } from "next/navigation";
 import { db } from "@/lib/firebase";
 import { addDoc, collection } from "firebase/firestore";
+import LoadingSpinner from "@/components/Global/LoadingSpiner";
 // import {db} from "@/lib/firebase";
 
 // declare types
@@ -60,6 +61,7 @@ export default function NewDeveloperForm ({onClick}:onClick) {
         }
         catch (err) {
             setError("Failed to create project");
+            console.log(err);
             setLoading(false);
         }
     }
@@ -124,9 +126,14 @@ export default function NewDeveloperForm ({onClick}:onClick) {
                         >
                             Close
                         </FormButton>
-                        <FormButton type="submit" variant="primary">
-                            <Icon name="Plus" size={16} strokeWidth={2} />
-                            Add Project
+                        <FormButton type="submit" variant="primary" disabled={loading || !!error}>
+                            {loading ? <LoadingSpinner /> : (
+                                <>
+                                    <Icon name="Plus" size={16} strokeWidth={2} />
+                                    Add Project
+                                </>
+                            )}
+                            
                         </FormButton>
                     </div>
                 </form>                
