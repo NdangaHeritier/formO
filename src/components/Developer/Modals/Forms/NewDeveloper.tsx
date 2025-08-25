@@ -7,6 +7,8 @@ import React, { useEffect, useState } from "react";
 import { TextAreaField } from "@/components/Global/TextAreaField";
 import { useAuth } from "@/lib/Auth_context";
 import { useRouter } from "next/navigation";
+import { db } from "@/lib/firebase";
+import { addDoc, collection } from "firebase/firestore";
 // import {db} from "@/lib/firebase";
 
 // declare types
@@ -19,11 +21,48 @@ export default function NewDeveloperForm ({onClick}:onClick) {
     });
     const [error, setError] = useState("");
     const [notification, setNotification] = useState<string>('');
+    const [loading, setLoading] = useState(false);
     // setError("null");
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
         e.preventDefault();
         setFormData({ ...FormData, [e.target.name]: e.target.value });
-    };    
+    };
+
+    const handleSubmit = async (e: React.ChangeEvent<HTMLFormElement>) => {
+        e.preventDefault();
+        setLoading(true);
+        setError("");
+
+        try {
+            if (!FormData.name) {
+                setError("Project name is required");
+                setLoading(false);
+                return;
+            }
+            const docRef = collection(db, "projects");
+            await addDoc(docRef, {
+                name: FormData.name,
+                userId: currentUser.uid,
+                description: FormData.description,
+                createdAt: new Date(),
+                updatedAt: new Date()
+            });
+            setNotification("Project created successfully");
+            setFormData({
+                name: '',
+                description: ''
+            });
+            setLoading(false);
+            setTimeout(() => {
+                setNotification('');
+                onClick();
+            }, 2000);
+        }
+        catch (err) {
+            setError("Failed to create project");
+            setLoading(false);
+        }
+    }
 
     const { currentUser, authLogin } = useAuth();
     const router = useRouter();
@@ -55,7 +94,7 @@ export default function NewDeveloperForm ({onClick}:onClick) {
                 </p>
 
                 {/* form goes here */}
-                <form method="post" className="pt-5 grid grid-cols-1 gap-5">
+                <form method="post" onSubmit={handleSubmit} className="pt-5 grid grid-cols-1 gap-5">
                     <InputField
                         type="text"
                         name="name"
