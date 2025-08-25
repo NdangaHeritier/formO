@@ -9,7 +9,7 @@ import { createPortal } from "react-dom";
 import { useRouter } from "next/navigation";
 import SkeletonBox from "./skeleton"
 type prop={border?: string; py?: string};
-export default function Header({border="border-b", py="py-auto"}:prop) {
+export default function Header({border="border-b", py="py-3"}:prop) {
 
     // changing header links into user profile and settings if user is logged in
     // and showing login and signup if not logged in...
@@ -23,7 +23,7 @@ export default function Header({border="border-b", py="py-auto"}:prop) {
     }, [currentUser, authLoading, signout]);
 
   return (
-    <header className={`h-1/8 w-full sticky top-0 left-0 right-0 z-40 ${border} border-zinc-200 dark:border-zinc-800 p-5 ${py} px-10 flex items-center justify-between gap-5 zinc-50/70 dark:bg-zinc-950 bg-zinc-50 backdrop-blur-2xl`}>
+    <header className={`w-full sticky top-0 left-0 right-0 z-40 ${border} border-zinc-200 dark:border-zinc-800 ${py} px-10 flex items-center justify-between gap-5 zinc-50/70 dark:bg-zinc-950 bg-zinc-50 backdrop-blur-2xl`}>
         <div className="">
             {mounted ? (
                 <Image src="/Assets/formo-coloured.png" alt="logo" height="50" width="50" />
