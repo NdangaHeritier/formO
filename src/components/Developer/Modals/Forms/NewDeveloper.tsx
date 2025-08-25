@@ -127,7 +127,7 @@ export default function NewDeveloperForm ({onClick}:onClick) {
                             Close
                         </FormButton>
                         <FormButton type="submit" variant="primary" disabled={loading || !!error}>
-                            {loading ? <LoadingSpinner /> : (
+                            {loading ? <Icon name="Loader" size={20} className="animate-spin" /> : (
                                 <>
                                     <Icon name="Plus" size={16} strokeWidth={2} />
                                     Add Project
