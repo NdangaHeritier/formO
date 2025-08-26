@@ -86,19 +86,8 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} font-sans antialiased dark:bg-black`}
       >   
-        <Analytics />
-        <div className="min-md:hidden p-8">
-            <header className="flex items-center justify-start gap-2 font-semibold text-lg text-zinc-800 dark:text-zinc-200">
-              <Image src="/Assets/formo-coloured.png" alt="FormO Logo" className="h-10 w-auto" height={60} width={60}/>
-            </header>
-            <div className="flex flex-col items-center justify-center p-8 py-20 text-center">
-              <h2 className="text-2xl font-bold mb-4">Device Not Supported</h2>
-              <p className="text-base text-gray-500">
-                Sorry, FormO is not compatible with small devices. Please use a tablet or desktop for the best experience.
-              </p>
-            </div>
-        </div>
-        <main className="max-md:hidden">
+        <Analytics />        
+        <main className="dark">
           <section className="min-h-screen p-0">
             <AuthProvider>
               {children}

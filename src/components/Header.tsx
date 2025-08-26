@@ -9,12 +9,13 @@ import { createPortal } from "react-dom";
 import { useRouter } from "next/navigation";
 import SkeletonBox from "./skeleton"
 type prop={border?: string; py?: string};
-export default function Header({border="border-b", py="py-3"}:prop) {
+export default function Header({border="border-b", py="py-3 max-sm:py-2"}:prop) {
 
     // changing header links into user profile and settings if user is logged in
     // and showing login and signup if not logged in...
     const { currentUser, signout, authLoading } = useAuth();
     const [isOpeningUserMenu, setIsOpeningUserMenu] = useState(false)
+    const [isNavOpen, setIsNavOpen] = useState(false);
     const [mounted, setMounted] = useState(false);
     const router = useRouter();
 
@@ -23,7 +24,7 @@ export default function Header({border="border-b", py="py-3"}:prop) {
     }, [currentUser, authLoading, signout]);
 
   return (
-    <header className={`w-full sticky top-0 left-0 right-0 z-40 ${border} border-zinc-200 dark:border-zinc-800 ${py} px-10 flex items-center justify-between gap-5 zinc-50/70 dark:bg-zinc-950 bg-zinc-50 backdrop-blur-2xl`}>
+    <header className={`w-full sticky top-0 left-0 right-0 z-40 ${border} border-zinc-800 ${py} px-10 max-sm:px-5 flex items-center justify-between gap-5 bg-zinc-950 bg-zinc-50 backdrop-blur-2xl`}>
         <div className="">
             {mounted ? (
                 <Image src="/Assets/formo-coloured.png" alt="logo" height="50" width="50" />
@@ -31,40 +32,42 @@ export default function Header({border="border-b", py="py-3"}:prop) {
                 <SkeletonBox customStyle="w-10 h-10 rounded-md" />
             )}
         </div>
-        <div className="links flex items-center justify-end gap-8">
+        <div className="links flex items-center justify-end gap-8 max-sm:gap-4">
             {authLoading ? (
-                <div className="grid grid-cols-4 max-sm:grid-cols-1 gap-2">
+                <div className="grid-cols-4 max-sm:grid-cols-1 gap-2 hidden sm:grid">
                     <SkeletonBox customStyle="w-20 h-6 rounded-md" shown={authLoading} />
                     <SkeletonBox customStyle="w-20 h-6 rounded-md" shown={authLoading} />
                     <SkeletonBox customStyle="w-20 h-6 rounded-md" shown={authLoading} />
                     <SkeletonBox customStyle="w-20 h-6 rounded-md" shown={authLoading} />
                 </div>
             ) : !currentUser ? (
-                <ul className="nav-links list-none flex items-center justify-end gap-5">
+                <ul className={`nav-links list-none flex items-center justify-end gap-5
+                    max-sm:fixed max-sm:inset-0 max-sm:z-50 max-sm:bg-black max-sm:flex-col max-sm:items-center max-sm:justify-center max-sm:p-6 transition-transform duration-300 
+                    ${isNavOpen ? "translate-x-0" : "translate-x-full"} max-sm:fixed max-sm:inset-0 ...`}>
                     <li className="list-item px-1">
-                        <Link href="/#about" className="text-zinc-700 dark:text-zinc-400 font-medium">Home</Link>
+                        <Link href="/#about" className="text-zinc-400 font-medium">Home</Link>
                     </li>
                     <li className="list-item px-1">
-                        <Link href="/#start" className="text-zinc-700 dark:text-zinc-400 font-medium">Docs</Link>
+                        <Link href="/#start" className="text-zinc-400 font-medium">Docs</Link>
                     </li>
                     <li className="list-item px-1">
-                        <Link href="/#company" className="text-zinc-700 dark:text-zinc-400 font-medium">Team</Link>
+                        <Link href="/#company" className="text-zinc-400 font-medium">Team</Link>
                     </li>
                     <li className="list-item px-1">
-                        <Link href="/#integrations" className="text-zinc-700 dark:text-zinc-400 font-medium">Integrations</Link>
+                        <Link href="/#integrations" className="text-zinc-400 font-medium">Integrations</Link>
                     </li>
                     <li className="list-item px-1">
-                        <Link href="/#start" className="text-zinc-700 dark:text-zinc-400 font-medium">Careers</Link>
+                        <Link href="/#start" className="text-zinc-400 font-medium">Careers</Link>
                     </li>
                 </ul>
             ) : `` }
             <div className="ctas flex items-center justify-center gap-3 relative">
                 <LinkButton href="/developer" variant="primary">
-                    <Icon name="Webhook" size={15} className="text-zinc-300 dark:text-zinc-700" />
+                    <Icon name="Webhook" size={15} className="text-zinc-300 dark:text-zinc-700 max-sm:hidden" />
                     Get API
                 </LinkButton>
                 <LinkButton href="/non-dev" variant="secondary">
-                    <Icon name="Text" size={15} className="text-zinc-700 dark:text-zinc-300" />
+                    <Icon name="Text" size={15} className="text-zinc-300 max-sm:hidden" />
                     Send Emails
                 </LinkButton>
                 {currentUser ? (
@@ -160,13 +163,13 @@ export default function Header({border="border-b", py="py-3"}:prop) {
                       </div>,
                       document.body
                     )
-                  : ""
+                  : <div className="hidden" />
                 }
             </div>
         </div>
-        <div className="navbar-toogle hidden max-sm:block">
-            <button type="button" className="toggleNav rounded-md bg-gradient-to-r from-transparent to-zinc-300 border shadow border-zinc-400/70 px-4 py-1 hover:bg-zinc-400/50 duration-300">
-                <Icon name="Menu" className="text-zinc-500" size={18} />
+        <div className={`navbar-toogle ${currentUser? `hidden` : `hidden max-sm:flex`}`}>
+            <button type="button" className="toggleNav" onClick={() => setIsNavOpen(!isNavOpen)}>
+                <Icon name="PanelRightOpen" className="text-zinc-500 hover:text-zinc-300 duration-500 cursor-pointer" size={20} strokeWidth={2}/>
             </button>
         </div>
     </header>

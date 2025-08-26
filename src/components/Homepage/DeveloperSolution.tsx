@@ -7,10 +7,10 @@ const DeveloperSolutions: React.FC = () => {
       <div className="flex items-center justify-center flex-col gap-y-6">
         <YellowBorderedSpan title="Built for Developers and Teams" />
         <div className="min-md:w-2/3">
-          <h1 className="text-6xl font-extrabold dark:text-zinc-300 text-zinc-900 pb-5 tracking-tight text-center">
+          <h1 className="text-6xl max-sm:text-4xl font-extrabold dark:text-zinc-300 text-zinc-900 pb-5 tracking-tight text-center">
             Developer-First, Always
           </h1>
-          <p className="text-zinc-600 dark:text-zinc-400 text-xl py-7 text-center">
+          <p className="text-zinc-600 dark:text-zinc-400 text-xl max-sm:text-lg py-7 text-center">
             Formo is built with <span className="text-yellow-200 font-mono">developer love</span> in mind. Easily plug-and-play APIs, workspaces designed to reduce backend stress, and tools that scale with your team and project.
           </p>
         </div>

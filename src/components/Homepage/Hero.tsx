@@ -7,21 +7,21 @@ import LinkButton from "../Global/LinkButton";
 
 export const Hero : React.FC = () => {
     return(
-        <section className="hero-section relative p-5 bg-gradient-to-l from-yellow-600/30 dark:from-yellow-950/50 from-50% to-50% to-zinc-50 dark:to-zinc-950">
+        <section className="hero-section relative p-5 max-sm:p-2 bg-gradient-to-l from-yellow-600/30 dark:from-yellow-950/50 from-50% to-50% to-zinc-50 dark:to-zinc-950">
             <Squares parLength={240} />
-            <div className="contain border shadow-2xl border-zinc-300 dark:border-zinc-900 relative dark:bg-black/90 bg-white/90 rounded-3xl p-20 flex flex-col items-center justify-center gap-7 w-full bg-right-bottom bg-no-repeat" style={{backgroundImage: "url('./Assets/mail.png')"}}>
+            <div className="contain border shadow-2xl border-zinc-300 dark:border-zinc-900 relative dark:bg-black/90 bg-white/90 rounded-3xl p-20 max-sm:p-5 flex flex-col items-center justify-center gap-7 w-full bg-right-bottom bg-no-repeat" style={{backgroundImage: "url('./Assets/mail.png')"}}>
                 <YellowBorderedSpan title="Get Started, It's free forever!" />
-                <h2 className="text-zinc-600 dark:text-zinc-500 uppercase text-lg">
+                <h2 className="text-zinc-600 dark:text-zinc-500 uppercase sm:text-lg max-sm:w-3/4">
                         — Effortless Form Submission and Email Handling
                 </h2>
-                <h1 className="text-6xl font-extrabold text-zinc-700 dark:text-zinc-300 pb-5 tracking-tight text-center">
-                    <span className="stroke text-transparent pb-10 text-7xl">Streamline Your Workflow</span>
+                <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold text-zinc-700 dark:text-zinc-300 pb-5 tracking-tight text-center">
+                    <span className="stroke text-transparent pb-10 text-5xl sm:text-6xl md:text-7xl">Streamline Your Workflow</span>
                     <br/> with Our Effortless Emailing Solution.
                 </h1>
             
             {/* feature comparations */}
             <div className="relative pt-10 dark:bg-zinc-900/10 bg-zinc-200/10 w-full">
-                <div className="absolute right-1/2 top-14 flex items-center justify-center -z-0">
+                <div className="absolute right-1/2 top-14 flex items-center justify-center -z-0 max-sm:hidden">
                     <div className="relative flex border-2 ring-4 ring-yellow-600/10 dark:ring-yellow-200/10 border-zinc-300 dark:border-zinc-300/10 bg-gradient-to-br from-yellow-700/20 to-zinc-200 dark:to-zinc-950 self-start content-start h-20 w-20 rounded-full font-medium text-sm items-center justify-center gap-x-2">
                         <span className="h-40 absolute mx-auto w-40 bg-yellow-600/8 dark:bg-yellow-200/5 rounded-full grid grid-cols-2 gap-5">
                             <Icon name="User" size={48} className="p-2 bg-white dark:bg-black border-2 border-zinc-300 dark:border-yellow-200/10 rounded-full text-zinc-500"/>

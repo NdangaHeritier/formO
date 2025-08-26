@@ -15,9 +15,9 @@ export default function Home() {
   return (
     <>
     <Header />
-    <div className="w-full flex flex-col justify-start gap-5">
+    <div className="relative z-10 w-full flex flex-col justify-start gap-5">
 
-        <div className="px-5">
+        <div className="px-5 max-sm:px-1">
           <Hero  />
           <WhyChooseFormo />
           <DeveloperSolutions />
