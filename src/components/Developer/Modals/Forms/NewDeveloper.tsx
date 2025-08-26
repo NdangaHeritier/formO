@@ -74,7 +74,7 @@ export default function NewDeveloperForm ({onClick}:onClick) {
         }
         setError("");        
     }
-    , [currentUser, authLogin]);
+    , [currentUser, authLogin, router]);
     return(
         <Layout onClick={onClick}>
 

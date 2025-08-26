@@ -11,7 +11,6 @@ import Link from "next/link";
 import { BackGraphicsLayout } from "./BackGraphicsLayout";
 import checkInterest from "./checkInterest";
 import { useRouter } from "next/navigation";
-import { getRouteRegex } from "next/dist/shared/lib/router/utils/route-regex";
 
 export default function LoginForm() {
     const { signin, currentUser } = useAuth();
