@@ -9,7 +9,6 @@ import { useAuth } from "@/lib/Auth_context";
 import { useRouter } from "next/navigation";
 import { db } from "@/lib/firebase";
 import { addDoc, collection } from "firebase/firestore";
-import LoadingSpinner from "@/components/Global/LoadingSpiner";
 // import {db} from "@/lib/firebase";
 
 // declare types

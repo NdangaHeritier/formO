@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { JetBrains_Mono, Inter } from 'next/font/google';
 import "./globals.css";
 import Footer from "@/components/Footer";
-import Image from "next/image";
 import { Analytics } from "@vercel/analytics/next";
 import { AuthProvider } from "@/lib/Auth_context";
 import { Icon } from "@/components/Global/Icon";
