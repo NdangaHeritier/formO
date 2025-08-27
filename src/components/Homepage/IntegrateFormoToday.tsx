@@ -4,7 +4,7 @@ import LinkButton from "../Global/LinkButton";
 
 const IntegrateFormoToday: React.FC = () => {
     return (
-        <section className="relative bg-zinc-50 dark:bg-zinc-950 p-10 flex items-center justify-center overflow-hidden">
+        <section className="relative bg-zinc-50 dark:bg-zinc-950 p-10 max-sm:px-4 flex items-center justify-center overflow-hidden">
             {/* Subtle background graphics */}
             <div className="absolute inset-0 grid grid-cols-2 gap-2 pointer-events-none opacity-40 z-0">
                 <BackGraphicsLayout />
@@ -16,7 +16,7 @@ const IntegrateFormoToday: React.FC = () => {
                 <h2 className="text-4xl font-extrabold dark:text-zinc-200 text-zinc-900 pb-3 tracking-tight text-center">
                     Integrate Formo Today
                 </h2>
-                <p className="text-zinc-600 dark:text-zinc-400 text-lg text-center max-w-xl">
+                <p className="text-zinc-600 dark:text-zinc-400 text-lg md:text-center max-w-xl">
                     Supercharge your workflow by integrating <span className="text-violet-500 font-semibold">Formo</span> into your stack. 
                     Whether you are a developer or not, Formo makes it easy to collect, manage, and automate your forms and emails.
                 </p>
@@ -25,7 +25,7 @@ const IntegrateFormoToday: React.FC = () => {
                     <div className="bg-zinc-950 p-6 rounded-xl flex flex-col items-center gap-4 shadow-lg border border-zinc-800">
                         <Icon name="Webhook" size={40} className="text-violet-400" />
                         <h3 className="font-bold text-lg text-zinc-200">For Developers</h3>
-                        <p className="text-zinc-400 text-center">
+                        <p className="text-zinc-400 md:text-center">
                             Use our API to integrate forms directly into your apps and automate your data collection.
                         </p>
                         <LinkButton href="/developer" variant="primary">
@@ -37,7 +37,7 @@ const IntegrateFormoToday: React.FC = () => {
                     <div className="bg-zinc-950 p-6 rounded-xl flex flex-col items-center gap-4 shadow-lg border border-zinc-800">
                         <Icon name="Text" size={40} className="text-yellow-300" />
                         <h3 className="font-bold text-lg text-zinc-200">For Everyone</h3>
-                        <p className="text-zinc-400 text-center">
+                        <p className="text-zinc-400 md:text-center">
                             No code? No problem! Easily create forms and send emails with our intuitive dashboard.
                         </p>
                         <LinkButton href="/non-dev" variant="secondary">
