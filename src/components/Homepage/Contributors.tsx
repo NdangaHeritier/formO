@@ -6,8 +6,8 @@ import LinkButton from "../Global/LinkButton";
 const MeetTeam: React.FC = () => {
     return (
         <>
-            <section className="relative bg-zinc-50 dark:bg-black p-10 max-sm:p-5 flex max-sm:flex-col items-center justify-center">
-                <div className="sm:flex-2/3">
+            <section className="relative bg-zinc-50 dark:bg-black p-10 max-sm:p-5 grid grid-cols-1 sm:grid-cols-2 gap-5">
+                <div className="p-10 max-sm:px-3">
                     <h1 className="text-4xl font-extrabold dark:text-zinc-300 text-zinc-900 pb-5 tracking-tight text-center">
                         Meet The Team Behind Formo.
                     </h1>
@@ -21,7 +21,7 @@ const MeetTeam: React.FC = () => {
                         </LinkButton>
                     </div>
                 </div>
-                <div className="grid mx-auto grid-cols-1 md:grid-cols-2 gap-5 p-3 min-w-4xl">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                     {/* Contributor 1 */}
                     <div className="bg-zinc-950 p-2 pt-10 rounded-xl flex items-center justify-center gap-3 flex-col">
                         <Image

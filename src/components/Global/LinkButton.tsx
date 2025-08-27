@@ -14,7 +14,7 @@ export default function LinkButton ({variant="primary", children, href}:Props) {
     return(
         <Link
             href={href}
-            className={`${variation[variant]} font-semibold duration-300 px-4 py-2 rounded-md text-sm flex items-center justify-center gap-2 cursor-pointer`}
+            className={`${variation[variant]} font-semibold duration-300 px-4 max-sm:px-3 py-2 rounded-md text-sm flex items-center justify-center gap-2 cursor-pointer`}
         >
             {children}                    
         </Link>

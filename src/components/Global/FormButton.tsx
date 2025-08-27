@@ -16,7 +16,7 @@ const FormButton = ({variant="primary",type="button",onClick, children, disabled
             type={type}
             onClick={onClick}
             disabled={disabled}
-            className={`${variation[variant]} ${disabled ? `opacity-40 cursor-not-allowed`: `cursor-pointer`} font-semibold duration-300 px-4 py-2 rounded-md text-sm flex items-center justify-center gap-2`}
+            className={`${variation[variant]} ${disabled ? `opacity-40 cursor-not-allowed`: `cursor-pointer`} font-semibold duration-300 px-4 max-sm:px-3 py-2 rounded-md text-sm flex items-center justify-center gap-2`}
         >
             {children}                    
         </button>

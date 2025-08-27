@@ -54,7 +54,7 @@ export default function Footer() {
                 </ul>
                 
             </div>
-            <div className="reach-out-through-our-social-media-account flex flex-col justify-start items-start gap-3 px-5">
+            <div className="reach-out-through-our-social-media-account flex flex-col justify-start items-start gap-3 md:px-5">
                 <h3 className="text-lg font-semibold text-zinc-700 dark:text-zinc-400">Follow Us</h3>
                 <ul className="list-none grid grid-cols-2 gap-3 text-zinc-600 dark:text-zinc-500">
                     <li className="flex items-center justify-start"><Link href="https://facebook.com" target="_blank" className="hover:underline text-sm flex items-center justify-center gap-2">
@@ -83,10 +83,10 @@ export default function Footer() {
             </div>
         </div>
         {/* Copyright */}
-        <div className="text-sm w-full grid grid-cols-3 p-5 border-t border-t-zinc-300  dark:border-zinc-800 mt-3">
+        <div className="text-sm w-full grid grid-cols-1 max-sm:gap-5 sm:grid-cols-2 md:grid-cols-3 p-5 border-t border-t-zinc-300  dark:border-zinc-800 mt-3">
 
             {/* Theme button */}
-            <div className="themes-toggling-buttons inline-flex items-center justify-start">
+            <div className="themes-toggling-buttons inline-flex items-center justify-start max-sm:justify-center">
                     
                 <div className="grid grid-cols-3 gap-1 bg-black/2 dark:bg-white/2 rounded-md p-1 shadow border border-black/10  dark:border-white/10">
                     <button className="flex items-center gap-2 bg-zinc-100 dark:bg-zinc-950/2 text-zinc-900 dark:text-zinc-100 hover:border border-zinc-300 dark:border-zinc-800 h-8 w-8 justify-center rounded-md hover:bg-zinc-200 dark:hover:bg-zinc-950">

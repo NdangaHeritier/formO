@@ -126,7 +126,7 @@ const NonDevSolutions: React.FC = () => {
 
                 <div className="grid grid-cols-2 md:grid-cols-2 gap-4 mb-10">
                 {nonDevFeatures.map(({ icon, title, desc }) => (
-                    <div key={title} className="flex items-start gap-4 border border-zinc-200 dark:border-zinc-900 rounded-xl p-4 bg-gradient-to-tr from-yellow-600/20 to-30% to-white dark:from-yellow-950/90 dark:to-zinc-950">
+                    <div key={title} className="flex max-sm:flex-col items-start gap-2 sm:gap-4 border border-zinc-200 dark:border-zinc-900 rounded-xl p-2 sm:p-4 bg-gradient-to-tr from-yellow-600/20 to-30% to-white dark:from-yellow-950/90 dark:to-zinc-950">
                         <div className="bg-yellow-600/20 dark:bg-yellow-950/30 text-yellow-700 p-2 rounded-full">
                             <Icon name={icon} size={20} className="text-yellow-700" />
                         </div>

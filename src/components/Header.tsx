@@ -9,7 +9,7 @@ import { createPortal } from "react-dom";
 import { useRouter } from "next/navigation";
 import SkeletonBox from "./skeleton"
 type prop={border?: string; py?: string};
-export default function Header({border="border-b", py="py-3 max-sm:py-2"}:prop) {
+export default function Header({border="border-b", py="py-3"}:prop) {
 
     // changing header links into user profile and settings if user is logged in
     // and showing login and signup if not logged in...
@@ -27,12 +27,12 @@ export default function Header({border="border-b", py="py-3 max-sm:py-2"}:prop) 
     <header className={`w-full sticky top-0 left-0 right-0 z-40 ${border} border-zinc-800 ${py} px-10 max-sm:px-5 flex items-center justify-between gap-5 bg-zinc-950 bg-zinc-50 backdrop-blur-2xl`}>
         <div className="">
             {mounted ? (
-                <Image src="/Assets/formo-coloured.png" alt="logo" height="50" width="50" />
+                <Image src="/Assets/formo-coloured.png" alt="logo" className="w-10 h-10" height="50" width="50" />
             ):(
                 <SkeletonBox customStyle="w-10 h-10 rounded-md" />
             )}
         </div>
-        <div className="links flex items-center justify-end gap-8 max-sm:gap-4">
+        <div className="links flex items-center justify-end gap-8 max-sm:gap-3 flex-1 overflow-hidden">
             {authLoading ? (
                 <div className="grid-cols-4 max-sm:grid-cols-1 gap-2 hidden sm:grid">
                     <SkeletonBox customStyle="w-20 h-6 rounded-md" shown={authLoading} />
@@ -41,23 +41,46 @@ export default function Header({border="border-b", py="py-3 max-sm:py-2"}:prop) 
                     <SkeletonBox customStyle="w-20 h-6 rounded-md" shown={authLoading} />
                 </div>
             ) : !currentUser ? (
-                <ul className={`nav-links list-none flex items-center justify-end gap-5
-                    max-sm:fixed max-sm:inset-0 max-sm:z-50 max-sm:bg-black max-sm:flex-col max-sm:items-center max-sm:justify-center max-sm:p-6 transition-transform duration-300 
-                    ${isNavOpen ? "translate-x-0" : "translate-x-full"} max-sm:fixed max-sm:inset-0 ...`}>
-                    <li className="list-item px-1">
-                        <Link href="/#about" className="text-zinc-400 font-medium">Home</Link>
+                <ul className={`flex items-center justify-center max-sm:flex-col max-sm:justify-start gap-5 max-sm:gap-0 max-sm:fixed max-sm:top-16 max-sm:left-0 max-sm:right-0 max-sm:bottom-0 max-sm:bg-zinc-950 max-sm:p-3 max-sm:min-h-screen max-sm:pb-20 ${isNavOpen ? `max-sm:visible` : `max-sm:invisible max-sm:h-0`}`}>
+                    <li className="list-item max-sm:w-full sm:px-1 max-sm:border-b max-sm:border-zinc-800 max-sm:grid max-sm:grid-cols-1">
+                        <Link href="/#about" className="text-zinc-400 font-medium max-sm:py-4 flex items-center justify-between">
+                            <span className="">Home</span>
+                            <Icon name="ArrowRight" size={15} strokeWidth={2} className="text-zinc-500 max-sm:block hidden" />
+                        </Link>
                     </li>
-                    <li className="list-item px-1">
-                        <Link href="/#start" className="text-zinc-400 font-medium">Docs</Link>
+                    <li className="list-item max-sm:w-full sm:px-1 max-sm:border-b max-sm:border-zinc-800 max-sm:grid max-sm:grid-cols-1">
+                        <Link href="/#docs" className="text-zinc-400 font-medium max-sm:py-4 flex items-center justify-between">
+                            <span className="">Docs</span>
+                            <Icon name="ArrowRight" size={15} strokeWidth={2} className="text-zinc-500 max-sm:block hidden" />
+                        </Link>
                     </li>
-                    <li className="list-item px-1">
-                        <Link href="/#company" className="text-zinc-400 font-medium">Team</Link>
+                    <li className="list-item max-sm:w-full sm:px-1 max-sm:border-b max-sm:border-zinc-800 max-sm:grid max-sm:grid-cols-1">
+                        <Link href="/#team" className="text-zinc-400 font-medium max-sm:py-4 flex items-center justify-between">
+                            <span className="">Team</span>
+                            <Icon name="ArrowRight" size={15} strokeWidth={2} className="text-zinc-500 max-sm:block hidden" />
+                        </Link>
                     </li>
-                    <li className="list-item px-1">
-                        <Link href="/#integrations" className="text-zinc-400 font-medium">Integrations</Link>
+                    <li className="list-item max-sm:w-full sm:px-1 max-sm:border-b max-sm:border-zinc-800 max-sm:grid max-sm:grid-cols-1">
+                        <Link href="/#integrations" className="text-zinc-400 font-medium max-sm:py-4 flex items-center justify-between">
+                            <span className="">Integrations</span>
+                            <Icon name="ArrowRight" size={15} strokeWidth={2} className="text-zinc-500 max-sm:block hidden" />
+                        </Link>
                     </li>
-                    <li className="list-item px-1">
-                        <Link href="/#start" className="text-zinc-400 font-medium">Careers</Link>
+                    <li className="list-item max-sm:w-full sm:px-1 max-sm:border-b max-sm:border-zinc-800 max-sm:grid max-sm:grid-cols-1">
+                        <Link href="/#Career" className="text-zinc-400 font-medium max-sm:py-4 flex items-center justify-between">
+                            <span className="">Career</span>
+                            <Icon name="ArrowRight" size={15} strokeWidth={2} className="text-zinc-500 max-sm:block hidden" />
+                        </Link>
+                    </li>
+                    <li className="list-item max-sm:w-full sm:hidden sm:px-1 py-4">
+                        <LinkButton href="/#Career" variant="secondary">
+                            Sign In
+                        </LinkButton>
+                    </li>
+                    <li className="list-item max-sm:w-full sm:hidden sm:px-1">
+                        <LinkButton href="/#Career" variant="primary">
+                            Get Started
+                        </LinkButton>
                     </li>
                 </ul>
             ) : `` }
@@ -169,7 +192,7 @@ export default function Header({border="border-b", py="py-3 max-sm:py-2"}:prop) 
         </div>
         <div className={`navbar-toogle ${currentUser? `hidden` : `hidden max-sm:flex`}`}>
             <button type="button" className="toggleNav" onClick={() => setIsNavOpen(!isNavOpen)}>
-                <Icon name="PanelRightOpen" className="text-zinc-500 hover:text-zinc-300 duration-500 cursor-pointer" size={20} strokeWidth={2}/>
+                <Icon name={!isNavOpen ? "PanelRightOpen" : "X"} className="text-zinc-500 hover:text-zinc-300 duration-500 cursor-pointer" size={20} strokeWidth={2}/>
             </button>
         </div>
     </header>
