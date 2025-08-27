@@ -15,7 +15,7 @@ export const Hero : React.FC = () => {
                         — Effortless Form Submission and Email Handling
                 </h2>
                 <h1 className="text-xl sm:text-5xl md:text-6xl font-extrabold text-zinc-700 dark:text-zinc-300 pb-5 tracking-tight text-center">
-                    <span className="stroke text-transparent pb-10 text-5xl sm:text-6xl md:text-7xl">Streamline Your Workflow</span>
+                    <span className="stroke text-transparent sm:pb-10 text-5xl sm:text-6xl md:text-7xl">Streamline Your Workflow</span>
                     <br/> with Our Effortless Emailing Solution.
                 </h1>
             
