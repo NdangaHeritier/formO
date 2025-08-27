@@ -9,12 +9,12 @@ export const Hero : React.FC = () => {
     return(
         <section className="hero-section relative p-5 max-sm:p-2 bg-gradient-to-l from-yellow-600/30 dark:from-yellow-950/50 from-50% to-50% to-zinc-50 dark:to-zinc-950">
             <Squares parLength={240} />
-            <div className="contain border shadow-2xl border-zinc-300 dark:border-zinc-900 relative dark:bg-black/90 bg-white/90 rounded-3xl p-20 max-sm:p-5 flex flex-col items-center justify-center gap-7 w-full bg-right-bottom bg-no-repeat" style={{backgroundImage: "url('./Assets/mail.png')"}}>
+            <div className="contain border shadow-2xl border-zinc-300 dark:border-zinc-900 relative dark:bg-black/90 bg-white/90 rounded-3xl p-20 max-sm:px-5 max-sm:py-14 flex flex-col items-center justify-center gap-7 w-full bg-right-bottom bg-no-repeat" style={{backgroundImage: "url('./Assets/mail.png')"}}>
                 <YellowBorderedSpan title="Get Started, It's free forever!" />
                 <h2 className="text-zinc-600 dark:text-zinc-500 uppercase sm:text-lg max-sm:w-3/4">
                         — Effortless Form Submission and Email Handling
                 </h2>
-                <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold text-zinc-700 dark:text-zinc-300 pb-5 tracking-tight text-center">
+                <h1 className="text-xl sm:text-5xl md:text-6xl font-extrabold text-zinc-700 dark:text-zinc-300 pb-5 tracking-tight text-center">
                     <span className="stroke text-transparent pb-10 text-5xl sm:text-6xl md:text-7xl">Streamline Your Workflow</span>
                     <br/> with Our Effortless Emailing Solution.
                 </h1>
