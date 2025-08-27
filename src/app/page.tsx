@@ -2,12 +2,12 @@ import Header from "@/components/Header";
 import MeetTeam from "@/components/Homepage/Contributors";
 import CustomizeTemplates from "@/components/Homepage/CustomizeTemplate";
 import DeveloperSolutions from "@/components/Homepage/DeveloperSolution";
-import Features from "@/components/Homepage/Features";
+{/*import Features from "@/components/Homepage/Features";*/}
 import { Hero } from "@/components/Homepage/Hero";
 import IntegrateFormoToday from "@/components/Homepage/IntegrateFormoToday";
 import NonDevSolutions from "@/components/Homepage/NonDevSolutions";
-import QuickActionSection from "@/components/Homepage/QuickActionSection";
-import UseCase from "@/components/Homepage/UseCases";
+{/*import QuickActionSection from "@/components/Homepage/QuickActionSection";
+import UseCase from "@/components/Homepage/UseCases";*/}
 import WhyChooseFormo from "@/components/Homepage/WhyChooseFormo";
 
 
@@ -24,10 +24,10 @@ export default function Home() {
           <NonDevSolutions />
           <IntegrateFormoToday />
           <CustomizeTemplates />
-          <Features />
-          <UseCase />
+          {/*<Features />*/}
+          {/*<UseCase />*/}
           <MeetTeam />
-          <QuickActionSection />
+          {/*<QuickActionSection />*/}
         </div>
     </div>
     </>
