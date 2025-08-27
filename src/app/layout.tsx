@@ -15,7 +15,7 @@ export const metadata: Metadata = {
     },
   ],
   creator: 'Ndanga Heritier',
-  applicationName: 'FormO',
+  applicationName: 'Formo',
   icons: [
     { rel: 'icon', type: 'image/png', sizes: '96x96', url: '/favicon-96x96.png' },
     { rel: 'icon', type: 'image/svg+xml', url: '/favicon.png' },
@@ -41,7 +41,7 @@ export const metadata: Metadata = {
     description:
       'Collect form data and send beautiful emails instantly. Whether you’re a dev or not, FormO makes it simple.',
     url: 'https://withformo.vercel.app',
-    siteName: 'FormO',
+    siteName: 'Formo',
     images: [
       {
         url: '/Twitter-card.png', 
@@ -91,7 +91,7 @@ export default function RootLayout({
             <AuthProvider>
               {children}
             </AuthProvider>
-            <div className="fixed right-0 bottom-0 p-3 inline-block">
+            <div className="fixed right-0 bottom-0 p-3 inline-block z-[9999]">
               <button type="button" className="bg-yellow-100 hover:bg-yellow-50 duration-500 cursor-pointer flex items-center justify-center p-3 text-yellow-800 rounded-full shadow-xl shadow-yellow-500 ring-4 ring-yellow-500/30">
                 <Icon name="Bot" size={25} strokeWidth={2} />
               </button>
