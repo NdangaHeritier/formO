@@ -3,7 +3,7 @@ import YellowBorderedSpan from "../Global/YellowBorderedSpan";
 
 const DeveloperSolutions: React.FC = () => {
     return (
-    <section className="relative bg-zinc-50 dark:bg-zinc-950/20 border border-zinc-300 dark:border-zinc-900 border-t-0 p-10">
+    <section className="relative bg-zinc-50 dark:bg-zinc-950/20 border border-zinc-300 dark:border-zinc-900 border-t-0 p-10 max-sm:px-4">
       <div className="flex items-center justify-center flex-col gap-y-6">
         <YellowBorderedSpan title="Built for Developers and Teams" />
         <div className="min-md:w-2/3">
