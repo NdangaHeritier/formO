@@ -103,7 +103,7 @@ const NonDevSolutions: React.FC = () => {
         </div>
 
         {/* Foreground Content */}
-        <div className="relative grid grid-cols-1 sm:grid-cols-2 z-10 bg-gradient-to-r from-zinc-50 to-white/30 dark:from-zinc-950/80 dark:to-black/30 p-10 py-20">
+        <div className="relative grid grid-cols-1 sm:grid-cols-2 z-10 bg-gradient-to-r from-zinc-50 to-white/30 dark:from-zinc-950/80 dark:to-black/30 p-10 max-sm:px-4 py-20">
            <div className="flex flex-col items-start justiffy-start gap-5">
                 <YellowBorderedSpan title="For Non-Developers Who Need Speed" />
                 <div className="w-full md:w-2/3 mb-10">
@@ -124,7 +124,7 @@ const NonDevSolutions: React.FC = () => {
                 ))}
                 </div>
 
-                <div className="grid grid-cols-2 md:grid-cols-2 gap-4 mb-10">
+                <div className="grid grid-cols-2 md:grid-cols-2 gap-4 max-sm:gap-2 mb-7">
                 {nonDevFeatures.map(({ icon, title, desc }) => (
                     <div key={title} className="flex max-sm:flex-col items-start gap-2 sm:gap-4 border border-zinc-200 dark:border-zinc-900 rounded-xl p-2 sm:p-4 bg-gradient-to-tr from-yellow-600/20 to-30% to-white dark:from-yellow-950/90 dark:to-zinc-950">
                         <div className="bg-yellow-600/20 dark:bg-yellow-950/30 text-yellow-700 p-2 rounded-full">
