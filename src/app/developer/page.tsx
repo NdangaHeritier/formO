@@ -2,8 +2,8 @@
 import { useEffect, useState } from 'react';
 import DeveloperBreadcrumb from '@/components/Developer/DeveloperBreadcrumb';
 import Header from '@/components/Header';
-import { IconType } from '@/types/Icon';
-import { AnalyticCard } from '@/components/Developer/AnalyticCard';
+// import { IconType } from '@/types/Icon';
+// import { AnalyticCard } from '@/components/Developer/AnalyticCard';
 import FormButton from '@/components/Global/FormButton';
 import { Icon } from '@/components/Global/Icon';
 // import { getProjects } from '@/data/projects';
@@ -16,135 +16,24 @@ import GuideCard from '@/components/Global/GuideCard';
 import NewDeveloperForm from '@/components/Developer/Modals/Forms/NewDeveloper';
 import NewForm from '@/components/Developer/Modals/Forms/NewForm';
 import { FormsDisplayModel } from '@/components/Developer/Modals/Displays/DisplayProjectForms';
-
-type AnalyticType= {
-  title: string,
-  icon: IconType,
-  desc: string,
-  data: {amount: number, period: "Month"|"Day"|"Year", rate: number}
-}
+import LinkButton from '@/components/Global/LinkButton';
+import PrivateRouter from '@/components/Global/privateRouter';
+import AnalyticsGroup from '@/components/Developer/AnalyticsGroup';
   
 const Developer= () => {
-    // const [isLoading, setIsLoading] = useState(true);
-
-    // useEffect(() => {
-    //     // Simulate a loading delay
-    //     const timer = setTimeout(() => {
-    //         setIsLoading(false);
-    //     }, 1000); // 1 second delay
-
-    //     return () => clearTimeout(timer);
-    // }, []);
-  
-    const Analytics : AnalyticType[] =[
-      {
-        title: "Submissions",
-        icon: "Activity",
-        desc: "Submission analytics for all forms in your project currently.",
-        data: {
-          amount: 200,
-          period: "Month",
-          rate: 1000
-        }
-      },
-      {
-        title: "Forms",
-        icon: "SquareCode",
-        desc: "Forms you have created in every project currently",
-        data: {
-          amount: 10,
-          period: "Month",
-          rate: 20
-        }
-      },
-      {
-        title: "Projects",
-        icon: "Folder",
-        desc: "All projects you have created and added forms to this month.",
-        data: {
-          amount: 4,
-          period: "Year",
-          rate: 5
-        }
-      }
-    ];
-
+ 
     // Fetch projects from PocketBase
 
     const [projects, setProjects] = useState<ProjectType[]>([]);
-    // useEffect(() => {
-    //    getProjects().then(async (projectList) => {
-    //     const fullProjects = await Promise.all(projectList.map(async (project) => {
-    //       const forms = await getFormsByProjectId(project.id);
-    //       return { ...project, forms };
-    //     }));
-    //     setProjects(fullProjects);
-    //   });
-    // }, []);
     useEffect(() => {
       // Demo project data
-      const demoProjects: ProjectType[] = [
-        {
-          id: "1",
-          name: "Demo Project",
-          description: "This is a demo project for display purposes.",
-          user: {
-            id: "u1",
-            name: "Demo User",
-            email: "demo@example.com",
-            avatar: "https://i.pravatar.cc/150?img=1",
-            created: new Date().toISOString(),
-            updated: new Date().toISOString()
-          },
-          forms: [
-            {
-              id: "form1",
-              title: "Demo Form",
-              description: "A sample form in the demo project.",
-              created: new Date().toISOString(),
-              endpoint: "https://example.com/submit",
-              email_to: "ndanga@hn.b",
-              updated: new Date().toISOString(),
-            }
-          ],
-          created: new Date().toISOString(),
-          updated: new Date().toISOString(),
-          status: "active"
-        },
-        {
-          id: "2",
-          name: "Sample Project",
-          description: "Another example project for demonstration.",
-          user: {
-            id: "u2",
-            name: "Sample User",
-            email: "sample@example.com",
-            avatar: "https://i.pravatar.cc/150?img=2",
-            created: new Date().toISOString(),
-            updated: new Date().toISOString()
-          },
-          forms: [
-            {
-              id: "form2",
-              title: "Sample Form",
-              description: "A sample form in the sample project.",
-              created: new Date().toISOString(),
-              endpoint: "https://example.com/sample-submit",
-              email_to: "sample@hn.b",
-              updated: new Date().toISOString(),
-            }
-          ],
-          created: new Date().toISOString(),
-          updated: new Date().toISOString(),
-          status: "active"
-        }
-      ];
+      const demoProjects: ProjectType[] = [];
       setProjects(demoProjects);
     }, []);
 
     // trigger to show create new project model..
     const [isCreateProjectModelOpen, setIsCreateProjectModelOpen] = useState(false);
-    const [createNewForm, setCreateNewForm] = useState(true);
+    const [createNewForm, setCreateNewForm] = useState(false);
 
     // set a project id for which each form can go with..
     const [projectID, setProjectID] = useState<string| undefined>(undefined);
@@ -161,7 +50,7 @@ const Developer= () => {
     });
 
   return (
-    <>
+    <PrivateRouter>
       <Header border='border-0' py='py-3'/>
       <DeveloperBreadcrumb
         navs={[
@@ -187,21 +76,17 @@ const Developer= () => {
       {/* Dashboard */}
       <section className="dashboard bg-white dark:bg-black text-zinc-900 dark:text-zinc-100 p-5 grid grid-cols-1 gap-y-10">
         {/* Analytics section */}
-        <div className="analytics grid grid-cols-3 gap-5 p-3">
-          {Analytics.map((analytic, index)=> {
-            return <AnalyticCard key={index} title={analytic.title} desc={analytic.desc} icon={analytic.icon} data={analytic.data}/>
-          })}
-        </div>
+        <AnalyticsGroup />
 
         {/* Projects Section */}
         <div className="relative rounded-lg">
           <Squares parLength={100} />
-          <div className="projects relative z-10 grid grid-cols-1 gap-5 bg-gradient-to-tr from-zinc-950 from-80% to-20% to-zinc-950/50 rounded-lg p-8">
+          <div className="projects relative z-10 grid grid-cols-1 gap-5 bg-gradient-to-tr from-zinc-100 to-zinc-100/50 dark:from-zinc-950 from-80% to-20% dark:to-zinc-950/50 rounded-lg p-8">
             <div className="flex items-center justify-between">
               <div className="title text-xl font-bold">Projects</div>
               <FormButton type='button' variant='primary' onClick={() => setIsCreateProjectModelOpen(true)}>
                 <Icon name="Plus" size={15} className="text-zinc-200 dark:text-zinc-800" />
-                  Create Project
+                  Add Project
               </FormButton>
             </div>
 
@@ -282,17 +167,16 @@ const Developer= () => {
               subDesc="Stay in the loop with actionable, well-designed notifications that keep your workflow efficient and responsive."
               />
             </div>
-          <FormButton type='button' variant='secondary' onClick={() => {
-            // Handle quick start logic here
-            console.log("Quick Start button clicked");
-          }}>
-            <Icon name="Rocket" size={15} className="text-zinc-500" />
-            Quick Start
-          </FormButton>
+          <div className='items-start justify-start flex'>
+            <LinkButton href='/login' variant='secondary'>
+              <Icon name="Rocket" size={15} className="text-zinc-400 dark:text-zinc-700" />
+              Quick Start
+            </LinkButton>
+          </div>
         </div>
 
       </section>
-    </>
+    </PrivateRouter>
   );
 }
 

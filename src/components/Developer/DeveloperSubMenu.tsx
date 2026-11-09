@@ -37,14 +37,14 @@ export default function DeveloperSubMenu({
             variant="primary"
             onClick={() => setOpen((v) => !v)}
           >
-              <Icon name="ChevronDown" className="w-4 h-4" /> Create
+              Create <Icon name="ChevronDown" className="w-4 h-4" />
           </FormButton>
           {open && (
-            <div className="absolute overflow-hidden right-0 mt-2 w-40 bg-zinc-100 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-xl shadow-lg z-10">
+            <div className="absolute overflow-hidden right-0 mt-2 w-40 p-1 gap-0.5 bg-zinc-100 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-xl shadow-lg z-10">
             {options.map((opt) => (
                 <button
                 key={opt.value}
-                className="flex items-center justify-start gap-2 w-full text-left px-3 py-2 hover:bg-zinc-200 dark:hover:bg-zinc-900 transition text-zinc-700 dark:text-zinc-200 text-sm"
+                className="flex items-center justify-start gap-2 w-full text-left px-3 py-2 rounded-lg hover:bg-zinc-200 dark:hover:bg-zinc-900 transition text-zinc-700 dark:text-zinc-200 text-sm"
                 onClick={() => {
                     setOpen(false);
                     onSelect?.(opt.value);
