@@ -1,8 +1,8 @@
 // firebase.ts
-import { initializeApp } from "firebase/app";
-import { getAuth } from "firebase/auth";
-import { getAnalytics, isSupported } from "firebase/analytics";
-import { getFirestore } from "firebase/firestore";
+import { getApp, getApps, initializeApp, type FirebaseApp } from "firebase/app";
+import { getAnalytics, isSupported, type Analytics } from "firebase/analytics";
+import { getAuth, type Auth as FirebaseAuth } from "firebase/auth";
+import { getFirestore, type Firestore } from "firebase/firestore";
 
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
@@ -14,14 +14,23 @@ const firebaseConfig = {
   measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID,
 };
 
-const App = initializeApp(firebaseConfig);
-const Auth = getAuth(App);
-const db = getFirestore(App);
+const hasFirebaseConfig = Boolean(firebaseConfig.apiKey && firebaseConfig.projectId);
 
-// ✅ Analytics only runs on the client
-let analytics = null;
+const App = (
+  hasFirebaseConfig
+    ? getApps().length > 0
+      ? getApp()
+      : initializeApp(firebaseConfig)
+    : null
+) as FirebaseApp;
 
-if (typeof window !== "undefined") {
+const Auth = (App ? getAuth(App) : null) as FirebaseAuth;
+const db = (App ? getFirestore(App) : null) as Firestore;
+
+// Analytics only runs on the client when Firebase is configured
+let analytics: Analytics | null = null;
+
+if (typeof window !== "undefined" && App && firebaseConfig.measurementId) {
   isSupported().then((yes) => {
     if (yes) {
       analytics = getAnalytics(App);

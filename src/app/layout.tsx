@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
-import { JetBrains_Mono, Inter } from 'next/font/google';
+import { JetBrains_Mono } from 'next/font/google';
+import localFont from 'next/font/local';
 import "./globals.css";
 import Footer from "@/components/Footer";
 import { Analytics } from "@vercel/analytics/next";
@@ -66,13 +67,27 @@ export const metadata: Metadata = {
   },
 };
 
-const geistSans = Inter({
-  subsets: ['latin'],
-  variable: '--font-geist-sans',
+const generalSans = localFont({
+  src: [
+    {
+      path: '../../public/Assets/Fonts/WEB/fonts/GeneralSans-Variable.woff2',
+      weight: '200 700',
+      style: 'normal',
+    },
+    {
+      path: '../../public/Assets/Fonts/WEB/fonts/GeneralSans-VariableItalic.woff2',
+      weight: '200 700',
+      style: 'italic',
+    },
+  ],
+  variable: '--font-general-sans',
+  display: 'swap',
+  fallback: ['system-ui', '-apple-system', 'sans-serif'],
 });
-const geistMono = JetBrains_Mono({
+const jetBrainsMono = JetBrains_Mono({
   subsets: ['latin'],
-  variable: '--font-geist-mono',
+  variable: '--font-jetbrains-mono',
+  display: 'swap',
 });
 
 export default function RootLayout({
@@ -81,9 +96,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" className={`${generalSans.variable} ${jetBrainsMono.variable}`}>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} font-sans antialiased dark:bg-black`}
+        className="font-sans antialiased dark:bg-black"
       >   
         <Analytics />        
         <main className="dark">

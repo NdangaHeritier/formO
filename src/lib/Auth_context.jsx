@@ -11,16 +11,19 @@ export const useAuth = () => {
 
 export const AuthProvider = ({ children }) => {
     const [currentUser, setCurrentUser] = useState(null);
-    const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState(() => Boolean(Auth));
     
     const signup = (email, password) => {
+        if (!Auth) return Promise.reject(new Error('Firebase Auth is not configured.'));
         return createUserWithEmailAndPassword(Auth, email, password);
     }
 
     const signin = (email, password) => {
+        if (!Auth) return Promise.reject(new Error('Firebase Auth is not configured.'));
         return signInWithEmailAndPassword(Auth, email, password);
     }
     const signout = () => {
+        if (!Auth) return Promise.resolve();
         return signOut(Auth);
     }
 
@@ -29,6 +32,7 @@ export const AuthProvider = ({ children }) => {
     }
 
     useEffect(() => {
+        if (!Auth) return;
         const unsubscribe = onAuthStateChanged(Auth, (user) => {
             setCurrentUser(user);
             setLoading(false);

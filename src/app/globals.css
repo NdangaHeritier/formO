@@ -8,8 +8,8 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-general-sans), ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --font-mono: var(--font-jetbrains-mono), ui-monospace, SFMono-Regular, Menlo, monospace;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -18,17 +18,59 @@
     --foreground: #ffff;
   }
 }
-.stroke {
-    -webkit-text-stroke: 1px var(--foreground);
-    font-family: "Inter", sans-serif;
-    font-optical-sizing: auto;
-    font-weight: 900;
-    font-style: normal;
+
+@layer base {
+  html {
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+
+  body {
+    font-family: var(--font-sans);
+    font-kerning: normal;
+    font-feature-settings: "kern" 1, "liga" 1;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    letter-spacing: -0.02em;
+    text-wrap: balance;
+  }
+
+  p {
+    text-wrap: pretty;
+  }
+
+  code,
+  pre,
+  kbd,
+  samp {
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
+  }
 }
+
+.stroke {
+  -webkit-text-stroke: 1px var(--foreground);
+  font-family: var(--font-sans);
+  font-optical-sizing: auto;
+  font-weight: 700;
+  font-style: normal;
+}
+
 .logo {
   animation: rotate 2s infinite linear;
 }
+
 @keyframes rotate {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }

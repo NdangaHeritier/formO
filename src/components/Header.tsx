@@ -4,7 +4,7 @@ import { Icon } from "./Global/Icon";
 import Link from "next/link";
 import LinkButton from "./Global/LinkButton";
 import { useAuth } from "@/lib/Auth_context";
-import { useEffect, useState } from "react";
+import { useState, useSyncExternalStore } from "react";
 import { createPortal } from "react-dom";
 import { useRouter } from "next/navigation";
 import SkeletonBox from "./skeleton"
@@ -16,15 +16,15 @@ export default function Header({border="border-b", py="py-3"}:prop) {
     const { currentUser, signout, authLoading } = useAuth();
     const [isOpeningUserMenu, setIsOpeningUserMenu] = useState(false)
     const [isNavOpen, setIsNavOpen] = useState(false);
-    const [mounted, setMounted] = useState(false);
+    const mounted = useSyncExternalStore(
+        () => () => {},
+        () => true,
+        () => false,
+    );
     const router = useRouter();
 
-    useEffect(() => {
-        setMounted(true);
-    }, [currentUser, authLoading, signout]);
-
   return (
-    <header className={`w-full sticky top-0 left-0 right-0 z-40 ${border} border-zinc-800 ${py} px-10 max-sm:px-5 flex items-center justify-between gap-5 bg-zinc-950 bg-zinc-50 backdrop-blur-2xl`}>
+    <header className={`w-full sticky top-0 left-0 right-0 z-40 ${border} border-zinc-900 ${py} px-10 max-sm:px-5 flex items-center justify-between gap-5 bg-zinc-950 bg-zinc-50 backdrop-blur-2xl`}>
         <div className="">
             {mounted ? (
                 <Image src="/Assets/formo-coloured.png" alt="logo" className="w-10 h-10" height="50" width="50" />

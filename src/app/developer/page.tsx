@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import DeveloperBreadcrumb from '@/components/Developer/DeveloperBreadcrumb';
 import Header from '@/components/Header';
 // import { IconType } from '@/types/Icon';
@@ -24,12 +24,7 @@ const Developer= () => {
  
     // Fetch projects from PocketBase
 
-    const [projects, setProjects] = useState<ProjectType[]>([]);
-    useEffect(() => {
-      // Demo project data
-      const demoProjects: ProjectType[] = [];
-      setProjects(demoProjects);
-    }, []);
+    const [projects] = useState<ProjectType[]>([]);
 
     // trigger to show create new project model..
     const [isCreateProjectModelOpen, setIsCreateProjectModelOpen] = useState(false);

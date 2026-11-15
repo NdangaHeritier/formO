@@ -43,17 +43,17 @@ const NonDevSolutions: React.FC = () => {
             <Squares parLength={120} />
         {/* Background Mockups */}
         <div className="sm:absolute sm:right-10 sm:top-10 flex flex-col gap-8 sm:w-[35%] max-sm:p-5 pointer-events-none z-0">
-            <div className="bg-zinc-100 dark:bg-zinc-900/80 rounded-xl shadow-xl border border-zinc-300 dark:border-zinc-700 p-4">
+            <div className="bg-zinc-100 dark:bg-zinc-900/80 rounded-3xl shadow-xl border border-zinc-100 dark:border-zinc-900 p-4">
             <div className="flex items-center justify-between mb-2">
                 <div className="flex gap-2">
                 <span className="w-3 h-3 bg-red-500 rounded-full" />
                 <span className="w-3 h-3 bg-yellow-500 rounded-full" />
                 <span className="w-3 h-3 bg-green-500 rounded-full" />
                 </div>
-                <span className="text-sm text-zinc-400 font-semibold">Template Preview</span>
+                <span className="text-sm text-zinc-200 font-normal">Template Preview</span>
             </div>
             <div className="h-40 bg-white dark:bg-zinc-950 rounded-lg p-4">
-                <div className="theme overflow-hidden max-h-32 w-full border border-zinc-400 dark:border-zinc-700 shadow rounded-t-lg">
+                <div className="theme overflow-hidden max-h-32 w-full border border-zinc-200 dark:border-zinc-800 shadow rounded-t-2xl cursor-pointer">
                     <div className="image h-10 p-2 gap-2 text-zinc-800 dark:text-zinc-200 w-full bg-zinc-100 dark:bg-zinc-900 text-xs border-b border-zinc-200 dark:border-zinc-800 flex items-end justify-between">
                         <div className="flex items-center gap-1">
                             <Icon name="Layout" className="text-green-600" size={16} /> 10X
@@ -67,7 +67,7 @@ const NonDevSolutions: React.FC = () => {
                             </div>
                         </div>
                     </div>
-                    <div className="p-2 m-2 bg-green-600/8 border border-zinc-300 dark:border-zinc-700 rounded-t-lg">
+                    <div className="p-2 m-2 bg-green-600/8 border border-zinc-100 dark:border-zinc-900 rounded-t-2xl">
                         <h2 className="text-green-600 font-bold text-base pb-1 flex items-center jujustify-between gap-x-2">
                             Introduce Formo Editor
                             <span className="bg-green-600 text-xs text-white rounded-full px-2 py-0.5">New</span>
@@ -81,22 +81,22 @@ const NonDevSolutions: React.FC = () => {
             </div>
             </div>
 
-            <div className="bg-zinc-100 dark:bg-zinc-900/80 rounded-xl shadow-xl border border-zinc-300 dark:border-zinc-700 p-4">
+            <div className="bg-zinc-100 dark:bg-zinc-900/80 rounded-3xl shadow-xl border border-zinc-100 dark:border-zinc-900 p-4">
             <div className="flex items-center justify-between mb-2">
                 <div className="flex gap-2">
                 <span className="w-3 h-3 bg-red-500 rounded-full" />
                 <span className="w-3 h-3 bg-yellow-500 rounded-full" />
                 <span className="w-3 h-3 bg-green-500 rounded-full" />
                 </div>
-                <span className="text-sm text-zinc-400 font-semibold">Dashboard View</span>
+                <span className="text-sm text-zinc-200 font-normal">Dashboard View</span>
             </div>
-            <div className="h-40 bg-white dark:bg-zinc-950/80 rounded-lg p-4 flex flex-col justify-between">
+            <div className="h-40 bg-white dark:bg-zinc-950/80 rounded-2xl p-4 flex flex-col justify-between">
                 <div>
                 <p className="text-sm text-zinc-700 dark:text-zinc-300 font-bold">Campaign Stats</p>
                 <p className="text-xs text-zinc-400">Open rate: <span className="text-green-600">65%</span> • Clicks: <span className="text-red-500">24%</span></p>
                 </div>
                 <LinkButton variant="primary" href="#">
-                    View Full Report
+                    View Full Insights
                 </LinkButton>
             </div>
             </div>
@@ -110,14 +110,14 @@ const NonDevSolutions: React.FC = () => {
                 <h1 className="text-5xl md:text-6xl font-extrabold text-zinc-900 dark:text-zinc-100 tracking-tight mb-4">
                     Easy for Everyone
                 </h1>
-                <p className="text-lg md:text-xl text-zinc-600 dark:text-zinc-400">
+                <p className="text-md md:text-lg text-zinc-600 dark:text-zinc-400">
                     Whether you&rsquo;re a marketer, teacher, or business owner—Formo is made for you.
                 </p>
                 </div>
 
                 <div className="flex flex-wrap gap-3 mb-6">
                 {['Marketers', 'Influencers', 'Teachers', 'Business Owners'].map((role) => (
-                    <div key={role} className="bg-zinc-100 flex items-center justify-center gap-1 dark:bg-zinc-900/40 border border-zinc-300 dark:border-zinc-800 pl-1 pe-3 py-1 rounded-full text-sm text-zinc-600 dark:text-zinc-300">
+                    <div key={role} className="bg-zinc-100 flex items-center justify-center gap-1 dark:bg-zinc-900/30 border border-zinc-100 dark:border-zinc-900 pl-1 pe-3 py-1 rounded-full text-sm text-zinc-700 dark:text-zinc-200">
                         <Icon name="User" size={20} className="border border-yellow-600 text-yellow-600 rounded-full p-1 shadow-2xl" />
                         <span className="">{role}</span>
                     </div>
@@ -126,7 +126,7 @@ const NonDevSolutions: React.FC = () => {
 
                 <div className="grid grid-cols-2 md:grid-cols-2 gap-4 max-sm:gap-2 mb-7">
                 {nonDevFeatures.map(({ icon, title, desc }) => (
-                    <div key={title} className="flex max-sm:flex-col items-start gap-2 sm:gap-4 border border-zinc-200 dark:border-zinc-900 rounded-xl p-2 sm:p-4 bg-gradient-to-tr from-yellow-600/20 to-30% to-white dark:from-yellow-950/90 dark:to-zinc-950">
+                    <div key={title} className="flex max-sm:flex-col items-start gap-2 sm:gap-4 border border-zinc-100 dark:border-zinc-900 rounded-3xl p-2 sm:p-4 bg-linear-to-tr from-yellow-600/20 to-30% to-white dark:from-yellow-950/90 dark:to-zinc-950">
                         <div className="bg-yellow-600/20 dark:bg-yellow-950/30 text-yellow-700 p-2 rounded-full">
                             <Icon name={icon} size={20} className="text-yellow-700" />
                         </div>

@@ -65,16 +65,14 @@ export default function NewDeveloperForm ({onClick}:onClick) {
         }
     }
 
-    const { currentUser, authLogin } = useAuth();
+    const { currentUser } = useAuth();
     const router = useRouter();
 
     useEffect(() => {
         if (!currentUser) {
             router.push("/login");
         }
-        setError("");        
-    }
-    , [currentUser, authLogin, router]);
+    }, [currentUser, router]);
     return(
         <Layout onClick={onClick}>
 
