@@ -129,7 +129,7 @@ export default function NewDeveloperForm ({onClick}:onClick) {
                     <div className="actions grid grid-cols-2 gap-3">
                         <FormButton
                             onClick={onClick}
-                            variant="secondary"
+                            variant="danger"
                         >
                             Close
                         </FormButton>
