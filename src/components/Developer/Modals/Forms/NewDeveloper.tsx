@@ -5,11 +5,8 @@ import { Icon } from "@/components/Global/Icon";
 import { InputField } from "@/components/Global/InputField";
 import React, { useEffect, useState } from "react";
 import { TextAreaField } from "@/components/Global/TextAreaField";
-import { useAuth } from "@/lib/Auth_context";
+import { useSession } from "@/lib/auth-client";
 import { useRouter } from "next/navigation";
-import { db } from "@/lib/firebase";
-import { addDoc, collection } from "firebase/firestore";
-// import {db} from "@/lib/firebase";
 
 // declare types
 type onClick= {onClick : () => void};
@@ -34,25 +31,37 @@ export default function NewDeveloperForm ({onClick}:onClick) {
         setError("");
 
         try {
-            if (!FormData.name) {
+            if (!FormData.name.trim()) {
                 setError("Project name is required");
                 setLoading(false);
                 return;
             }
-            const docRef = collection(db, "projects");
-            await addDoc(docRef, {
-                name: FormData.name,
-                userId: currentUser.uid,
-                description: FormData.description,
-                createdAt: new Date(),
-                updatedAt: new Date()
+            if (!currentUser) {
+                setError("Please sign in to create a project");
+                setLoading(false);
+                return;
+            }
+            const res = await fetch("/api/projects", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    name: FormData.name,
+                    description: FormData.description,
+                }),
             });
+            const json = (await res.json()) as { error?: string };
+            if (!res.ok) {
+                setError(json.error || "Failed to create project");
+                setLoading(false);
+                return;
+            }
             setNotification("Project created successfully");
             setFormData({
                 name: '',
                 description: ''
             });
             setLoading(false);
+            router.refresh();
             setTimeout(() => {
                 setNotification('');
                 onClick();
@@ -65,14 +74,15 @@ export default function NewDeveloperForm ({onClick}:onClick) {
         }
     }
 
-    const { currentUser } = useAuth();
+    const { data: session, isPending } = useSession();
+    const currentUser = session?.user ?? null;
     const router = useRouter();
 
     useEffect(() => {
-        if (!currentUser) {
+        if (!isPending && !currentUser) {
             router.push("/login");
         }
-    }, [currentUser, router]);
+    }, [isPending, currentUser, router]);
     return(
         <Layout onClick={onClick}>
 

@@ -1,0 +1,445 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum OrgRole {
+  member
+  admin
+  owner
+
+  @@map("org_role")
+}
+
+enum UserInterest {
+  developer
+  non_developer
+
+  @@map("user_interest")
+}
+
+enum ProjectStatus {
+  active
+  archived
+
+  @@map("project_status")
+}
+
+enum RecipientType {
+  to
+  cc
+  bcc
+
+  @@map("recipient_type")
+}
+
+enum SubmissionStatus {
+  pending
+  sent
+  failed
+  spam
+
+  @@map("submission_status")
+}
+
+enum DeliveryStatus {
+  pending
+  processing
+  sent
+  retrying
+  failed
+  dead_letter
+
+  @@map("delivery_status")
+}
+
+enum EmailEventType {
+  queued
+  sent
+  delivered
+  opened
+  clicked
+  bounced
+  complained
+
+  @@map("email_event_type")
+}
+
+model User {
+  id            String       @id @default(dbgenerated("uuidv7()")) @db.Uuid
+  name          String
+  email         String       @unique
+  emailVerified Boolean      @default(false) @map("email_verified")
+  image         String?
+  interest      UserInterest @default(developer)
+  role          String       @default("user")
+  createdAt     DateTime     @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt     DateTime     @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  sessions       Session[]
+  accounts       Account[]
+  memberships    Member[]
+  invitations    Invitation[]
+  createdProjects Project[]   @relation("ProjectCreator")
+  createdApiKeys ApiKey[]     @relation("ApiKeyCreator")
+  auditLogs      AuditLog[]   @relation("AuditActor")
+
+  @@map("users")
+}
+
+model Session {
+  id                   String   @id @default(dbgenerated("uuidv7()")) @db.Uuid
+  expiresAt            DateTime @map("expires_at") @db.Timestamptz(6)
+  token                String   @unique
+  ipAddress            String?  @map("ip_address")
+  userAgent            String?  @map("user_agent")
+  userId               String   @map("user_id") @db.Uuid
+  activeOrganizationId String?  @map("active_organization_id") @db.Uuid
+  createdAt            DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt            DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, expiresAt], map: "sessions_user_expires_idx")
+  @@map("sessions")
+}
+
+model Account {
+  id                    String    @id @default(dbgenerated("uuidv7()")) @db.Uuid
+  accountId             String    @map("account_id")
+  providerId            String    @map("provider_id")
+  userId                String    @map("user_id") @db.Uuid
+  accessToken           String?   @map("access_token")
+  refreshToken          String?   @map("refresh_token")
+  idToken               String?   @map("id_token")
+  accessTokenExpiresAt  DateTime? @map("access_token_expires_at") @db.Timestamptz(6)
+  refreshTokenExpiresAt DateTime? @map("refresh_token_expires_at") @db.Timestamptz(6)
+  scope                 String?
+  password              String?
+  createdAt             DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt             DateTime  @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([providerId, accountId], map: "accounts_provider_account_uq")
+  @@index([userId], map: "accounts_user_idx")
+  @@map("accounts")
+}
+
+model Verification {
+  id         String   @id @default(dbgenerated("uuidv7()")) @db.Uuid
+  identifier String
+  value      String
+  expiresAt  DateTime @map("expires_at") @db.Timestamptz(6)
+  createdAt  DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt  DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  @@index([identifier], map: "verifications_identifier_idx")
+  @@map("verifications")
+}
+
+model Organization {
+  id        String   @id @default(dbgenerated("uuidv7()")) @db.Uuid
+  name      String
+  slug      String   @unique
+  logo      String?
+  metadata  String?
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  members        Member[]
+  invitations    Invitation[]
+  projects       Project[]
+  smtpConfigs    SmtpConfig[]
+  emailTemplates EmailTemplate[]
+  apiKeys        ApiKey[]
+  auditLogs      AuditLog[]
+
+  @@map("organizations")
+}
+
+model Member {
+  id             String   @id @default(dbgenerated("uuidv7()")) @db.Uuid
+  organizationId String   @map("organization_id") @db.Uuid
+  userId         String   @map("user_id") @db.Uuid
+  role           String   @default("member")
+  createdAt      DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([organizationId, userId], map: "members_org_user_uq")
+  @@index([userId], map: "members_user_idx")
+  @@map("members")
+}
+
+model Invitation {
+  id             String   @id @default(dbgenerated("uuidv7()")) @db.Uuid
+  organizationId String   @map("organization_id") @db.Uuid
+  email          String
+  role           String?
+  status         String   @default("pending")
+  expiresAt      DateTime @map("expires_at") @db.Timestamptz(6)
+  inviterId      String   @map("inviter_id") @db.Uuid
+  createdAt      DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  inviter      User         @relation(fields: [inviterId], references: [id], onDelete: Cascade)
+
+  @@index([organizationId, email], map: "invitations_org_email_idx")
+  @@map("invitations")
+}
+
+model Project {
+  id             String        @id @default(dbgenerated("uuidv7()")) @db.Uuid
+  organizationId String        @map("organization_id") @db.Uuid
+  createdById    String?       @map("created_by_id") @db.Uuid
+  name           String
+  slug           String
+  description    String?
+  status         ProjectStatus @default(active)
+  deletedAt      DateTime?     @map("deleted_at") @db.Timestamptz(6)
+  createdAt      DateTime      @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt      DateTime      @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  organization Organization  @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  createdBy    User?         @relation("ProjectCreator", fields: [createdById], references: [id], onDelete: SetNull)
+  forms        ProjectForm[]
+
+  // Active-only uniqueness on (organization_id, slug) is enforced via partial SQL index WHERE deleted_at IS NULL
+  @@index([organizationId, slug], map: "projects_org_slug_idx")
+  @@index([organizationId, deletedAt], map: "projects_org_active_idx")
+  @@map("projects")
+}
+
+model SmtpConfig {
+  id                String   @id @default(dbgenerated("uuidv7()")) @db.Uuid
+  organizationId    String   @map("organization_id") @db.Uuid
+  name              String
+  host              String
+  port              Int      @default(587)
+  secure            Boolean  @default(false)
+  username          String
+  encryptedPassword Bytes    @map("encrypted_password")
+  iv                Bytes
+  authTag           Bytes    @map("auth_tag")
+  keyVersion        Int      @default(1) @map("key_version")
+  fromEmail         String   @map("from_email")
+  isVerified        Boolean  @default(false) @map("is_verified")
+  createdAt         DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt         DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  organization Organization  @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  forms        ProjectForm[]
+
+  @@index([organizationId], map: "smtp_configs_org_idx")
+  @@map("smtp_configs")
+}
+
+model EmailTemplate {
+  id              String   @id @default(dbgenerated("uuidv7()")) @db.Uuid
+  organizationId  String   @map("organization_id") @db.Uuid
+  name            String
+  subjectTemplate String   @map("subject_template")
+  htmlTemplate    String   @map("html_template")
+  isDefault       Boolean  @default(false) @map("is_default")
+  createdAt       DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt       DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  organization Organization  @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  forms        ProjectForm[]
+
+  @@index([organizationId], map: "email_templates_org_idx")
+  @@map("email_templates")
+}
+
+model ProjectForm {
+  id               String    @id @default(dbgenerated("uuidv7()")) @db.Uuid
+  projectId        String    @map("project_id") @db.Uuid
+  title            String
+  description      String?
+  // Permanently unique even after soft-delete to prevent hijacking old HTML form embeds
+  endpoint         String    @unique
+  emailTo          String    @map("email_to")
+  replyToField     String?   @map("reply_to_field")
+  customSubject    String?   @map("custom_subject")
+  allowedOrigins   String[]  @default([]) @map("allowed_origins")
+  honeypotField    String?   @default("_gotcha") @map("honeypot_field")
+  requireTurnstile Boolean   @default(false) @map("require_turnstile")
+  maxPayloadBytes  Int       @default(65536) @map("max_payload_bytes")
+  isActive         Boolean   @default(true) @map("is_active")
+  smtpConfigId     String?   @map("smtp_config_id") @db.Uuid
+  emailTemplateId  String?   @map("email_template_id") @db.Uuid
+  deletedAt        DateTime? @map("deleted_at") @db.Timestamptz(6)
+  createdAt        DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt        DateTime  @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  project         Project          @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  smtpConfig      SmtpConfig?      @relation(fields: [smtpConfigId], references: [id], onDelete: SetNull)
+  emailTemplate   EmailTemplate?   @relation(fields: [emailTemplateId], references: [id], onDelete: SetNull)
+  recipients      FormRecipient[]
+  submissions     FormSubmission[]
+  dailyStats      FormDailyStat[]
+  idempotencyKeys SubmissionIdempotencyKey[]
+
+  @@index([projectId, deletedAt], map: "project_forms_project_active_idx")
+  @@map("project_forms")
+}
+
+model FormRecipient {
+  id        String        @id @default(dbgenerated("uuidv7()")) @db.Uuid
+  formId    String        @map("form_id") @db.Uuid
+  email     String
+  type      RecipientType @default(to)
+  isActive  Boolean       @default(true) @map("is_active")
+  createdAt DateTime      @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  form ProjectForm @relation(fields: [formId], references: [id], onDelete: Cascade)
+
+  @@unique([formId, email, type], map: "form_recipients_form_email_type_uq")
+  @@index([formId, isActive], map: "form_recipients_form_active_idx")
+  @@map("form_recipients")
+}
+
+model FormSubmission {
+  id           String           @default(dbgenerated("uuidv7()")) @db.Uuid
+  formId       String           @map("form_id") @db.Uuid
+  status       SubmissionStatus @default(pending)
+  data         Json             @db.JsonB
+  origin       String?
+  ipHash       Bytes?           @map("ip_hash")
+  userAgent    String?          @map("user_agent")
+  sentAt       DateTime?        @map("sent_at") @db.Timestamptz(6)
+  errorMessage String?          @map("error_message")
+  createdAt    DateTime         @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  form       ProjectForm        @relation(fields: [formId], references: [id], onDelete: Cascade)
+  deliveries EmailDeliveryLog[]
+
+  @@id([id, createdAt])
+  @@index([formId, createdAt(sort: Desc)], map: "form_submissions_form_created_idx")
+  @@index([formId, status, createdAt(sort: Desc)], map: "form_submissions_form_status_idx")
+  @@map("form_submissions")
+}
+
+model EmailDeliveryLog {
+  id                  String         @default(dbgenerated("uuidv7()")) @db.Uuid
+  submissionId        String         @map("submission_id") @db.Uuid
+  submissionCreatedAt DateTime       @map("submission_created_at") @db.Timestamptz(6)
+  recipientEmail      String         @map("recipient_email")
+  status              DeliveryStatus @default(pending)
+  attemptCount        Int            @default(0) @map("attempt_count")
+  nextRetryAt         DateTime       @default(now()) @map("next_retry_at") @db.Timestamptz(6)
+  providerMessageId   String?        @map("provider_message_id")
+  smtpResponse        String?        @map("smtp_response")
+  errorMessage        String?        @map("error_message")
+  createdAt           DateTime       @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt           DateTime       @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  submission FormSubmission @relation(fields: [submissionId, submissionCreatedAt], references: [id, createdAt], onDelete: Cascade)
+  events     EmailEvent[]
+
+  @@id([id, createdAt])
+  @@index([submissionId, submissionCreatedAt], map: "email_deliveries_submission_idx")
+  @@index([status, nextRetryAt], map: "email_deliveries_queue_idx")
+  @@map("email_deliveries")
+}
+
+model EmailEvent {
+  id                String         @default(dbgenerated("uuidv7()")) @db.Uuid
+  deliveryId        String         @map("delivery_id") @db.Uuid
+  deliveryCreatedAt DateTime       @map("delivery_created_at") @db.Timestamptz(6)
+  eventType         EmailEventType @map("event_type")
+  metadata          Json?          @db.JsonB
+  createdAt         DateTime       @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  delivery EmailDeliveryLog @relation(fields: [deliveryId, deliveryCreatedAt], references: [id, createdAt], onDelete: Cascade)
+
+  @@id([id, createdAt])
+  @@index([deliveryId, deliveryCreatedAt], map: "email_events_delivery_idx")
+  @@map("email_events")
+}
+
+model ApiKey {
+  id             String    @id @default(dbgenerated("uuidv7()")) @db.Uuid
+  organizationId String    @map("organization_id") @db.Uuid
+  createdById    String?   @map("created_by_id") @db.Uuid
+  name           String
+  keyPrefix      String    @map("key_prefix") @db.VarChar(16)
+  keyHash        Bytes     @unique @map("key_hash")
+  scopes         String[]  @default(["forms:write", "emails:send"])
+  lastUsedAt     DateTime? @map("last_used_at") @db.Timestamptz(6)
+  expiresAt      DateTime? @map("expires_at") @db.Timestamptz(6)
+  revokedAt      DateTime? @map("revoked_at") @db.Timestamptz(6)
+  createdAt      DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt      DateTime  @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  createdBy    User?        @relation("ApiKeyCreator", fields: [createdById], references: [id], onDelete: SetNull)
+
+  @@index([organizationId], map: "api_keys_org_idx")
+  @@index([keyPrefix], map: "api_keys_prefix_idx")
+  @@map("api_keys")
+}
+
+model FormDailyStat {
+  formId        String   @map("form_id") @db.Uuid
+  statDate      DateTime @map("stat_date") @db.Date
+  acceptedCount Int      @default(0) @map("accepted_count")
+  sentCount     Int      @default(0) @map("sent_count")
+  failedCount   Int      @default(0) @map("failed_count")
+  spamCount     Int      @default(0) @map("spam_count")
+
+  form ProjectForm @relation(fields: [formId], references: [id], onDelete: Cascade)
+
+  @@id([formId, statDate])
+  @@index([statDate], map: "form_daily_stats_date_idx")
+  @@map("form_daily_stats")
+}
+
+model RateLimitBucket {
+  bucketKey   String   @id @map("bucket_key") @db.VarChar(160)
+  count       Int      @default(1)
+  windowStart DateTime @map("window_start") @db.Timestamptz(6)
+  expiresAt   DateTime @map("expires_at") @db.Timestamptz(6)
+
+  @@index([expiresAt], map: "rate_limit_buckets_expires_idx")
+  @@map("rate_limit_buckets")
+}
+
+model SubmissionIdempotencyKey {
+  formId              String   @map("form_id") @db.Uuid
+  idempotencyKey      String   @map("idempotency_key") @db.VarChar(128)
+  submissionId        String   @map("submission_id") @db.Uuid
+  submissionCreatedAt DateTime @map("submission_created_at") @db.Timestamptz(6)
+  expiresAt           DateTime @map("expires_at") @db.Timestamptz(6)
+
+  form ProjectForm @relation(fields: [formId], references: [id], onDelete: Cascade)
+
+  @@id([formId, idempotencyKey])
+  @@index([expiresAt], map: "submission_idempotency_keys_expires_idx")
+  @@map("submission_idempotency_keys")
+}
+
+model AuditLog {
+  id             String   @default(dbgenerated("uuidv7()")) @db.Uuid
+  organizationId String   @map("organization_id") @db.Uuid
+  actorUserId    String?  @map("actor_user_id") @db.Uuid
+  action         String
+  targetType     String   @map("target_type")
+  targetId       String?  @map("target_id")
+  ipHash         Bytes?   @map("ip_hash")
+  metadata       Json?    @db.JsonB
+  createdAt      DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  actorUser    User?        @relation("AuditActor", fields: [actorUserId], references: [id], onDelete: SetNull)
+
+  @@id([id, createdAt])
+  @@index([organizationId, createdAt(sort: Desc)], map: "audit_logs_org_created_idx")
+  @@map("audit_logs")
+}

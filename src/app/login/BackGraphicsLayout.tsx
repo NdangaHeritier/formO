@@ -1,6 +1,6 @@
 export const BackGraphicsLayout = () => {
     return (
-        <div className="w-full h-full flex items-center flex-col gap-5 p-4 bg-transparent z-0 transform rotate-30">
+        <div className="w-full h-[90vh] flex items-center flex-col gap-5 p-4 bg-transparent z-0 my-auto">
             <div className="rounded-xl border border-zinc-800 bg-zinc-950 p-3 w-full">
                 <div className="grid grid-cols-2 gap-2 p-2">
                     <div className="h-6 flex rounded-lg shadow-sm w-full bg-zinc-900 border border-zinc-700" />

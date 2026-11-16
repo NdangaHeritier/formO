@@ -5,15 +5,28 @@ import { Icon } from "@/components/Global/Icon";
 import FormButton from "@/components/Global/FormButton";
 import { InputField } from "@/components/Global/InputField";
 import Header from "@/components/Header";
-import { useAuth } from "@/lib/Auth_context";
+import { signIn, useSession } from "@/lib/auth-client";
 import Image from "next/image";
 import Link from "next/link";
 import { BackGraphicsLayout } from "./BackGraphicsLayout";
-import checkInterest from "./checkInterest";
 import { useRouter } from "next/navigation";
 
+async function resolveWorkspaceRoute(): Promise<string> {
+    try {
+        const res = await fetch("/api/auth/workspace");
+        if (!res.ok) return "/dashboard";
+        const data = (await res.json()) as { user?: { interest?: string } };
+        if (data.user?.interest === "developer") return "/developer";
+        if (data.user?.interest === "non_developer") return "/non-dev";
+        return "/signup/select-interest";
+    } catch {
+        return "/dashboard";
+    }
+}
+
 export default function LoginForm() {
-    const { signin, currentUser } = useAuth();
+    const { data: session } = useSession();
+    const currentUser = session?.user ?? null;
     const [isLoading, setIsLoading] = useState(true);
     const [form, setForm] = useState({ email: "", password: "" });
     const [error, setError] = useState("");
@@ -26,7 +39,7 @@ export default function LoginForm() {
     useEffect(() => {
         if (currentUser) {
             const run = async () => {
-                const route = await checkInterest(currentUser.uid); // wait for DB result
+                const route = await resolveWorkspaceRoute(); // wait for DB result
                 router.push(route);
             };
 
@@ -34,11 +47,20 @@ export default function LoginForm() {
         }
     }, [currentUser, router]);
 
-    // Dummy Google sign-in handler
     const signInWithGoogle = async () => {
-        // This function should handle Google sign-in logic
-        // For now, it just alerts the user
-        alert("Google Sign-In not implemented. Connect your auth provider here.");
+        setError("");
+        const res = await signIn.social({ provider: "google", callbackURL: "/dashboard" });
+        if (res?.error) {
+            setError(res.error.message || "Google Sign-In is not configured yet.");
+        }
+    };
+
+    const signInWithGithub = async () => {
+        setError("");
+        const res = await signIn.social({ provider: "github", callbackURL: "/dashboard" });
+        if (res?.error) {
+            setError(res.error.message || "GitHub Sign-In is not configured yet.");
+        }
     };
 
     // A crazy loading effect in the beginning of mounting login..
@@ -57,15 +79,24 @@ export default function LoginForm() {
         e.preventDefault();
         setSigninLoading(true);
 
-        try{
-            await signin(form.email, form.password);
+        try {
+            const result = await signIn.email({
+                email: form.email.trim(),
+                password: form.password,
+            });
+            if (result.error) {
+                setSigninLoading(false);
+                setSignedIn(false);
+                setError(result.error.message || "Incorrect email or password. Please try again.");
+                return;
+            }
             setSigninLoading(false);
             setSignedIn(true);
             setError("");
             // Redirect to the dashboard or home page after successful sign-in
-            const route = await checkInterest(currentUser.uid); // wait for DB result
+            const route = await resolveWorkspaceRoute(); // wait for DB result
             router.push(route);
-                 
+
         }
         catch (err) {
             setSigninLoading(false);
@@ -91,116 +122,158 @@ export default function LoginForm() {
         <div className="">
             <title>Login</title>
             <Header />
-            <section className="grid grid-cols-1 grid-row-1 sm:grid-cols-3 min-h-screen">
+            <section className="grid grid-cols-1 grid-row-1 sm:grid-cols-3 min-h-[80vh] my-6 ">
                 <div className="hidden sm:flex relative -z-1">
-                    <div className="absolute inset-0 bg-gradient-to-r from-black to-black via-transparent z-1"></div>
+                    <div className="absolute inset-0 bg-linear-to-r from-black to-black via-transparent z-1"></div>
                     <BackGraphicsLayout />
                 </div>
                 {isSignedIn ? (
-                    <div className="border-r border-l overflow-hidden border-zinc-800 bg-zinc-950 flex flex-col gap-10 p-5 sm:p-8 pt-10 sm:pt-16 items-center">
-                        <Icon name="Check" className="text-green-200 mx-auto w-20 h-20 rounded-full p-3 bg-green-600 ring-4 ring-green-800/30 border-2 border-zinc-950 flex items-center justify-center" strokeWidth={2.5}/>
+                    <div className="border-none overflow-hidden  bg-zinc-950 flex flex-col gap-10 p-5 sm:p-8 pt-10 sm:pt-16 items-center align-middle justify-center rounded-3xl">
+                        <Icon name="Check" className="text-green-200 mx-auto w-20 h-20 rounded-full p-3 bg-green-600 ring-4 ring-green-800/30 border-2 border-zinc-950 flex items-center justify-center" strokeWidth={2.5} />
                         <h1 className="text-2xl font-semibold text-zinc-200 text-center">Successfully Signed In!</h1>
                         <p className="text-zinc-500 text-center font-bold animate-pulse">Redirecting to your dashboard...</p>
                     </div>
-                ):(
-                <div className="border-none overflow-hidden bg-zinc-950 flex-col gap-5 p-5 sm:p-8">
-                    <div className="w-full flex p-5 items-start justify-start border-b-zinc-700 gap-4">
-                        <div className="">
-                            <Image
-                                src="/Assets/formo-coloured.png"
-                                alt="Formo"
-                                className="h-10 w-auto border-2 rounded-md border-yellow-200/20"
-                                height={60}
-                                width={60} />
+                ) : (
+                    <div className="border-none overflow-hidden bg-zinc-950 flex-col gap-5 p-5 sm:p-8 rounded-3xl">
+                        <div className="w-full flex p-5 items-start justify-start border-b-zinc-700 gap-4">
+                            <div className="">
+                                <Image
+                                    src="/Assets/formo-coloured.png"
+                                    alt="Formo"
+                                    className="h-10 w-auto border-2 rounded-md border-yellow-200/20"
+                                    height={60}
+                                    width={60} />
+                            </div>
+                            <div className="flex flex-col">
+                                <h1 className="text-2xl font-semibold text-zinc-200">Sign In</h1>
+                                <p className="text-sm text-zinc-500">Welcome back! Please sign in to continue.</p>
+                            </div>
                         </div>
-                        <div className="flex flex-col">
-                            <h1 className="text-2xl font-semibold text-zinc-200">Sign In</h1>
-                            <p className="text-sm text-zinc-500">Welcome back! Please sign in to continue.</p>
-                        </div>
-                    </div>
-                    <form onSubmit={handleSubmit} className="text-zinc-200 flex flex-col gap-4 p-8">
-                        <div className="flex flex-col gap-4 my-2 py-2">
+                        <form onSubmit={handleSubmit} className="text-zinc-200 flex flex-col gap-4 p-8">
+                            <div className="flex flex-col gap-4 my-2 py-2">
+                                <FormButton
+                                    type="button"
+                                    onClick={signInWithGoogle}
+                                    variant="primary"
+                                    disabled={signinLoading}
+                                >
+                                    <svg
+                                        width="20"
+                                        height="20"
+                                        viewBox="0 0 48 48"
+                                        className="inline-block h-5 w-5 shrink-0"
+                                    >
+                                        <g>
+                                            <path
+                                                fill="#4285F4"
+                                                d="M43.6 20.5h-1.9V20H24v8h11.3c-1.6 4.3-5.7 7-11.3 7-6.6 0-12-5.4-12-12s5.4-12 12-12c2.6 0 5 .8 7 2.3l5.7-5.7C33.5 6.5 28.9 4.5 24 4.5 13.5 4.5 5 13 5 23.5S13.5 42.5 24 42.5c10.2 0 18.5-8.3 18.5-18.5 0-1.2-.1-2.1-.3-3z"
+                                            />
+                                            <path
+                                                fill="#34A853"
+                                                d="M6.3 14.7l6.6 4.8C14.3 16.1 18.8 13 24 13c2.6 0 5 .8 7 2.3l5.7-5.7C33.5 6.5 28.9 4.5 24 4.5c-7.2 0-13.2 4.1-16.2 10.2z"
+                                            />
+                                            <path
+                                                fill="#FBBC05"
+                                                d="M24 42.5c5.4 0 10.1-1.8 13.5-4.9l-6.2-5.1c-1.8 1.3-4.1 2.1-7.3 2.1-5.6 0-10.3-3.7-12-8.7l-6.6 5.1C10.8 39.1 16.9 42.5 24 42.5z"
+                                            />
+                                            <path
+                                                fill="#EA4335"
+                                                d="M43.6 20.5h-1.9V20H24v8h11.3c-0.7 2-2.1 3.7-4.1 4.9l6.2 5.1c3.6-3.3 5.6-8.1 5.6-13.5 0-1.2-.1-2.1-.3-3z"
+                                            />
+                                        </g>
+                                    </svg>
+
+                                    Sign in with Google
+                                </FormButton>
+
+                                <FormButton
+                                    type="button"
+                                    onClick={signInWithGithub}
+                                    variant="primary"
+                                    disabled={signinLoading}
+                                >
+                                    <svg
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        width="20"
+                                        height="20"
+                                        viewBox="0 0 24 24"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        className="inline-block h-5 w-5 shrink-0"
+                                    >
+                                        <g
+                                            fill="none"
+                                            stroke="currentColor"
+                                            strokeLinecap="round"
+                                            strokeLinejoin="round"
+                                            strokeWidth="2"
+                                        >
+                                            <path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5c.08-1.25-.27-2.48-1-3.5c.28-1.15.28-2.35 0-3.5c0 0-1 0-3 1.5c-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.4 5.4 0 0 0 4 9c0 3.5 3 5.5 6 5.5c-.39.49-.68 1.05-.85 1.65S8.93 17.38 9 18v4" />
+                                            <path d="M9 18c-4.51 2-5-2-7-2" />
+                                        </g>
+                                    </svg>
+
+                                    Sign in with Github
+                                </FormButton>
+
+                            </div>
+                            <div className="flex items-center gap-2 my-2">
+                                <div className="flex-1 h-px bg-zinc-700" />
+                                <span className="text-xs text-zinc-500">or</span>
+                                <div className="flex-1 h-px bg-zinc-700" />
+                            </div>
+                            <div>
+                                {error && (
+                                    <div className="text-red-500 text-xs">{error}</div>
+                                )}
+                            </div>
+                            <InputField
+                                type="email"
+                                name="email"
+                                value={form.email}
+                                onChange={handleChange}
+                                placeholder="Email address"
+                                autoComplete="email"
+                            />
+                            <InputField
+                                type="password"
+                                name="password"
+                                value={form.password}
+                                onChange={handleChange}
+                                placeholder="Password"
+                                autoComplete="current-password"
+                            />
+
                             <FormButton
-                            type="button"
-                            onClick={signInWithGoogle}
-                            variant="primary"
-                            disabled={signinLoading}
-                        >
-                            <svg width="20" height="20" viewBox="0 0 48 48" className="inline-block">
-                                <g>
-                                    <path fill="#4285F4" d="M43.6 20.5h-1.9V20H24v8h11.3c-1.6 4.3-5.7 7-11.3 7-6.6 0-12-5.4-12-12s5.4-12 12-12c2.6 0 5 .8 7 2.3l5.7-5.7C33.5 6.5 28.9 4.5 24 4.5 13.5 4.5 5 13 5 23.5S13.5 42.5 24 42.5c10.2 0 18.5-8.3 18.5-18.5 0-1.2-.1-2.1-.3-3z"/>
-                                    <path fill="#34A853" d="M6.3 14.7l6.6 4.8C14.3 16.1 18.8 13 24 13c2.6 0 5 .8 7 2.3l5.7-5.7C33.5 6.5 28.9 4.5 24 4.5c-7.2 0-13.2 4.1-16.2 10.2z"/>
-                                    <path fill="#FBBC05" d="M24 42.5c5.4 0 10.1-1.8 13.5-4.9l-6.2-5.1c-1.8 1.3-4.1 2.1-7.3 2.1-5.6 0-10.3-3.7-12-8.7l-6.6 5.1C10.8 39.1 16.9 42.5 24 42.5z"/>
-                                    <path fill="#EA4335" d="M43.6 20.5h-1.9V20H24v8h11.3c-0.7 2-2.1 3.7-4.1 4.9l6.2 5.1c3.6-3.3 5.6-8.1 5.6-13.5 0-1.2-.1-2.1-.3-3z"/>
-                                </g>
-                            </svg>
-                            Sign in with Google
-                        </FormButton>
-                          <FormButton
-                            type="button"
-                            onClick={signInWithGoogle}
-                            variant="primary"
-                            disabled={signinLoading}
-                        >
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5c.08-1.25-.27-2.48-1-3.5c.28-1.15.28-2.35 0-3.5c0 0-1 0-3 1.5c-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.4 5.4 0 0 0 4 9c0 3.5 3 5.5 6 5.5c-.39.49-.68 1.05-.85 1.65S8.93 17.38 9 18v4"/><path d="M9 18c-4.51 2-5-2-7-2"/></g></svg>
-                            Sign in with Github
-                        </FormButton>
+                                type="submit"
+                                variant="secondary"
+                                disabled={signinLoading || !form.email || !form.password}
+                            >
+                                {signinLoading ? (
+                                    <Icon name="Loader" size={20} className="animate-spin" />
+                                ) : (
+                                    "Sign In"
+                                )}
+                            </FormButton>
 
-                        </div>
-                        <div className="flex items-center gap-2 my-2">
-                            <div className="flex-1 h-px bg-zinc-700" />
-                            <span className="text-xs text-zinc-500">or</span>
-                            <div className="flex-1 h-px bg-zinc-700" />
-                        </div>
-                        <InputField
-                            type="email"
-                            name="email"
-                            value={form.email}
-                            onChange={handleChange}
-                            placeholder="Email address"
-                            autoComplete="email"
-                        />
-                        <InputField
-                            type="password"
-                            name="password"
-                            value={form.password}
-                            onChange={handleChange}
-                            placeholder="Password"
-                            autoComplete="current-password"
-                        />
-                        {error && (
-                            <div className="text-red-500 text-xs">{error}</div>
-                        )}
-                        <FormButton
-                            type="submit"
-                            variant="secondary"
-                            disabled={signinLoading || !form.email || !form.password}
-                        >
-                            {signinLoading ? (
-                                <Icon name="Loader" size={20} className="animate-spin" />
-                            ) : (
-                                "Sign In"
-                            )}
-                        </FormButton>
-                        
-                        
-                    </form>
-                    <div className="grid grid-cols-2 gap-3 border-t border-b border-zinc-700 p-4">
-                        <div className="flex items-center text-xs justify-center gap-1 text-zinc-500">
-                            <Link href="/signup" className="text-gray-300 hover:underline">Sign Up for free</Link>
+
+                        </form>
+                        <div className="grid grid-cols-2 gap-3 border-t border-b border-zinc-700 p-4">
+                            <div className="flex items-center text-xs justify-center gap-1 text-zinc-500">
+                                <Link href="/signup" className="text-gray-300 hover:underline">Sign Up for free</Link>
+                            </div>
+
+                            {/* forgot password */}
+                            <div className="flex items-center text-xs justify-center gap-1 text-zinc-500 border-l pl-3 border-l-zinc-700">
+                                <Link href="/#" className="text-gray-300 hover:underline">Forgot your password?</Link>
+                            </div>
                         </div>
 
-                        {/* forgot password */}
-                        <div className="flex items-center text-xs justify-center gap-1 text-zinc-500 border-l pl-3 border-l-zinc-700">
-                            <Link href="/#" className="text-gray-300 hover:underline">Forgot your password?</Link>
+                        <div className="text-xs text-zinc-500 text-center pt-5">
+                            By signing in, you agree to our <Link href="/terms" className="text-gray-300 hover:underline">Terms of Service</Link> and <Link href="/privacy" className="text-gray-300 hover:underline">Privacy Policy</Link>.
                         </div>
                     </div>
-
-                    <div className="text-xs text-zinc-500 text-center pt-5">
-                        By signing in, you agree to our <Link href="/terms" className="text-gray-300 hover:underline">Terms of Service</Link> and <Link href="/privacy" className="text-gray-300 hover:underline">Privacy Policy</Link>.
-                    </div>
-                </div>
-                )}                
+                )}
                 <div className="hidden sm:flex items-center justify-center">
                     <div className="w-full text-7xl text-zinc-700 uppercase font-extralight transform rotate-90 opacity-50">
                         <span className="text-yellow-200">All</span> Beautful.

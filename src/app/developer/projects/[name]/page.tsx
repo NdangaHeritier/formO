@@ -5,9 +5,33 @@ import Header from "@/components/Header";
 import Image from "next/image";
 import Link from "next/link";
 import { useParams } from "next/navigation";
+import { useEffect, useState } from "react";
+import type { ProjectType } from "@/types/Project";
 
 export default function ProjectPage (){
     const {name} = useParams();
+    const [project, setProject] = useState<ProjectType | null>(null);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        if (!name) return;
+        fetch(`/api/projects/slug/${name}`)
+            .then((res) => (res.ok ? res.json() : null))
+            .then((data: { project?: ProjectType } | null) => {
+                if (data?.project) {
+                    setProject(data.project);
+                }
+            })
+            .catch(() => {})
+            .finally(() => setLoading(false));
+    }, [name]);
+
+    const stats = project?.submissionsStats;
+    const topForms = [...(project?.forms ?? [])]
+        .sort((a, b) => (b.submissionsCount ?? 0) - (a.submissionsCount ?? 0))
+        .slice(0, 4);
+    const recentSubmissions = project?.recentSubmissions ?? [];
+
     return (
         <section className="flex flex-col min-h-screen w-full text-zinc-400">
             <Header />
@@ -54,17 +78,29 @@ export default function ProjectPage (){
                                 <div className="title-and-desc">
                                     <Icon name="Code2" strokeWidth={2} className="w-16 h-16 p-4 rounded-full bg-gradient-to-br from-zinc-900 to-transparent shadow-xl"/>
                                     <h2 className="text-zinc-200 fnt-bold text-2xl pt-4 pb-2">
-                                        {name}
+                                        {project?.name ?? (loading ? "Loading..." : name)}
                                     </h2>
                                     <p className="text-zinc-400 text-base">
-                                        {name} is a project focused on improving Lorem Ipsum dore..
+                                        {project?.description ?? (loading ? "" : "No description provided yet.")}
                                     </p>
                                 </div>
                                 <div className="grid grid-cols-2 grid-rows-2 gap-5">
-                                    <div className="bg-zinc-900/70 shadow-lg rounded-lg"></div>
-                                    <div className="bg-zinc-900/70 shadow-lg rounded-lg"></div>
-                                    <div className="bg-zinc-900/70 shadow-lg rounded-lg"></div>
-                                    <div className="bg-zinc-900/70 shadow-lg rounded-lg"></div>
+                                    <div className="bg-zinc-900/70 shadow-lg rounded-lg flex flex-col items-center justify-center">
+                                        <span className="text-2xl font-bold text-zinc-200">{project?.formsCount ?? project?.forms?.length ?? 0}</span>
+                                        <span className="text-xs text-zinc-500">Forms</span>
+                                    </div>
+                                    <div className="bg-zinc-900/70 shadow-lg rounded-lg flex flex-col items-center justify-center">
+                                        <span className="text-2xl font-bold text-zinc-200">{stats?.total ?? 0}</span>
+                                        <span className="text-xs text-zinc-500">Submissions</span>
+                                    </div>
+                                    <div className="bg-zinc-900/70 shadow-lg rounded-lg flex flex-col items-center justify-center">
+                                        <span className="text-2xl font-bold text-zinc-200">{stats?.sent ?? 0}</span>
+                                        <span className="text-xs text-zinc-500">Delivered</span>
+                                    </div>
+                                    <div className="bg-zinc-900/70 shadow-lg rounded-lg flex flex-col items-center justify-center">
+                                        <span className="text-2xl font-bold text-zinc-200">{stats?.spam ?? 0}</span>
+                                        <span className="text-xs text-zinc-500">Spam</span>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -83,19 +119,19 @@ export default function ProjectPage (){
                                     <div className="grid grid-cols-1 gap-2">
                                         <div className="flex items-center gap-2 text-xs">
                                             <span className="w-4 h-4 rounded-md bg-green-600/40"></span>
-                                            Delivered Successfully.
+                                            Delivered Successfully. ({stats?.sent ?? 0})
                                         </div>
                                         <div className="flex items-center gap-2 text-xs">
                                             <span className="w-4 h-4 rounded-md bg-yellow-600/30"></span>
-                                            Delivered but failed to reach.
+                                            Delivered but failed to reach. ({stats?.failed ?? 0})
                                         </div>
                                         <div className="flex items-center gap-2 text-xs">
                                             <span className="w-4 h-4 rounded-md bg-red-500/40"></span>
-                                            Spams.
+                                            Spams. ({stats?.spam ?? 0})
                                         </div>
                                         <div className="flex items-center gap-2 text-xs">
                                             <span className="w-4 h-4 rounded-md bg-zinc-800"></span>
-                                            Not Delivered
+                                            Not Delivered ({stats?.pending ?? 0})
                                         </div>
                                     </div>
                                 </div>
@@ -125,7 +161,18 @@ export default function ProjectPage (){
                                         </SmallBtn >
                                     </div>
                                     <div className="p-2 h-40 w-full flex items-center justify-center">
-                                        No data Found
+                                        {topForms.length === 0 ? (
+                                            "No data Found"
+                                        ) : (
+                                            <ul className="w-full flex flex-col gap-2 px-3">
+                                                {topForms.map((form) => (
+                                                    <li key={form.id} className="flex items-center justify-between text-sm bg-zinc-900/60 rounded-lg px-3 py-2">
+                                                        <span className="text-zinc-300 truncate">{form.title}</span>
+                                                        <span className="text-xs text-zinc-500">{form.submissionsCount ?? 0} submissions</span>
+                                                    </li>
+                                                ))}
+                                            </ul>
+                                        )}
                                     </div>
                                 </div>
                             </div>
@@ -139,7 +186,33 @@ export default function ProjectPage (){
                                 Recent Submissions
                             </div>
                             <div className="bg-zinc-950 p-5 flex items-center justify-center text-zinc-500 h-54">
-                                No data found.
+                                {recentSubmissions.length === 0 ? (
+                                    "No data found."
+                                ) : (
+                                    <ul className="w-full flex flex-col gap-2">
+                                        {recentSubmissions.map((submission) => (
+                                            <li key={submission.id} className="flex items-center justify-between text-sm bg-zinc-900/60 rounded-lg px-3 py-2">
+                                                <span className="text-zinc-300 truncate">{submission.formTitle}</span>
+                                                <span className="flex items-center gap-3">
+                                                    <span className={
+                                                        submission.status === "sent"
+                                                            ? "text-green-500 text-xs"
+                                                            : submission.status === "failed"
+                                                                ? "text-red-500 text-xs"
+                                                                : submission.status === "spam"
+                                                                    ? "text-yellow-600 text-xs"
+                                                                    : "text-zinc-500 text-xs"
+                                                    }>
+                                                        {submission.status}
+                                                    </span>
+                                                    <span className="text-xs text-zinc-500">
+                                                        {new Date(submission.createdAt).toLocaleString()}
+                                                    </span>
+                                                </span>
+                                            </li>
+                                        ))}
+                                    </ul>
+                                )}
                             </div>
                         </div>
                     </div>

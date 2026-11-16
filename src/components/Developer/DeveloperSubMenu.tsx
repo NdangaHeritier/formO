@@ -25,7 +25,7 @@ export default function DeveloperSubMenu({
           <Link
             key={i}
             href={nav.href}
-            className="px-3 py-1 rounded-lg border border-transparent text-zinc-700 dark:text-zinc-200 font-medium hover:bg-zinc-500/10 transition"
+            className="px-3 py-1 rounded-lg border border-transparent text-zinc-700 dark:text-zinc-200 font-normal hover:bg-zinc-500/10 transition"
           >
             {nav.label}
           </Link>
@@ -40,11 +40,11 @@ export default function DeveloperSubMenu({
               Create <Icon name="ChevronDown" className="w-4 h-4" />
           </FormButton>
           {open && (
-            <div className="absolute overflow-hidden right-0 mt-2 w-40 p-1 gap-0.5 bg-zinc-100 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-xl shadow-lg z-10">
+            <div className="absolute overflow-hidden right-0 mt-2 w-[15vw] p-1 gap-0.5 bg-zinc-100 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-xl shadow-lg z-10">
             {options.map((opt) => (
                 <button
                 key={opt.value}
-                className="flex items-center justify-start gap-2 w-full text-left px-3 py-2 rounded-lg hover:bg-zinc-200 dark:hover:bg-zinc-900 transition text-zinc-700 dark:text-zinc-200 text-sm"
+                className="flex items-center justify-start gap-2 w-full text-left px-3 py-2 rounded-lg hover:bg-zinc-200 dark:hover:bg-zinc-900 transition text-zinc-700 dark:text-zinc-200 text-sm cursor-pointer"
                 onClick={() => {
                     setOpen(false);
                     onSelect?.(opt.value);

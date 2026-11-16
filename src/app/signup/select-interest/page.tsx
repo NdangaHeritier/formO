@@ -2,17 +2,18 @@
 import FormButton from "@/components/Global/FormButton";
 import { Icon } from "@/components/Global/Icon";
 import PrivateRouter from "@/components/Global/privateRouter";
-import { useAuth } from "@/lib/Auth_context";
+import { useSession } from "@/lib/auth-client";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { addDoc, collection, getDocs, query, updateDoc, where } from "firebase/firestore";
-import { db } from "@/lib/firebase";
 
 const SelectInterest = () => {
 
-    const { currentUser } = useAuth();
-    const [interest, setInterest] = useState(currentUser?.interest || "developer");
+    const { data: session } = useSession();
+    const currentUser = session?.user as { name?: string; email?: string; interest?: string } | undefined;
+    const [interest, setInterest] = useState(
+        currentUser?.interest === "non_developer" ? "non-developer" : (currentUser?.interest || "developer")
+    );
     const [updateLoading, setUpdateLoading] = useState(false);
     const router = useRouter();
 
@@ -26,30 +27,21 @@ const SelectInterest = () => {
             return; // Ensure currentUser is defined before proceeding....
         }
         try {
-            const userRef = collection(db, "user_preferences");
-            const userDocQuery = query(userRef, where("userId", "==", currentUser.uid));
-            const userSnapshot = await getDocs(userDocQuery);
-
-            if (userSnapshot.empty) {
-                // No document exists for this user, so create one...
-                await addDoc(userRef, {
-                    userId: currentUser.uid,
-                    interest: newInterest,
-                });
-                console.log("New Interest saved for user.");
-            } else {
-                // User document found — update it....
-                const docRef = userSnapshot.docs[0].ref;
-                await updateDoc(docRef, {
-                    interest: newInterest,
-                });
-                console.log("User interest updated.");
+            const dbInterest = newInterest === "non-developer" ? "non_developer" : "developer";
+            const res = await fetch("/api/auth/workspace", {
+                method: "PATCH",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ interest: dbInterest }),
+            });
+            if (!res.ok) {
+                throw new Error("Failed to update interest in user profile");
             }
 
             setInterest(newInterest);
             console.log("Interest updated successfully.");
             setUpdateLoading(false);
         } catch (error) {
+            setUpdateLoading(false);
             console.error("Failed to update interest in user profile:", error);
         }
     };
@@ -65,7 +57,7 @@ const SelectInterest = () => {
                         width={50}
                     />
                 </div>
-                <h1 className="text-3xl font-bold text-transparent bg-clip-text from-yellow-600 to-yellow-800 bg-gradient-to-br mb-4">Welcome, {currentUser?.displayName || currentUser?.email}</h1>
+                <h1 className="text-3xl font-bold text-transparent bg-clip-text from-yellow-600 to-yellow-800 bg-gradient-to-br mb-4">Welcome, {currentUser?.name || currentUser?.email}</h1>
                 <h1 className="text-3xl font-bold text-white mb-4">Select Your Interests</h1>
                 <p className="text-gray-400 mb-8">Choose the topics you are interested in to personalize your experience.</p>
                 {/* Add your interest selection UI here... */}

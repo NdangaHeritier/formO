@@ -14,5 +14,15 @@ export default function createNextConfig(phase: string): NextConfig {
 
   return {
     distDir: isDev ? ".next-dev" : ".next",
+    reactStrictMode: true,
+    poweredByHeader: false,
+    compress: true,
+    serverExternalPackages: ["pg", "nodemailer", "@prisma/adapter-pg"],
+    experimental: {
+      optimizePackageImports: ["lucide-react", "@react-email/components"],
+    },
+    images: {
+      formats: ["image/avif", "image/webp"],
+    },
   };
 }

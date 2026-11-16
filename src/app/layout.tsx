@@ -4,7 +4,6 @@ import localFont from 'next/font/local';
 import "./globals.css";
 import Footer from "@/components/Footer";
 import { Analytics } from "@vercel/analytics/next";
-import { AuthProvider } from "@/lib/Auth_context";
 import { Icon } from "@/components/Global/Icon";
 
 export const metadata: Metadata = {
@@ -103,9 +102,7 @@ export default function RootLayout({
         <Analytics />        
         <main className="dark">
           <section className="min-h-screen p-0">
-            <AuthProvider>
-              {children}
-            </AuthProvider>
+            {children}
             <div className="fixed right-0 bottom-0 p-3 inline-block z-[9999]">
               <button type="button" className="bg-yellow-100 hover:bg-yellow-50 duration-500 cursor-pointer flex items-center justify-center p-3 text-yellow-800 rounded-full shadow-xl shadow-yellow-500 ring-4 ring-yellow-500/30">
                 <Icon name="Bot" size={25} strokeWidth={2} />

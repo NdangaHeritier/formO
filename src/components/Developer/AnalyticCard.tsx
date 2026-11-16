@@ -1,19 +1,18 @@
-import { IconType } from "@/types/Icon"
+import type { AnalyticType } from "@/types/Project"
 import { Icon } from "../Global/Icon"
 
-type AnalyticProps={
-    title: string,
-    icon: IconType,
-    desc: string,
-    data: {amount: number, period: "Month"|"Day"|"Year", rate: number}
-}
+type AnalyticProps = AnalyticType
 
 export const AnalyticCard = ( {title, icon, desc, data}:AnalyticProps) => {
-    const dataRate= ((data.amount*100)/data.rate);
+    // rate is the real % change vs the previous period, computed by the API.
+    // null means there is no baseline yet, so no delta is shown.
+    const rate = data.rate;
+    const hasRate = rate !== null;
+    const isIncrease = (rate ?? 0) >= 0;
     return (
-        <div className="rounded-2xl grid grid-cols-1 gap-5 p-5 border-zinc-300 border dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950 shadow-lg hover:border-zinc-600 transition-all duration-200 ease-in-out hover:shadow-xl">
+        <div className="rounded-3xl grid grid-cols-1 gap-5 p-5 border-zinc-200 border dark:border-zinc-900 bg-zinc-50 dark:bg-zinc-950 shadow-lg hover:border-zinc-800 transition-all duration-200 ease-in-out hover:shadow-xl">
             <div className="flex items-center justify-between">
-              <h1 className="font-bold text-2xl">
+              <h1 className="font-semibold text-2xl antialiased text-zinc-900 dark:text-zinc-100">
                 {title}
               </h1>
               <div className="flex items-center justify-right">
@@ -36,7 +35,13 @@ export const AnalyticCard = ( {title, icon, desc, data}:AnalyticProps) => {
                     </span>
                 </div>
                 <div className="status text-zinc-800 dark:text-zinc-200 text-sm">
-                    {dataRate>=50 ? <div><span className="text-green-600 dark:text-green-500">{dataRate}%</span> Increase compared to last {data.period}</div> : <div><span className="text-red-600  dark:text-red-500">{dataRate}%</span> Decrease compared to last {data.period}</div>}
+                    {!hasRate ? (
+                        <div className="text-zinc-500 dark:text-zinc-400">No data to compare with last {data.period} yet</div>
+                    ) : isIncrease ? (
+                        <div><span className="text-green-600 dark:text-green-500">{rate}%</span> Increase compared to last {data.period}</div>
+                    ) : (
+                        <div><span className="text-red-600  dark:text-red-500">{Math.abs(rate ?? 0)}%</span> Decrease compared to last {data.period}</div>
+                    )}
                 </div>
             </div>
         </div>

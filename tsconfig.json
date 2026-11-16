@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "target": "ES2017",
+    "target": "ES2022",
     "lib": [
       "dom",
       "dom.iterable",
@@ -30,16 +30,22 @@
   },
   "include": [
     "next-env.d.ts",
-    "**/*.ts",
-    "**/*.tsx",
+    "src/**/*.ts",
+    "src/**/*.tsx",
+    "next.config.ts",
+    "prisma.config.ts",
+    "prisma/**/*.ts",
     ".next/types/**/*.ts",
-    "src/lib/Auth_context.jsx",
-    "src/app/login/checkInterest.js",
     ".next/dev/types/**/*.ts",
     ".next-dev/types/**/*.ts",
     ".next-dev/dev/types/**/*.ts"
   ],
   "exclude": [
-    "node_modules"
+    "node_modules",
+    ".next",
+    ".next-dev",
+    "out",
+    "build",
+    "src/generated"
   ]
 }

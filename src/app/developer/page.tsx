@@ -1,5 +1,5 @@
 "use client";
-import { useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import DeveloperBreadcrumb from '@/components/Developer/DeveloperBreadcrumb';
 import Header from '@/components/Header';
 // import { IconType } from '@/types/Icon';
@@ -22,19 +22,36 @@ import AnalyticsGroup from '@/components/Developer/AnalyticsGroup';
   
 const Developer= () => {
  
-    // Fetch projects from PocketBase
+    // Fetch projects from API
 
-    const [projects] = useState<ProjectType[]>([]);
+    const [projects, setProjects] = useState<ProjectType[]>([]);
+    const loadProjects = useCallback(() => {
+      fetch("/api/projects")
+        .then((res) => (res.ok ? res.json() : null))
+        .then((data: { projects?: ProjectType[] } | null) => {
+          if (data?.projects) {
+            setProjects(data.projects);
+          }
+        })
+        .catch(() => {});
+    }, []);
+
+    useEffect(() => {
+      loadProjects();
+    }, [loadProjects]);
 
     // trigger to show create new project model..
     const [isCreateProjectModelOpen, setIsCreateProjectModelOpen] = useState(false);
     const [createNewForm, setCreateNewForm] = useState(false);
 
     // set a project id for which each form can go with..
+    // (kept for the forms modal — these options move to the project details route)
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [projectID, setProjectID] = useState<string| undefined>(undefined);
 
     // Set Project selected to view forms
     const [showFormsModal, setShowFormsModal] = useState(false);
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [selectedProject, setSelectedProject] = useState<ProjectType>({
       id: '',
       name: '',
@@ -74,9 +91,9 @@ const Developer= () => {
         <AnalyticsGroup />
 
         {/* Projects Section */}
-        <div className="relative rounded-lg">
+        <div className="relative rounded-2xl">
           <Squares parLength={100} />
-          <div className="projects relative z-10 grid grid-cols-1 gap-5 bg-gradient-to-tr from-zinc-100 to-zinc-100/50 dark:from-zinc-950 from-80% to-20% dark:to-zinc-950/50 rounded-lg p-8">
+          <div className="projects relative z-10 grid grid-cols-1 gap-5 bg-gradient-to-tr from-zinc-100 to-zinc-100/50 dark:from-zinc-950 from-80% to-20% dark:to-zinc-950/50 rounded-2xl p-8">
             <div className="flex items-center justify-between">
               <div className="title text-xl font-bold">Projects</div>
               <FormButton type='button' variant='primary' onClick={() => setIsCreateProjectModelOpen(true)}>
@@ -88,25 +105,22 @@ const Developer= () => {
             {/* projects cards */}
             <div className="grid grid-cols-3 gap-5">
               {projects.length > 0 ? (
-                projects.map((project, index) => (
+                projects.map((project) => (
                     <ProjectCard
-                      key={index}
+                      key={project.id}
                       id={project.id}
                       name={project.name}
+                      slug={project.slug}
                       description={project.description}
                       user={project.user}
                       forms={project.forms}
+                      formsCount={project.formsCount}
+                      submissionsCount={project.submissionsCount}
+                      endpoint={project.latestFormEndpoint}
                       created={project.created}
                       updated={project.updated}
-                      status="active"
-                      openForm={()=> {
-                        setProjectID(project.name)
-                        setCreateNewForm(true);
-                      }}
-                      showForms={()=> {
-                        setSelectedProject(project)
-                        setShowFormsModal(true);
-                      }}
+                      status={project.status}
+                      onChanged={loadProjects}
                     />
                   
                 ))

@@ -1,44 +1,41 @@
 'use client';
 import React, { useEffect } from 'react';
 
-import { useAuth } from "@/lib/Auth_context";
+import { useSession } from "@/lib/auth-client";
 import PrivateRouter from '@/components/Global/privateRouter';
 import { useRouter } from 'next/navigation'
-import { collection, getDocs, query, where } from 'firebase/firestore';
-import { db } from '@/lib/firebase';
 import { Icon } from '@/components/Global/Icon';
 
 export default function Dashboard() {
 
-    const { currentUser } = useAuth();
+    const { data: session, isPending } = useSession();
+    const currentUser = session?.user ?? null;
     const router = useRouter();
     // Redirect user based on their interest
     useEffect(() => {
+        if (isPending) return;
         if (!currentUser) {
             router.push("/login");
             return;
         }
         const fetchUserPreferences = async () => {
-            const userInterestRef = collection(db, "user_preferences");
-            const userInterestQuery = query(userInterestRef, where("userId", "==", currentUser.uid));
-            const userInterestSnapshot = await getDocs(userInterestQuery);
-            if (userInterestSnapshot.empty) {
-                router.push("/signup/select-interest"); // go to set interst if not set...
-                return; //exit
+            const res = await fetch("/api/auth/workspace");
+            if (!res.ok) {
+                router.push("/signup/select-interest");
+                return;
             }
-            const userInterestData = userInterestSnapshot.docs[0].data(); // get first instance of user interest
-            const interest = userInterestData.interest;
+            const json = (await res.json()) as { user?: { interest?: string } };
+            const interest = json.user?.interest;
             if (interest === "developer") {
                 router.push("/developer");
-            } else if (interest === "non-developer") {
+            } else if (interest === "non_developer" || interest === "non-developer") {
                 router.push("/non-dev");
             } else {
-                // fallback if interest is not recognized
                 router.push("/signup/select-interest");
             }
         };
         fetchUserPreferences();
-    }, [currentUser, router]);
+    }, [isPending, currentUser, router]);
 
     // Optionally, show aaka loader while processing
     return (

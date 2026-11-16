@@ -1,10 +1,11 @@
 "use client"
-import { useAuth } from "@/lib/Auth_context";
+import { useSession } from "@/lib/auth-client";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 
 export default function PrivateRouter ({ children }: { children: React.ReactNode }) {
-  const { currentUser, authLoading } = useAuth();
+  const { data: session, isPending: authLoading } = useSession();
+  const currentUser = session?.user ?? null;
     const router = useRouter();
 
     // check if user is authenticated

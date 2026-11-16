@@ -42,7 +42,7 @@ export const FormsDisplayModel = ({project, closeModal}:DisplayType) => {
                         Forms: {forms?.length}
                     </p>
                     <p className="text-sm text-end text-zinc-400">
-                        Total Submissions: 200
+                        Total Submissions: {project.submissionsStats?.total ?? project.submissionsCount ?? 0}
                     </p>
                 </div>
 
