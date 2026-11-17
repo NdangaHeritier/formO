@@ -41,7 +41,7 @@ export default function ProjectPage (){
                         <Link href="/developer/projects" className="text-zinc-500 hover:text-zinc-300 rounded-xl p-2 flex items-center justify-center cursor-pointer gap-2 hover:bg-zinc-900">
                             <Icon name="LayoutDashboard" size={20} strokeWidth={2} />
                         </Link>
-                        <Link href={`/developer/${name}/Analytics`} className="text-zinc-500 hover:text-zinc-300">
+                        <Link href="/developer/analytics" className="text-zinc-500 hover:text-zinc-300">
                             <Icon name="ChartNoAxesColumn" size={20} strokeWidth={2} />
                         </Link>
                     </div>                    

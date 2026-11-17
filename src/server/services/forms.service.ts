@@ -665,6 +665,35 @@ export async function listWorkspaceApiKeys(organizationId: string) {
   });
 }
 
+export async function listWorkspaceForms(organizationId: string) {
+  return prisma.projectForm.findMany({
+    where: {
+      deletedAt: null,
+      project: {
+        organizationId,
+        deletedAt: null,
+      },
+    },
+    select: {
+      id: true,
+      title: true,
+      description: true,
+      endpoint: true,
+      emailTo: true,
+      isActive: true,
+      createdAt: true,
+      updatedAt: true,
+      project: {
+        select: { id: true, name: true, slug: true },
+      },
+      _count: {
+        select: { submissions: true },
+      },
+    },
+    orderBy: { createdAt: "desc" },
+  });
+}
+
 export async function createWorkspaceApiKey(params: {
   organizationId: string;
   actorUserId: string;
