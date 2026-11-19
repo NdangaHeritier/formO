@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 import { Icon } from "@/components/Global/Icon";
 import SmallBtn from "@/components/Global/smallBtn";
 import Header from "@/components/Header";
@@ -78,7 +78,7 @@ export default function ProjectPage (){
                                 <div className="title-and-desc">
                                     <Icon name="Code2" strokeWidth={2} className="w-16 h-16 p-4 rounded-full bg-gradient-to-br from-zinc-900 to-transparent shadow-xl"/>
                                     <h2 className="text-zinc-200 fnt-bold text-2xl pt-4 pb-2">
-                                        {project?.name ?? (loading ? "Loading..." : name)}
+                                        {project?.name ?? name}
                                     </h2>
                                     <p className="text-zinc-400 text-base">
                                         {project?.description ?? (loading ? "" : "No description provided yet.")}
@@ -221,3 +221,4 @@ export default function ProjectPage (){
         </section>
     )
 }
+

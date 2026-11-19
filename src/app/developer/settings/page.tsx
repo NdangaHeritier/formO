@@ -6,8 +6,9 @@ import { Icon, type LucideIconName } from "@/components/Global/Icon";
 import { relativeTime } from "@/lib/format";
 import { Skeleton, SkeletonListRows } from "@/components/Global/Skeleton";
 import FormButton from "@/components/Global/FormButton";
-import { InputField } from "@/components/Global/InputField";
 import ConfirmDialog from "@/components/Global/ConfirmDialog";
+import NewSenderModal from "@/components/Developer/Modals/Settings/NewSenderModal";
+import NewApiKeyModal from "@/components/Developer/Modals/Settings/NewApiKeyModal";
 import LinkButton from "@/components/Global/LinkButton";
 
 type SmtpConfig = {
@@ -93,19 +94,10 @@ const SettingsPage = () => {
   const [loading, setLoading] = useState(true);
   const [actionError, setActionError] = useState("");
   const [notice, setNotice] = useState("");
-  const [newKeyName, setNewKeyName] = useState("");
-  const [rawKey, setRawKey] = useState("");
   const [pendingRevoke, setPendingRevoke] = useState<ApiKey | null>(null);
   const [pendingSmtpDelete, setPendingSmtpDelete] = useState<SmtpConfig | null>(null);
-  const [showSmtpForm, setShowSmtpForm] = useState(false);
-  const [newSmtp, setNewSmtp] = useState({
-    name: "",
-    host: "",
-    port: "587",
-    username: "",
-    password: "",
-    fromEmail: "",
-  });
+  const [showSenderModal, setShowSenderModal] = useState(false);
+  const [showKeyModal, setShowKeyModal] = useState(false);
 
   const reload = () => {
     Promise.all([
@@ -119,28 +111,6 @@ const SettingsPage = () => {
     }).catch(() => setActionError("Could not reload settings."));
   };
 
-  const createKey = async () => {
-    setActionError("");
-    setRawKey("");
-    try {
-      const res = await fetch("/api/settings/api-keys", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name: newKeyName.trim() }),
-      });
-      const data = (await res.json().catch(() => null)) as {
-        apiKey?: { rawKey?: string };
-        error?: string;
-      } | null;
-      if (!res.ok || !data?.apiKey) throw new Error(data?.error ?? "Could not create API key");
-      setRawKey(data.apiKey.rawKey ?? "");
-      setNewKeyName("");
-      reload();
-    } catch (error) {
-      setActionError(error instanceof Error ? error.message : "Could not create API key");
-    }
-  };
-
   const revokeKey = async () => {
     if (!pendingRevoke) return;
     try {
@@ -152,29 +122,6 @@ const SettingsPage = () => {
       setActionError(error instanceof Error ? error.message : "Could not revoke API key");
     } finally {
       setPendingRevoke(null);
-    }
-  };
-
-  const createSmtp = async () => {
-    setActionError("");
-    try {
-      const res = await fetch("/api/settings/smtp", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          ...newSmtp,
-          port: Number(newSmtp.port),
-          secure: false,
-        }),
-      });
-      const data = (await res.json().catch(() => null)) as { error?: string } | null;
-      if (!res.ok) throw new Error(data?.error ?? "Could not add SMTP sender");
-      setShowSmtpForm(false);
-      setNewSmtp({ name: "", host: "", port: "587", username: "", password: "", fromEmail: "" });
-      setNotice("SMTP sender added.");
-      reload();
-    } catch (error) {
-      setActionError(error instanceof Error ? error.message : "Could not add SMTP sender");
     }
   };
 
@@ -232,38 +179,12 @@ const SettingsPage = () => {
             </p>
           )}
 
-          {rawKey && (
-            <div className="rounded-lg border border-zinc-200 bg-zinc-50 p-3 dark:border-zinc-800 dark:bg-zinc-900/40">
-              <p className="text-xs font-semibold text-zinc-800 dark:text-zinc-200">
-                Copy this key now — it will not be shown again.
-              </p>
-              <code className="block break-all font-mono text-xs text-zinc-600 dark:text-zinc-400">
-                {rawKey}
-              </code>
-            </div>
-          )}
-
           {/* SMTP senders */}
           <div className="flex justify-end">
-            <FormButton variant="secondary" onClick={() => setShowSmtpForm((open) => !open)}>
+            <FormButton variant="secondary" onClick={() => setShowSenderModal(true)}>
               <Icon name="Plus" size={14} /> Add sender
             </FormButton>
           </div>
-          {showSmtpForm && (
-            <div className="grid grid-cols-1 gap-3 rounded-2xl border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-950 sm:grid-cols-2">
-              <InputField type="text" name="smtpName" id="smtp-name" label="Label" placeholder="Primary sender" value={newSmtp.name} onChange={(e) => setNewSmtp({ ...newSmtp, name: e.target.value })} />
-              <InputField type="text" name="smtpHost" id="smtp-host" label="Host" placeholder="smtp.example.com" value={newSmtp.host} onChange={(e) => setNewSmtp({ ...newSmtp, host: e.target.value })} />
-              <InputField type="number" name="smtpPort" id="smtp-port" label="Port" placeholder="587" value={newSmtp.port} onChange={(e) => setNewSmtp({ ...newSmtp, port: e.target.value })} />
-              <InputField type="email" name="smtpFrom" id="smtp-from" label="From address" placeholder="noreply@example.com" value={newSmtp.fromEmail} onChange={(e) => setNewSmtp({ ...newSmtp, fromEmail: e.target.value })} />
-              <InputField type="text" name="smtpUser" id="smtp-user" label="Username" placeholder="username" value={newSmtp.username} onChange={(e) => setNewSmtp({ ...newSmtp, username: e.target.value })} />
-              <InputField type="password" name="smtpPass" id="smtp-pass" label="Password" placeholder="••••••••" value={newSmtp.password} onChange={(e) => setNewSmtp({ ...newSmtp, password: e.target.value })} />
-              <div className="sm:col-span-2 flex justify-end gap-2">
-                <FormButton variant="secondary" onClick={() => setShowSmtpForm(false)}>Cancel</FormButton>
-                <FormButton onClick={() => void createSmtp()}>Save sender</FormButton>
-              </div>
-            </div>
-          )}
-
           <Section
             title="SMTP Senders"
             icon="Server"
@@ -302,18 +223,9 @@ const SettingsPage = () => {
           </Section>
 
           {/* API keys */}
-          <div className="flex items-center justify-end gap-2">
-            <InputField
-              type="text"
-              name="newKeyName"
-              id="new-key-name"
-              label=""
-              placeholder="Key label"
-              value={newKeyName}
-              onChange={(e) => setNewKeyName(e.target.value)}
-            />
-            <FormButton onClick={() => void createKey()} disabled={!newKeyName.trim()}>
-              Create key
+          <div className="flex justify-end">
+            <FormButton onClick={() => setShowKeyModal(true)}>
+              <Icon name="Plus" size={14} /> Create key
             </FormButton>
           </div>
           <Section
@@ -409,6 +321,21 @@ const SettingsPage = () => {
         onCancel={() => setPendingSmtpDelete(null)}
         onConfirm={deleteSmtp}
       />
+      {showSenderModal && (
+        <NewSenderModal
+          onClose={() => setShowSenderModal(false)}
+          onCreated={() => {
+            setNotice("SMTP sender added.");
+            reload();
+          }}
+        />
+      )}
+      {showKeyModal && (
+        <NewApiKeyModal
+          onClose={() => setShowKeyModal(false)}
+          onCreated={reload}
+        />
+      )}
     </DeveloperShell>
   );
 };
