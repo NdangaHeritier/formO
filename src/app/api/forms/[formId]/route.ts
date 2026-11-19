@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { readJson } from "@/lib/json";
 import { updateFormSchema } from "@/lib/validation/forms";
-import { jsonErrorResponse, requireFormAccess } from "@/server/auth/authorization";
+import { jsonErrorResponse, requireFormAccess , validationErrorResponse} from "@/server/auth/authorization";
 import {
   deleteProjectForm,
   getProjectFormDetail,
@@ -38,10 +38,7 @@ export async function PATCH(
     const parsed = updateFormSchema.safeParse(body);
 
     if (!parsed.success) {
-      return NextResponse.json(
-        { error: parsed.error.issues[0]?.message ?? "Invalid form update payload" },
-        { status: 400 }
-      );
+      return validationErrorResponse(parsed.error, "Invalid form update payload");
     }
 
     const form = await updateProjectForm({

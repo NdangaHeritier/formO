@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
+import { readJson } from "@/lib/json";
 import { createEmailTemplateSchema } from "@/lib/validation/forms";
-import { jsonErrorResponse, requireActiveWorkspace } from "@/server/auth/authorization";
+import { jsonErrorResponse, requireActiveWorkspace , validationErrorResponse} from "@/server/auth/authorization";
 import {
   createWorkspaceEmailTemplate,
   listWorkspaceEmailTemplates,
@@ -21,14 +22,11 @@ export async function GET() {
 export async function POST(request: NextRequest) {
   try {
     const workspace = await requireActiveWorkspace("member");
-    const body = await request.json();
+    const body = await readJson(request);
     const parsed = createEmailTemplateSchema.safeParse(body);
 
     if (!parsed.success) {
-      return NextResponse.json(
-        { error: parsed.error.issues[0]?.message ?? "Invalid email template payload" },
-        { status: 400 }
-      );
+      return validationErrorResponse(parsed.error, "Invalid email template payload");
     }
 
     const template = await createWorkspaceEmailTemplate({

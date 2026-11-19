@@ -27,33 +27,107 @@ export function assertRole(actual: string, minRole: OrgRole, context = "resource
   }
 }
 
+export type ErrorFields = Record<string, string[]>;
+
 export class HttpError extends Error {
   readonly status: number;
+  readonly code: string;
+  readonly fields?: ErrorFields;
 
-  constructor(status: number, message: string) {
+  constructor(
+    status: number,
+    message: string,
+    options?: { code?: string; fields?: ErrorFields }
+  ) {
     super(message);
     this.name = "HttpError";
     this.status = status;
+    this.code = options?.code ?? defaultErrorCode(status);
+    this.fields = options?.fields;
   }
 }
 
-export function jsonErrorResponse(error: unknown) {
+export function defaultErrorCode(status: number): string {
+  const codes: Record<number, string> = {
+    400: "BAD_REQUEST",
+    401: "UNAUTHORIZED",
+    403: "FORBIDDEN",
+    404: "NOT_FOUND",
+    409: "CONFLICT",
+    413: "PAYLOAD_TOO_LARGE",
+    415: "UNSUPPORTED_MEDIA_TYPE",
+    422: "UNPROCESSABLE_ENTITY",
+    429: "RATE_LIMITED",
+    503: "UNAVAILABLE",
+  };
+  return codes[status] ?? "ERROR";
+}
+
+/** Single error envelope used by every API route. */
+export function errorBody(error: unknown): { status: number; body: { error: string; code: string; fields?: ErrorFields } } {
   if (error instanceof HttpError) {
-    return NextResponse.json({ error: error.message }, { status: error.status });
+    return {
+      status: error.status,
+      body: {
+        error: error.message,
+        code: error.code,
+        ...(error.fields ? { fields: error.fields } : {}),
+      },
+    };
   }
-  // Prisma errors are plain objects with a `code`; detect by duck typing so
-  // this works without importing generated classes.
+  // Prisma errors are plain objects with a `code`; duck typing avoids importing
+  // generated classes into the HTTP layer.
   if (typeof error === "object" && error !== null && "code" in error) {
     const code = (error as { code?: unknown }).code;
     if (code === "P2002") {
-      return NextResponse.json({ error: "That value is already in use" }, { status: 409 });
+      return { status: 409, body: { error: "That value is already in use", code: "CONFLICT" } };
     }
     if (code === "P2025") {
-      return NextResponse.json({ error: "Resource not found" }, { status: 404 });
+      return { status: 404, body: { error: "Resource not found", code: "NOT_FOUND" } };
     }
   }
-  console.error("[authz] Unexpected route error:", error);
-  return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+  return { status: 500, body: { error: "Internal server error", code: "INTERNAL" } };
+}
+
+export function jsonErrorResponse(error: unknown) {
+  if (!(error instanceof HttpError) && typeof error === "object" && error !== null && "code" in error) {
+    const code = (error as { code?: unknown }).code;
+    if (code !== "P2002" && code !== "P2025") {
+      console.error("[authz] Unexpected route error:", error);
+    }
+  } else if (!(error instanceof HttpError)) {
+    console.error("[authz] Unexpected route error:", error);
+  }
+  const { status, body } = errorBody(error);
+  return NextResponse.json(body, { status });
+}
+
+/** Ready-made 422 response for a failed zod parse in a route handler. */
+export function validationErrorResponse(
+  error: { issues: Array<{ path: readonly unknown[]; message: string }> },
+  fallback: string
+) {
+  const httpError = validationHttpError(error);
+  return NextResponse.json(
+    {
+      error: error.issues[0]?.message ?? fallback,
+      code: httpError.code,
+      fields: httpError.fields,
+    },
+    { status: httpError.status }
+  );
+}
+
+/** Converts zod issues into the shared validation envelope. */
+export function validationHttpError(error: {
+  issues: Array<{ path: readonly unknown[]; message: string }>;
+}): HttpError {
+  const fields: ErrorFields = {};
+  for (const issue of error.issues) {
+    const key = issue.path.map(String).join(".") || "body";
+    (fields[key] ??= []).push(issue.message);
+  }
+  return new HttpError(422, "Validation failed", { code: "VALIDATION", fields });
 }
 
 export interface AuthenticatedUser {
@@ -328,4 +402,5 @@ export async function requireFormAccess(
     role,
   };
 }
+
 

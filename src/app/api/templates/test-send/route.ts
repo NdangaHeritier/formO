@@ -1,6 +1,6 @@
-import { NextRequest, NextResponse } from "next/server";
+﻿import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
-import { jsonErrorResponse, HttpError, requireActiveWorkspace } from "@/server/auth/authorization";
+import { jsonErrorResponse, HttpError, requireActiveWorkspace , validationErrorResponse} from "@/server/auth/authorization";
 import { sendTemplateTestEmail } from "@/server/services/forms.service";
 import { consumeBucket } from "@/server/submissions/rate-limit";
 import { templateSchemaParameters } from "@/lib/template-design";
@@ -24,17 +24,14 @@ export async function POST(request: NextRequest) {
     const retryAfter = await consumeBucket(`u:${workspace.user.id}`, 5);
     if (retryAfter !== null) {
       return NextResponse.json(
-        { error: "Too many test emails. Please try again later." },
+        { error: "Too many test emails. Please try again later.", code: "RATE_LIMITED" },
         { status: 429, headers: { "Retry-After": String(retryAfter) } }
       );
     }
 
     const parsed = testSendSchema.safeParse(await request.json());
     if (!parsed.success) {
-      return NextResponse.json(
-        { error: parsed.error.issues[0]?.message ?? "Invalid test-send payload" },
-        { status: 400 }
-      );
+      return validationErrorResponse(parsed.error, "Invalid test-send payload");
     }
 
     const result = await sendTemplateTestEmail({
@@ -51,3 +48,4 @@ export async function POST(request: NextRequest) {
     return jsonErrorResponse(error);
   }
 }
+

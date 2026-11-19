@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createSmtpConfigSchema } from "@/lib/validation/forms";
-import { jsonErrorResponse, requireActiveWorkspace } from "@/server/auth/authorization";
+import { jsonErrorResponse, requireActiveWorkspace , validationErrorResponse} from "@/server/auth/authorization";
 import {
   createWorkspaceSmtpConfig,
   listWorkspaceSmtpConfigs,
@@ -25,10 +25,7 @@ export async function POST(request: NextRequest) {
     const parsed = createSmtpConfigSchema.safeParse(body);
 
     if (!parsed.success) {
-      return NextResponse.json(
-        { error: parsed.error.issues[0]?.message ?? "Invalid SMTP configuration" },
-        { status: 400 }
-      );
+      return validationErrorResponse(parsed.error, "Invalid SMTP configuration");
     }
 
     const smtpConfig = await createWorkspaceSmtpConfig({

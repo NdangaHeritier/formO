@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
+import { readJson } from "@/lib/json";
 import { createProjectSchema } from "@/lib/validation/projects";
-import { jsonErrorResponse, requireActiveWorkspace } from "@/server/auth/authorization";
+import { jsonErrorResponse, requireActiveWorkspace , validationErrorResponse} from "@/server/auth/authorization";
 import {
   createWorkspaceProject,
   listWorkspaceProjects,
@@ -24,14 +25,11 @@ export async function GET() {
 export async function POST(request: NextRequest) {
   try {
     const workspace = await requireActiveWorkspace("member");
-    const body = await request.json();
+    const body = await readJson(request);
     const parsed = createProjectSchema.safeParse(body);
 
     if (!parsed.success) {
-      return NextResponse.json(
-        { error: parsed.error.issues[0]?.message ?? "Invalid project payload" },
-        { status: 400 }
-      );
+      return validationErrorResponse(parsed.error, "Invalid project payload");
     }
 
     const project = await createWorkspaceProject({

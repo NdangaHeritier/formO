@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { updateProjectSchema } from "@/lib/validation/projects";
-import { jsonErrorResponse, requireProjectAccess } from "@/server/auth/authorization";
+import { jsonErrorResponse, requireProjectAccess , validationErrorResponse} from "@/server/auth/authorization";
 import {
   deleteWorkspaceProject,
   getWorkspaceProjectDetail,
@@ -34,10 +34,7 @@ export async function PATCH(
     const parsed = updateProjectSchema.safeParse(body);
 
     if (!parsed.success) {
-      return NextResponse.json(
-        { error: parsed.error.issues[0]?.message ?? "Invalid project update payload" },
-        { status: 400 }
-      );
+      return validationErrorResponse(parsed.error, "Invalid project update payload");
     }
 
     const project = await updateWorkspaceProject({

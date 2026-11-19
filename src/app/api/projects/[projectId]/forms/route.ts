@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createFormSchema } from "@/lib/validation/forms";
-import { jsonErrorResponse, requireProjectAccess } from "@/server/auth/authorization";
+import { jsonErrorResponse, requireProjectAccess , validationErrorResponse} from "@/server/auth/authorization";
 import { createProjectForm, listProjectForms } from "@/server/services/forms.service";
 
 export const dynamic = "force-dynamic";
@@ -33,10 +33,7 @@ export async function POST(
     const parsed = createFormSchema.safeParse(body);
 
     if (!parsed.success) {
-      return NextResponse.json(
-        { error: parsed.error.issues[0]?.message ?? "Invalid form payload" },
-        { status: 400 }
-      );
+      return validationErrorResponse(parsed.error, "Invalid form payload");
     }
 
     const form = await createProjectForm({

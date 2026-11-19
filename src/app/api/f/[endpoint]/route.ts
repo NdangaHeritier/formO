@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from "next/server";
+﻿import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { acceptSubmission } from "@/server/services/submissions.service";
 import {
@@ -34,7 +34,7 @@ export async function POST(request: NextRequest, { params }: RouteContext) {
         headers: { ...result.headers, Location: result.location },
       });
     }
-    return NextResponse.json(result.body ?? { error: "Submission failed" }, {
+    return NextResponse.json(result.body ?? { error: "Submission failed", code: "ERROR" }, {
       status: result.status,
       headers: result.headers,
     });
@@ -43,8 +43,9 @@ export async function POST(request: NextRequest, { params }: RouteContext) {
       reason: error instanceof Error ? error.message : "unknown",
     });
     return NextResponse.json(
-      { error: "Internal server error" },
+      { error: "Internal server error", code: "INTERNAL" },
       { status: 500, headers: corsHeaders(origin, true) }
     );
   }
 }
+

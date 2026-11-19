@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { interestSchema } from "@/lib/validation/auth";
-import { jsonErrorResponse, requireActiveWorkspace, requireUser } from "@/server/auth/authorization";
+import { jsonErrorResponse, requireActiveWorkspace, requireUser , validationErrorResponse} from "@/server/auth/authorization";
 
 export async function GET() {
   try {
@@ -32,10 +32,7 @@ export async function PATCH(request: NextRequest) {
     const parsed = interestSchema.safeParse(body);
 
     if (!parsed.success) {
-      return NextResponse.json(
-        { error: parsed.error.issues[0]?.message ?? "Invalid interest selection" },
-        { status: 400 }
-      );
+      return validationErrorResponse(parsed.error, "Invalid interest selection");
     }
 
     const updated = await prisma.user.update({

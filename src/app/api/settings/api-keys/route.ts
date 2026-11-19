@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createApiKeySchema } from "@/lib/validation/forms";
-import { jsonErrorResponse, requireActiveWorkspace } from "@/server/auth/authorization";
+import { jsonErrorResponse, requireActiveWorkspace , validationErrorResponse} from "@/server/auth/authorization";
 import {
   createWorkspaceApiKey,
   listWorkspaceApiKeys,
@@ -25,10 +25,7 @@ export async function POST(request: NextRequest) {
     const parsed = createApiKeySchema.safeParse(body);
 
     if (!parsed.success) {
-      return NextResponse.json(
-        { error: parsed.error.issues[0]?.message ?? "Invalid API key request" },
-        { status: 400 }
-      );
+      return validationErrorResponse(parsed.error, "Invalid API key request");
     }
 
     const apiKey = await createWorkspaceApiKey({
