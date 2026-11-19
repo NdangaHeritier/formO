@@ -20,6 +20,13 @@ const serverEnvSchema = z.object({
   TRUSTED_PROXY_HOPS: z.coerce.number().int().min(0).max(10).default(0),
   // How many months of range partitions the maintenance job keeps ahead.
   PARTITION_MONTHS_AHEAD: z.coerce.number().int().min(2).max(24).default(6),
+  // Local SMTP sinks are only reachable with an explicit opt-in.
+  FORMO_ALLOW_LOCAL_SMTP: z
+    .enum(["true", "false"])
+    .default("false")
+    .transform((value) => value === "true"),
+  // Comma-separated additional browser origins trusted by better-auth.
+  TRUSTED_ORIGINS: z.string().optional(),
 }).superRefine((data, ctx) => {
   if (data.NODE_ENV !== "production") return;
   const required = [

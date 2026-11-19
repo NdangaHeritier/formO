@@ -19,6 +19,20 @@ import { isUniqueConstraintError } from "@/lib/prisma";
 import { getPreset, renderPresetHtml } from "@/server/services/template-presets";
 import { getCachedTransporter } from "@/server/services/delivery.service";
 import { stripCrlf } from "@/server/submissions/render-email";
+import { assertSmtpEndpoint, SmtpEndpointError } from "@/lib/smtp-guard";
+import { getServerEnv } from "@/lib/env";
+import { sanitizeTemplateHtml, sanitizeTemplateSubject } from "@/lib/template-sanitize";
+
+async function assertSmtpAllowed(host: string, port: number): Promise<void> {
+  try {
+    await assertSmtpEndpoint(host, port, {
+      allowLocal: getServerEnv().FORMO_ALLOW_LOCAL_SMTP,
+    });
+  } catch (error) {
+    if (error instanceof SmtpEndpointError) throw new HttpError(400, error.message);
+    throw error;
+  }
+}
 
 async function allocateUniqueEndpoint(
   tx: Prisma.TransactionClient,
@@ -456,6 +470,7 @@ export async function createWorkspaceSmtpConfig(params: {
   input: CreateSmtpConfigInput;
 }) {
   const { organizationId, actorUserId, input } = params;
+  await assertSmtpAllowed(input.host, input.port);
   const sealed = encryptSecret(input.password);
 
   return prisma.$transaction(async (tx) => {
@@ -521,6 +536,7 @@ export async function verifyWorkspaceSmtpConfig(params: {
     throw new HttpError(404, "SMTP configuration not found");
   }
 
+  await assertSmtpAllowed(record.host, record.port);
   const password = decryptSecret({
     ciphertext: record.encryptedPassword,
     iv: record.iv,
@@ -584,6 +600,9 @@ export async function deleteWorkspaceSmtpConfig(params: {
   if (!existing) {
     throw new HttpError(404, "SMTP configuration not found");
   }
+  if ((await prisma.projectForm.count({ where: { smtpConfigId: smtpId } })) > 0) {
+    throw new HttpError(409, "SMTP configuration is used by one or more forms");
+  }
 
   await prisma.$transaction([
     prisma.smtpConfig.delete({ where: { id: smtpId } }),
@@ -628,8 +647,8 @@ export async function createWorkspaceEmailTemplate(params: {
       data: {
         organizationId,
         name: input.name.trim(),
-        subjectTemplate: input.subjectTemplate.trim(),
-        htmlTemplate: input.htmlTemplate,
+        subjectTemplate: sanitizeTemplateSubject(input.subjectTemplate),
+        htmlTemplate: sanitizeTemplateHtml(input.htmlTemplate),
         isDefault: input.isDefault ?? false,
       },
     });
@@ -663,6 +682,9 @@ export async function deleteWorkspaceEmailTemplate(params: {
 
   if (!existing) {
     throw new HttpError(404, "Email template not found");
+  }
+  if ((await prisma.projectForm.count({ where: { emailTemplateId: templateId } })) > 0) {
+    throw new HttpError(409, "Email template is used by one or more forms");
   }
 
   await prisma.$transaction([
@@ -895,8 +917,9 @@ export async function sendTemplateTestEmail(params: {
     throw new HttpError(400, "A preset or template is required");
   }
 
-  const cache = new Map<string, ReturnType<typeof getCachedTransporter>>();
-  const transporter = getCachedTransporter(cache, smtp);
+  await assertSmtpAllowed(smtp.host, smtp.port);
+  const cache = new Map<string, Awaited<ReturnType<typeof getCachedTransporter>>>();
+  const transporter = await getCachedTransporter(cache, smtp);
 
   try {
     const info = await transporter.sendMail({

@@ -1,6 +1,7 @@
 import nodemailer, { type Transporter } from "nodemailer";
 import type { Prisma } from "@/generated/prisma/client";
 import { decryptSecret } from "@/lib/crypto";
+import { assertSmtpEndpoint } from "@/lib/smtp-guard";
 import { getServerEnv } from "@/lib/env";
 import { prisma } from "@/lib/prisma";
 import {
@@ -130,13 +131,23 @@ export type SmtpSender = {
 };
 
 /** Shared by the delivery worker and the test-send route. */
-export function getCachedTransporter(
+export async function getCachedTransporter(
   cache: Map<string, Transporter>,
   smtp: SmtpSender | null
-): Transporter {
+): Promise<Transporter> {
   const key = smtp?.id ?? "system";
   let transporter = cache.get(key);
   if (!transporter) {
+    const env = getServerEnv();
+    if (smtp) {
+      await assertSmtpEndpoint(smtp.host, smtp.port, {
+        allowLocal: env.FORMO_ALLOW_LOCAL_SMTP,
+      });
+    } else {
+      await assertSmtpEndpoint(env.SMTP_HOST, env.SMTP_PORT, {
+        allowLocal: env.FORMO_ALLOW_LOCAL_SMTP,
+      });
+    }
     transporter = smtp ? customTransporter(smtp) : systemTransporter();
     cache.set(key, transporter);
   }
@@ -195,6 +206,8 @@ function classify(error: unknown): boolean {
   if (typeof error !== "object" || error === null) return false;
   const code = "responseCode" in error ? Number(error.responseCode) : NaN;
   if (code >= 550 && code <= 554) return true;
+  // Name comes from Error.name for our own guard errors, which are permanent.
+  if (error instanceof Error && error.name === "SmtpEndpointError") return true;
   const name = "code" in error ? String(error.code) : "";
   const message = "message" in error ? String(error.message) : "";
   return name === "EINVAL" || /invalid.{0,20}(address|recipient)|no recipients/i.test(message);
@@ -323,13 +336,13 @@ export async function runDeliveryBatch(): Promise<DeliveryBatchResult> {
         }
 
         const context = buildContext(delivery, row.recipient_email);
-        const transporter = getCachedTransporter(transporters, delivery.form.smtpConfig);
 
         const key = {
           id_createdAt: { id: row.id, createdAt: row.created_at },
         };
 
         try {
+          const transporter = await getCachedTransporter(transporters, delivery.form.smtpConfig);
           const subject = renderSubject(context);
           const { html, text, oversized } = await renderEmail(context);
           const replyTo = isSingleValidEmail(
