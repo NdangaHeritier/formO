@@ -1,4 +1,4 @@
-import { headers } from "next/headers";
+﻿import { headers } from "next/headers";
 import { NextResponse } from "next/server";
 import type { Organization, Project, ProjectForm, UserInterest } from "@/generated/prisma/client";
 import { auth } from "@/lib/auth";
@@ -17,6 +17,14 @@ export function normalizeOrgRole(role: string): OrgRole {
     return role;
   }
   return "member";
+}
+
+/** Single role-decision point shared by every workspace/project/form guard. */
+export function assertRole(actual: string, minRole: OrgRole, context = "resource"): void {
+  const role = normalizeOrgRole(actual);
+  if (ROLE_RANK[role] < ROLE_RANK[minRole]) {
+    throw new HttpError(403, `Insufficient ${context} permissions (requires ${minRole})`);
+  }
 }
 
 export class HttpError extends Error {
@@ -134,9 +142,7 @@ export async function requireOrgAccess(
   }
 
   const role = normalizeOrgRole(membership.role);
-  if (ROLE_RANK[role] < ROLE_RANK[minRole]) {
-    throw new HttpError(403, `Insufficient workspace permissions (requires ${minRole})`);
-  }
+  assertRole(membership.role, minRole, "workspace");
 
   return {
     user,
@@ -176,9 +182,7 @@ export async function requireActiveWorkspace(
   }
 
   const role = normalizeOrgRole(resolved.role);
-  if (ROLE_RANK[role] < ROLE_RANK[minRole]) {
-    throw new HttpError(403, `Insufficient workspace permissions (requires ${minRole})`);
-  }
+  assertRole(resolved.role, minRole, "workspace");
 
   return {
     user,
@@ -259,9 +263,7 @@ export async function requireProjectAccess(
   }
 
   const role = normalizeOrgRole(project.organization.members[0].role);
-  if (ROLE_RANK[role] < ROLE_RANK[minRole]) {
-    throw new HttpError(403, `Insufficient project permissions (requires ${minRole})`);
-  }
+  assertRole(project.organization.members[0].role, minRole, "project");
 
   return {
     user,
@@ -317,9 +319,7 @@ export async function requireFormAccess(
   }
 
   const role = normalizeOrgRole(form.project.organization.members[0].role);
-  if (ROLE_RANK[role] < ROLE_RANK[minRole]) {
-    throw new HttpError(403, `Insufficient form permissions (requires ${minRole})`);
-  }
+  assertRole(form.project.organization.members[0].role, minRole, "form");
 
   return {
     user,
@@ -328,3 +328,4 @@ export async function requireFormAccess(
     role,
   };
 }
+

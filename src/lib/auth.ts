@@ -5,6 +5,16 @@ import { nextCookies } from "better-auth/next-js";
 import { organization } from "better-auth/plugins";
 import { sendTransactionalEmail } from "./mailer";
 import { prisma } from "./prisma";
+import { getServerEnv } from "./env";
+
+function trustedOrigins(): string[] {
+  const env = getServerEnv();
+  const extra = (env.TRUSTED_ORIGINS ?? "")
+    .split(",")
+    .map((value) => value.trim())
+    .filter(Boolean);
+  return [...new Set([env.BETTER_AUTH_URL, ...extra])];
+}
 
 function escapeHtml(value: string): string {
   return value
@@ -31,11 +41,28 @@ export const auth = betterAuth({
   }),
   secret: process.env.BETTER_AUTH_SECRET,
   baseURL: process.env.BETTER_AUTH_URL || "http://localhost:3000",
-  trustedOrigins: [process.env.BETTER_AUTH_URL || "http://localhost:3000"],
+  trustedOrigins: trustedOrigins(),
   emailAndPassword: {
     enabled: true,
     minPasswordLength: 8,
     maxPasswordLength: 128,
+    // Verification is mandatory in production; local development stays usable
+    // without an SMTP sink.
+    requireEmailVerification: process.env.NODE_ENV === "production",
+    async sendVerificationEmail({
+      user,
+      url,
+    }: {
+      user: { name?: string | null; email: string };
+      url: string;
+    }) {
+      await sendTransactionalEmail({
+        to: user.email,
+        subject: "Verify your FormO email address",
+        html: `<p>Hi ${escapeHtml(user.name || "there")},</p><p><a href="${escapeHtml(url)}">Verify your email</a></p>`,
+        text: `Verify your FormO email: ${url}`,
+      });
+    },
     async sendResetPassword({ user, url }) {
       const safeName = escapeHtml(user.name || "there");
       const safeUrl = escapeHtml(url);
