@@ -18,6 +18,7 @@
     "test:pipeline": "vitest run",
     "test:e2e": "tsx scripts/e2e-submission.ts",
     "test:e2e:maintenance": "tsx scripts/e2e-maintenance.ts",
+    "test:e2e:recipients": "tsx scripts/e2e-recipients.ts",
     "clean": "rmdir /s /q .next"
   },
   "dependencies": {

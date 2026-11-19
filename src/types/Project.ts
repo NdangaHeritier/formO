@@ -39,13 +39,21 @@ export type ProjectType = {
 
 };
 
+export type FormRecipientType = {
+    id?: string;
+    email: string;
+    type: "to" | "cc" | "bcc";
+    isActive?: boolean;
+};
+
 export type FormType = {
     id: string;
     project?: ProjectType; // reference to the project ID
     title: string;
     description: string;
     endpoint: string;
-    email_to: string;
+    emailTo: string;
+    recipients?: FormRecipientType[];
     isActive?: boolean;
     submissionsCount?: number;
     created: string;

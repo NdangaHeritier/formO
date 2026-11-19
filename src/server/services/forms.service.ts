@@ -269,6 +269,18 @@ export async function updateProjectForm(params: {
   return prisma.$transaction(async (tx) => {
     await verifyOrgResources(tx, organizationId, input.smtpConfigId, input.emailTemplateId);
 
+    // Read the old primary address BEFORE the update; reading it afterwards
+    // returns the new value and would create a duplicate `to` recipient.
+    const previousEmailTo =
+      input.emailTo !== undefined && input.recipients === undefined
+        ? (
+            await tx.projectForm.findUnique({
+              where: { id: formId },
+              select: { emailTo: true },
+            })
+          )?.emailTo
+        : undefined;
+
     const updated = await tx.projectForm.update({
       where: { id: formId },
       data: {
@@ -318,25 +330,30 @@ export async function updateProjectForm(params: {
     } else if (input.emailTo !== undefined) {
       // Only the primary "to" address changed: update the existing "to" row,
       // leaving CC and BCC recipients untouched.
-      const previous = await tx.projectForm.findUnique({
-        where: { id: formId },
-        select: { emailTo: true, recipients: { select: { email: true, type: true } } },
-      });
       const newEmail = updated.emailTo.trim().toLowerCase();
-
-      const oldToRow = previous?.recipients.find(
-        (r) => r.type === "to" && r.email.trim().toLowerCase() === previous.emailTo.trim().toLowerCase()
-      );
-      if (oldToRow) {
-        await tx.formRecipient.update({
-          where: { formId_email_type: { formId, email: oldToRow.email, type: oldToRow.type } },
-          data: { email: newEmail },
-        });
+      const oldEmail = previousEmailTo?.trim().toLowerCase();
+      if (oldEmail && oldEmail !== newEmail) {
+        await tx.formRecipient
+          .update({
+            where: {
+              formId_email_type: { formId, email: oldEmail, type: "to" },
+            },
+            data: { email: newEmail },
+          })
+          .catch(async () => {
+            // Old row gone (e.g. earlier partial write): make sure exactly one
+            // primary recipient exists at the new address.
+            await tx.formRecipient.upsert({
+              where: { formId_email_type: { formId, type: "to", email: newEmail } },
+              create: { formId, email: newEmail, type: "to", isActive: true },
+              update: {},
+            });
+          });
       } else {
         await tx.formRecipient.upsert({
           where: { formId_email_type: { formId, type: "to", email: newEmail } },
           create: { formId, email: newEmail, type: "to", isActive: true },
-          update: { email: newEmail },
+          update: {},
         });
       }
     }
@@ -743,7 +760,7 @@ export async function listWorkspaceForms(organizationId: string) {
         select: { id: true, name: true, slug: true },
       },
       _count: {
-        select: { submissions: true },
+        select: { submissions: true, recipients: true },
       },
     },
     orderBy: { createdAt: "desc" },

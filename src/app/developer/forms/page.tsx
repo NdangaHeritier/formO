@@ -16,7 +16,7 @@ type WorkspaceForm = {
   createdAt: string;
   updatedAt: string;
   project: { id: string; name: string; slug: string };
-  _count: { submissions: number };
+  _count: { submissions: number; recipients: number };
 };
 
 const FormsPage = () => {
@@ -150,6 +150,7 @@ const FormsPage = () => {
                     <th scope="col" className="px-5 py-3 text-start font-semibold">Form</th>
                     <th scope="col" className="px-5 py-3 text-start font-semibold">Project</th>
                     <th scope="col" className="px-5 py-3 text-start font-semibold">Endpoint</th>
+                    <th scope="col" className="px-5 py-3 text-start font-semibold">Recipients</th>
                     <th scope="col" className="px-5 py-3 text-start font-semibold">Submissions</th>
                     <th scope="col" className="px-5 py-3 text-start font-semibold">Created</th>
                   </tr>
@@ -214,6 +215,9 @@ const FormsPage = () => {
                             {testResult.text}
                           </span>
                         )}
+                      </td>
+                      <td className="px-5 py-4 text-zinc-700 dark:text-zinc-400 whitespace-nowrap">
+                        {form._count.recipients}
                       </td>
                       <td className="px-5 py-4 text-zinc-700 dark:text-zinc-400 whitespace-nowrap">
                         {form._count.submissions}
