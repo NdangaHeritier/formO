@@ -1,5 +1,7 @@
+import type { NextRequest } from "next/server";
 import { getServerEnv } from "@/lib/env";
 import { HttpError } from "@/server/auth/authorization";
+import { getClientIp, UNKNOWN_IP } from "@/server/submissions/client-ip";
 
 const SITEVERIFY_URL = "https://challenges.cloudflare.com/turnstile/v0/siteverify";
 const TIMEOUT_MS = 5_000;
@@ -9,10 +11,14 @@ const TIMEOUT_MS = 5_000;
  * negative verification is a 400; a configuration or network fault is a 503.
  * The remote IP is sent only to Cloudflare and is never logged.
  */
-export async function verifyTurnstile(token: string | undefined, remoteIp: string): Promise<void> {
+export async function verifyTurnstile(
+  token: string | undefined,
+  request: NextRequest
+): Promise<void> {
   if (!token || !token.trim()) {
     throw new HttpError(400, "Turnstile verification is required");
   }
+  const remoteIp = getClientIp(request);
 
   let secret: string | undefined;
   try {
@@ -26,7 +32,7 @@ export async function verifyTurnstile(token: string | undefined, remoteIp: strin
   }
 
   const body = new URLSearchParams({ secret, response: token.trim() });
-  if (remoteIp && remoteIp !== "unknown") body.set("remoteip", remoteIp);
+  if (remoteIp !== UNKNOWN_IP) body.set("remoteip", remoteIp);
 
   let response: Response;
   try {

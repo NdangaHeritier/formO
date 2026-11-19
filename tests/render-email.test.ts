@@ -1,9 +1,9 @@
-import { describe, expect, it } from "vitest";
+﻿import { describe, expect, it } from "vitest";
 import {
   MAX_RENDERED_HTML_BYTES,
   escapeHtml,
   isSingleValidEmail,
-  renderHtml,
+  renderEmail,
   renderSubject,
   renderText,
   stripCrlf,
@@ -74,7 +74,7 @@ describe("subject rendering", () => {
 
 describe("HTML rendering", () => {
   it("HTML-escapes submitted values in custom templates", async () => {
-    const html = await renderHtml(
+    const { html } = await renderEmail(
       context({
         data: { name: "<script>alert(1)</script>" },
         template: { subjectTemplate: "s", htmlTemplate: "<p>{{name}}</p>" },
@@ -85,16 +85,45 @@ describe("HTML rendering", () => {
   });
 
   it("renders unknown placeholders as empty", async () => {
-    const html = await renderHtml(
+    const { html } = await renderEmail(
       context({ template: { subjectTemplate: "s", htmlTemplate: "[{{missing}}]" } })
     );
     expect(html).toBe("[]");
   });
 
   it("produces a non-empty default email with no custom template", async () => {
-    const html = await renderHtml(context());
+    const { html } = await renderEmail(context());
     expect(html.length).toBeGreaterThan(50);
     expect(Buffer.byteLength(html, "utf8")).toBeLessThanOrEqual(MAX_RENDERED_HTML_BYTES);
+  });
+});
+
+describe("oversized rendering", () => {
+  it("falls back to plain text instead of truncating HTML mid-tag", async () => {
+    const huge = "x".repeat(210 * 1024);
+    const result = await renderEmail(
+      context({
+        data: { name: "Ada", email: "ada@site.test", blob: huge },
+        template: {
+          subjectTemplate: "s",
+          htmlTemplate: `<p>{{blob}}</p><div class="tail">after</div>`,
+        },
+      })
+    );
+    expect(result.oversized).toBe(true);
+    expect(result.html).not.toContain("class=\"tail\"");
+    expect(result.html).not.toContain(huge);
+    expect(result.html).toContain("too large");
+    expect(result.text).toContain("name: Ada");
+    expect(result.text).toContain(`blob: ${huge}`.slice(0, 100));
+  });
+
+  it("does not report a normal template as oversized", async () => {
+    const result = await renderEmail(
+      context({ template: { subjectTemplate: "s", htmlTemplate: "<p>{{name}}</p>" } })
+    );
+    expect(result.oversized).toBe(false);
+    expect(result.html).toBe("<p>Ada</p>");
   });
 });
 
@@ -106,3 +135,4 @@ describe("plain-text alternative", () => {
     expect(text).toContain("email: ada@site.test");
   });
 });
+

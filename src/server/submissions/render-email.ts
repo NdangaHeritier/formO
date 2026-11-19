@@ -84,9 +84,25 @@ export function renderSubject(context: RenderContext): string {
   return stripCrlf(substitute(source, context, false)).trim().slice(0, MAX_SUBJECT_LENGTH);
 }
 
-export async function renderHtml(context: RenderContext): Promise<string> {
+export type RenderedEmail = {
+  html: string;
+  text: string;
+  oversized: boolean;
+};
+
+export function renderText(context: RenderContext): string {
+  const lines = Object.entries(context.data).map(([key, value]) => `${key}: ${value}`);
+  return [`New submission: ${context.title}`, "", ...lines].join("\n").slice(0, MAX_RENDERED_HTML_BYTES);
+}
+
+/**
+ * Renders HTML and its plain-text alternative together. An oversized template
+ * is never cut mid-tag: the plain-text body is sent instead and the HTML part
+ * becomes a short notice.
+ */
+export async function renderEmail(context: RenderContext): Promise<RenderedEmail> {
   const template = context.template;
-  const html = template
+  let html = template
     ? substitute(template.htmlTemplate, context, true)
     : await render(
         createElement(FormSubmission, {
@@ -96,16 +112,13 @@ export async function renderHtml(context: RenderContext): Promise<string> {
         })
       );
 
-  const bytes = Buffer.byteLength(html, "utf8");
-  if (bytes > MAX_RENDERED_HTML_BYTES) {
-    // DECISION: oversized custom templates are truncated rather than rejected so
-    // an existing form keeps delivering; the browser already clamps field values.
-    return html.slice(0, MAX_RENDERED_HTML_BYTES);
+  const text = renderText(context);
+  if (Buffer.byteLength(html, "utf8") > MAX_RENDERED_HTML_BYTES) {
+    return {
+      html: `<p>This submission was too large to render as HTML. The full details are in the plain-text part of this message.</p>`,
+      text,
+      oversized: true,
+    };
   }
-  return html;
-}
-
-export function renderText(context: RenderContext): string {
-  const lines = Object.entries(context.data).map(([key, value]) => `${key}: ${value}`);
-  return [`New submission: ${context.title}`, "", ...lines].join("\n").slice(0, MAX_RENDERED_HTML_BYTES);
+  return { html, text, oversized: false };
 }

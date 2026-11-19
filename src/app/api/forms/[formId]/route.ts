@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { readJson } from "@/lib/json";
 import { updateFormSchema } from "@/lib/validation/forms";
 import { jsonErrorResponse, requireFormAccess } from "@/server/auth/authorization";
 import {
@@ -8,6 +9,9 @@ import {
 } from "@/server/services/forms.service";
 
 export const dynamic = "force-dynamic";
+
+// Public submissions live only at POST /api/f/{endpoint}. This route is form
+// management (by form id) and deliberately exposes no POST or OPTIONS.
 
 export async function GET(
   _request: NextRequest,
@@ -30,7 +34,7 @@ export async function PATCH(
   try {
     const { formId } = await context.params;
     const access = await requireFormAccess(formId, "member");
-    const body = await request.json();
+    const body = await readJson(request);
     const parsed = updateFormSchema.safeParse(body);
 
     if (!parsed.success) {

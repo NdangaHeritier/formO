@@ -12,6 +12,7 @@ import {
 import { parseSubmissionBody, readBodyBytes } from "@/server/submissions/parse-body";
 import { enforceRateLimits, ipHashHex } from "@/server/submissions/rate-limit";
 import { verifyTurnstile } from "@/server/submissions/turnstile";
+import { getClientIp } from "@/server/submissions/client-ip";
 
 const IDEMPOTENCY_TTL_MS = 24 * 60 * 60_000;
 const DEFAULT_THANKS_PATH = "/f/thanks";
@@ -22,14 +23,6 @@ export type SubmissionOutcome = {
   headers: Record<string, string>;
   location?: string;
 };
-
-function clientIp(request: NextRequest): string {
-  return (
-    request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ||
-    request.headers.get("x-real-ip")?.trim() ||
-    "unknown"
-  );
-}
 
 function todayUtc(): Date {
   const now = new Date();
@@ -103,8 +96,8 @@ export async function acceptSubmission(
   }
 
   // 4. Two rate-limit buckets.
-  const ip = clientIp(request);
-  const retryAfter = await enforceRateLimits(form.id, ip);
+  const ip = getClientIp(request);
+  const retryAfter = await enforceRateLimits(form.id, request);
   if (retryAfter !== null) {
     return outcome(429, { ...baseHeaders, "Retry-After": String(retryAfter) }, {
       error: "Too many submissions. Please try again later.",
@@ -160,7 +153,7 @@ export async function acceptSubmission(
   // 8. Turnstile â€” fail closed.
   if (form.requireTurnstile) {
     try {
-      await verifyTurnstile(reserved.turnstile, ip);
+      await verifyTurnstile(reserved.turnstile, request);
     } catch (error) {
       if (error instanceof HttpError) {
         return outcome(error.status, baseHeaders, { error: error.message });
@@ -324,4 +317,5 @@ function successOutcome(
   );
   return outcome(303, headers, undefined, allowedRedirect ?? DEFAULT_THANKS_PATH);
 }
+
 

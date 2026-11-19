@@ -15,8 +15,10 @@ import type {
   UpdateFormInput,
 } from "@/lib/validation/forms";
 import { HttpError } from "@/server/auth/authorization";
-import { isUniqueConstraintError } from "@/server/services/submission.service";
+import { isUniqueConstraintError } from "@/lib/prisma";
 import { getPreset, renderPresetHtml } from "@/server/services/template-presets";
+import { getCachedTransporter } from "@/server/services/delivery.service";
+import { stripCrlf } from "@/server/submissions/render-email";
 
 async function allocateUniqueEndpoint(
   tx: Prisma.TransactionClient,
@@ -843,13 +845,19 @@ function substituteTestValues(input: string, values: Record<string, unknown>, fo
  * Sends a test delivery for a saved template or a preset. Uses the workspace's
  * own SMTP config; nothing is sent on the public submission path.
  */
+/** Fixed sample data only — never values from the request body. */
+const TEST_SAMPLE_VALUES: Record<string, string> = {
+  name: "Sample Sender",
+  email: "sample@example.test",
+  message: "This is sample data used to preview this template.",
+};
+
 export async function sendTemplateTestEmail(params: {
   organizationId: string;
   actorUserId: string;
+  userEmail: string;
   presetId?: string;
   templateId?: string;
-  values: Record<string, unknown>;
-  to: string;
   smtpConfigId: string;
 }): Promise<{ sent: true; messageId: string | null }> {
   const smtp = await prisma.smtpConfig.findFirst({
@@ -857,49 +865,44 @@ export async function sendTemplateTestEmail(params: {
   });
   if (!smtp) throw new HttpError(404, "SMTP configuration not found");
 
+  // The destination is the caller's own verified address; a body-supplied
+  // recipient is never read, so this endpoint cannot become an open relay.
+  const to = stripCrlf(params.userEmail).trim();
+  if (!to || !/^[^\s@<>]+@[^\s@<>]+\.[^\s@<>]+$/.test(to)) {
+    throw new HttpError(400, "A verified email address is required");
+  }
+
   let subject: string;
   let html: string;
+  const sample = { ...TEST_SAMPLE_VALUES };
 
   if (params.templateId) {
     const template = await prisma.emailTemplate.findFirst({
       where: { id: params.templateId, organizationId: params.organizationId },
     });
     if (!template) throw new HttpError(404, "Template not found");
-    subject = substituteTestValues(template.subjectTemplate, params.values, false);
-    html = substituteTestValues(template.htmlTemplate, params.values, true);
+    subject = substituteTestValues(template.subjectTemplate, sample, false);
+    html = substituteTestValues(template.htmlTemplate, sample, true);
   } else if (params.presetId) {
     const preset = getPreset(params.presetId);
     if (!preset) throw new HttpError(404, "Preset not found");
-    subject = substituteTestValues(preset.subject, params.values, false);
+    subject = substituteTestValues(preset.subject, sample, false);
     html = await renderPresetHtml(params.presetId, {
-      ...(params.values as Record<string, string>),
-      siteName: String(params.values.siteName ?? "FormO"),
+      ...sample,
+      siteName: "FormO",
     });
   } else {
     throw new HttpError(400, "A preset or template is required");
   }
 
-  const password = decryptSecret({
-    ciphertext: smtp.encryptedPassword,
-    iv: smtp.iv,
-    authTag: smtp.authTag,
-    keyVersion: smtp.keyVersion,
-  });
-  const transporter = nodemailer.createTransport({
-    host: smtp.host,
-    port: smtp.port,
-    secure: smtp.secure,
-    auth: { user: smtp.username, pass: password },
-    connectionTimeout: 8_000,
-    greetingTimeout: 8_000,
-    socketTimeout: 12_000,
-  });
+  const cache = new Map<string, ReturnType<typeof getCachedTransporter>>();
+  const transporter = getCachedTransporter(cache, smtp);
 
   try {
     const info = await transporter.sendMail({
-      from: smtp.fromEmail,
-      to: params.to,
-      subject: subject.replace(/[\r\n]+/g, " ").trim().slice(0, 200) || "FormO test email",
+      from: stripCrlf(smtp.fromEmail),
+      to,
+      subject: stripCrlf(subject).trim().slice(0, 200) || "FormO test email",
       html,
       text: html.replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim().slice(0, 20_000),
     });
@@ -911,7 +914,7 @@ export async function sendTemplateTestEmail(params: {
         action: "email_template.test_sent",
         targetType: "email_template",
         targetId: params.templateId ?? params.presetId ?? null,
-        metadata: { to: params.to },
+        metadata: { to },
       },
     });
 

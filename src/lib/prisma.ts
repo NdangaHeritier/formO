@@ -77,6 +77,16 @@ export const prisma = new Proxy({} as PrismaClient, {
   },
 });
 
+/** Detects Prisma unique-constraint violations without importing generated classes. */
+export function isUniqueConstraintError(error: unknown): boolean {
+  return (
+    typeof error === "object" &&
+    error !== null &&
+    "code" in error &&
+    (error as { code?: unknown }).code === "P2002"
+  );
+}
+
 /**
  * Verifies PostgreSQL connectivity and returns the active server version string.
  */

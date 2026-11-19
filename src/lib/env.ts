@@ -3,10 +3,10 @@ import { z } from "zod";
 const serverEnvSchema = z.object({
   NODE_ENV: z.enum(["development", "test", "production"]).default("development"),
   DATABASE_URL: z.string().url("DATABASE_URL must be a valid PostgreSQL connection URL"),
-  BETTER_AUTH_SECRET: z.string().min(32).optional(),
+  BETTER_AUTH_SECRET: z.string().min(32),
   BETTER_AUTH_URL: z.string().url().default("http://localhost:3000"),
-  FORMO_ENCRYPTION_KEY: z.string().min(32).optional(),
-  FORMO_HMAC_PEPPER: z.string().min(32).optional(),
+  FORMO_ENCRYPTION_KEY: z.string().min(32),
+  FORMO_HMAC_PEPPER: z.string().min(32),
   SMTP_HOST: z.string().default("127.0.0.1"),
   SMTP_PORT: z.coerce.number().int().min(1).max(65535).default(1025),
   SMTP_SECURE: z.enum(["true", "false"]).default("false"),
@@ -15,6 +15,35 @@ const serverEnvSchema = z.object({
   SMTP_FROM: z.string().default("FormO <noreply@localhost>"),
   CRON_SECRET: z.string().min(24).optional(),
   TURNSTILE_SECRET_KEY: z.string().optional(),
+  // Number of trusted reverse-proxy hops in X-Forwarded-For. 0 ignores the
+  // header entirely because clients can spoof it.
+  TRUSTED_PROXY_HOPS: z.coerce.number().int().min(0).max(10).default(0),
+  // How many months of range partitions the maintenance job keeps ahead.
+  PARTITION_MONTHS_AHEAD: z.coerce.number().int().min(2).max(24).default(6),
+}).superRefine((data, ctx) => {
+  if (data.NODE_ENV !== "production") return;
+  const required = [
+    "BETTER_AUTH_SECRET",
+    "FORMO_ENCRYPTION_KEY",
+    "FORMO_HMAC_PEPPER",
+    "CRON_SECRET",
+  ] as const;
+  for (const key of required) {
+    if ((process.env[key]?.trim().length ?? 0) < 32) {
+      ctx.addIssue({
+        code: "custom",
+        path: [key],
+        message: `${key} must be at least 32 characters in production`,
+      });
+    }
+  }
+  if (process.env.FORMO_ALLOW_DEV_SECRETS === "1") {
+    ctx.addIssue({
+      code: "custom",
+      path: ["FORMO_ALLOW_DEV_SECRETS"],
+      message: "FORMO_ALLOW_DEV_SECRETS=1 is not allowed in production",
+    });
+  }
 });
 
 export type ServerEnv = z.infer<typeof serverEnvSchema>;
@@ -38,6 +67,11 @@ export function getServerEnv(): ServerEnv {
 
   cachedEnv = parsed.data;
   return cachedEnv;
+}
+
+/** Test-only helper: clears the cached parse after env vars are changed. */
+export function resetServerEnvCache(): void {
+  cachedEnv = null;
 }
 
 export function isDatabaseConfigured(): boolean {

@@ -5,9 +5,8 @@ import { getServerEnv } from "@/lib/env";
 import { prisma } from "@/lib/prisma";
 import {
   isSingleValidEmail,
-  renderHtml,
+  renderEmail,
   renderSubject,
-  renderText,
   stripCrlf,
   type RenderContext,
 } from "@/server/submissions/render-email";
@@ -116,7 +115,33 @@ function systemTransporter(): Transporter {
   );
 }
 
-function customTransporter(smtp: NonNullable<DeliveryContext["form"]["smtpConfig"]>): Transporter {
+export type SmtpSender = {
+  id?: string;
+  host: string;
+  port: number;
+  secure: boolean;
+  username: string;
+  encryptedPassword: Uint8Array;
+  iv: Uint8Array;
+  authTag: Uint8Array;
+  keyVersion: number;
+};
+
+/** Shared by the delivery worker and the test-send route. */
+export function getCachedTransporter(
+  cache: Map<string, Transporter>,
+  smtp: SmtpSender | null
+): Transporter {
+  const key = smtp?.id ?? "system";
+  let transporter = cache.get(key);
+  if (!transporter) {
+    transporter = smtp ? customTransporter(smtp) : systemTransporter();
+    cache.set(key, transporter);
+  }
+  return transporter;
+}
+
+function customTransporter(smtp: SmtpSender): Transporter {
   const password = decryptSecret({
     ciphertext: smtp.encryptedPassword,
     iv: smtp.iv,
@@ -292,14 +317,7 @@ export async function runDeliveryBatch(): Promise<DeliveryBatchResult> {
         }
 
         const context = buildContext(delivery, row.recipient_email);
-        const cacheKey = delivery.form.smtpConfig?.id ?? "system";
-        let transporter = transporters.get(cacheKey);
-        if (!transporter) {
-          transporter = delivery.form.smtpConfig
-            ? customTransporter(delivery.form.smtpConfig)
-            : systemTransporter();
-          transporters.set(cacheKey, transporter);
-        }
+        const transporter = getCachedTransporter(transporters, delivery.form.smtpConfig);
 
         const key = {
           id_createdAt: { id: row.id, createdAt: row.created_at },
@@ -307,12 +325,15 @@ export async function runDeliveryBatch(): Promise<DeliveryBatchResult> {
 
         try {
           const subject = renderSubject(context);
-          const html = await renderHtml(context);
-          const text = renderText(context);
+          const { html, text, oversized } = await renderEmail(context);
           const replyTo = isSingleValidEmail(
             delivery.form.replyToField ? context.data[delivery.form.replyToField] : undefined
           );
 
+          // Delivery is at-least-once, not exactly-once: a worker killed after
+          // SMTP accepted the message but before the database recorded it will
+          // resend after the 10-minute stale-claim recovery. A stable Message-ID
+          // lets receiving servers deduplicate those retries.
           const info = await transporter.sendMail({
             from: stripCrlf(
               delivery.form.smtpConfig?.fromEmail ?? getServerEnv().SMTP_FROM
@@ -321,6 +342,7 @@ export async function runDeliveryBatch(): Promise<DeliveryBatchResult> {
             subject: stripCrlf(subject),
             html,
             text,
+            messageId: `<${row.id}@formo.local>`,
             ...(replyTo ? { replyTo: stripCrlf(replyTo) } : {}),
           });
 
@@ -348,6 +370,19 @@ export async function runDeliveryBatch(): Promise<DeliveryBatchResult> {
           result.sent += 1;
         } catch (error) {
           const permanent = classify(error);
+          if (
+            !permanent &&
+            typeof error === "object" &&
+            error !== null &&
+            !("responseCode" in error)
+          ) {
+            // Countable signal for providers that fail without an SMTP code.
+            console.warn("[delivery] retry without SMTP responseCode", {
+              deliveryId: row.id,
+              attempt: row.attempt_count,
+              errorCode: "code" in error ? String(error.code) : "none",
+            });
+          }
           const dead = permanent || row.attempt_count >= MAX_ATTEMPTS;
           const status = dead ? (permanent ? "failed" : "dead_letter") : "retrying";
           const message = safeErrorText(error);
