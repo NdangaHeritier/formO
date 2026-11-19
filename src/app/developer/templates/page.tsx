@@ -5,6 +5,7 @@ import FormButton from "@/components/Global/FormButton";
 import LinkButton from "@/components/Global/LinkButton";
 import { Icon } from "@/components/Global/Icon";
 import ConfirmDialog from "@/components/Global/ConfirmDialog";
+import { SkeletonListRows } from "@/components/Global/Skeleton";
 import DeveloperShell from "@/components/Developer/DeveloperShell";
 import { relativeTime } from "@/lib/format";
 import type { TemplateRecord } from "@/components/Developer/Templates/types";
@@ -83,11 +84,7 @@ export default function TemplatesPage() {
           </div>
           <div className="p-3">
             {loading ? (
-              <div className="grid grid-cols-1 gap-3 p-2">
-                {[...Array(2)].map((_, index) => (
-                  <div key={index} className="h-12 animate-pulse rounded-lg bg-zinc-200/60 dark:bg-zinc-900" />
-                ))}
-              </div>
+              <SkeletonListRows rows={2} />
             ) : loadError ? (
               <div className="grid justify-items-center gap-3 py-8 text-center text-zinc-500">
                 Couldn&apos;t load templates.

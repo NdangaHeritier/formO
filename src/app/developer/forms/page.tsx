@@ -5,6 +5,7 @@ import DeveloperShell from "@/components/Developer/DeveloperShell";
 import { Squares } from "@/components/Global/Squares";
 import { Icon } from "@/components/Global/Icon";
 import { relativeTime } from "@/lib/format";
+import { SkeletonTableRows } from "@/components/Global/Skeleton";
 
 type WorkspaceForm = {
   id: string;
@@ -128,10 +129,8 @@ const FormsPage = () => {
           )}
 
           {loading ? (
-            <div className="grid grid-cols-1 gap-3">
-              {[...Array(5)].map((_, i) => (
-                <div key={i} className="h-14 animate-pulse bg-zinc-200/60 dark:bg-zinc-900 rounded-lg" />
-              ))}
+            <div className="overflow-x-auto rounded-2xl border border-zinc-200 dark:border-zinc-900 bg-white dark:bg-black shadow-lg">
+              <SkeletonTableRows rows={5} />
             </div>
           ) : loadError ? (
             <div className="text-center text-zinc-500 p-10">Couldn&apos;t load forms.</div>

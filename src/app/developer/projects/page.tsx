@@ -11,6 +11,7 @@ import { Squares } from "@/components/Global/Squares";
 import FormButton from "@/components/Global/FormButton";
 import { Icon } from "@/components/Global/Icon";
 import ConfirmDialog from "@/components/Global/ConfirmDialog";
+import { SkeletonGrid, SkeletonTableRows } from "@/components/Global/Skeleton";
 import { ProjectType } from "@/types/Project";
 
 type StatusTab = "all" | "active" | "archived";
@@ -284,17 +285,11 @@ const Projects = () => {
             {loading ? (
               /* skeletons — shaped like the active view */
               view === "list" ? (
-                <div className="grid grid-cols-1 gap-3">
-                  {[...Array(5)].map((_, i) => (
-                    <div key={i} className="h-14 animate-pulse bg-zinc-200/60 dark:bg-zinc-900 rounded-lg" />
-                  ))}
+                <div className="overflow-x-auto rounded-2xl border border-zinc-200 dark:border-zinc-900 bg-white dark:bg-black shadow-lg">
+                  <SkeletonTableRows rows={5} />
                 </div>
               ) : (
-                <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5">
-                  {[...Array(6)].map((_, i) => (
-                    <div key={i} className="h-72 animate-pulse bg-zinc-200/60 dark:bg-zinc-900 rounded-3xl" />
-                  ))}
-                </div>
+                <SkeletonGrid count={6} />
               )
             ) : loadError ? (
               <div className="text-center text-zinc-500 p-10 flex flex-col items-center gap-4">
@@ -422,7 +417,7 @@ const Projects = () => {
                             {menuProjectId === project.id && (
                               <div
                                 role="menu"
-                                className="absolute right-0 mt-2 w-44 p-1 bg-zinc-100 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-xl shadow-lg z-20"
+                                className="absolute right-0 mt-2 w-44 p-1 bg-zinc-100 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-xl shadow-lg z-50"
                               >
                                 <button
                                   type="button"

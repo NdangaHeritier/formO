@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import type { AnalyticType } from "@/types/Project";
 import { AnalyticCard } from "./AnalyticCard";
+import { SkeletonMetricCard } from "@/components/Global/Skeleton";
 
 type AnalyticsResponse = {
   projects: { total: number; thisMonth: number; lastMonth: number; changeRate: number | null };
@@ -18,6 +19,7 @@ type AnalyticsResponse = {
 
 export default function AnalyticsGroup() {
   const [analytics, setAnalytics] = useState<AnalyticsResponse | null>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     fetch("/api/analytics")
@@ -27,7 +29,8 @@ export default function AnalyticsGroup() {
           setAnalytics(data);
         }
       })
-      .catch(() => {});
+      .catch(() => {})
+      .finally(() => setLoading(false));
   }, []);
 
   const analyticsList: AnalyticType[] = [
@@ -63,8 +66,18 @@ export default function AnalyticsGroup() {
     },
   ];
 
+  if (loading) {
+    return (
+      <div className="analytics grid grid-cols-3 gap-5 py-3">
+        {Array.from({ length: 3 }, (_, index) => (
+          <SkeletonMetricCard key={index} />
+        ))}
+      </div>
+    );
+  }
+
   return (
-    <div className="analytics grid grid-cols-3 gap-5 py-3 space-x-4">
+    <div className="analytics grid grid-cols-3 gap-5 py-3">
       {analyticsList.map((analytic, index) => (
         <AnalyticCard
           key={index}

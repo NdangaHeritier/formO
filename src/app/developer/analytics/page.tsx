@@ -5,6 +5,7 @@ import DeveloperShell from "@/components/Developer/DeveloperShell";
 import { Squares } from "@/components/Global/Squares";
 import { Icon } from "@/components/Global/Icon";
 import AnalyticsGroup from "@/components/Developer/AnalyticsGroup";
+import { Skeleton, SkeletonListRows } from "@/components/Global/Skeleton";
 import { ProjectType } from "@/types/Project";
 
 type AnalyticsResponse = {
@@ -78,7 +79,7 @@ const AnalyticsPage = () => {
                   {box.label}
                 </div>
                 {loading ? (
-                  <span className="h-8 w-16 rounded-md animate-pulse bg-zinc-200/60 dark:bg-zinc-900 block" />
+                  <Skeleton className="h-8 w-16 block" />
                 ) : (
                   <span className="text-3xl font-bold text-zinc-900 dark:text-zinc-100">
                     {box.value}
@@ -104,11 +105,7 @@ const AnalyticsPage = () => {
             </div>
             <div className="p-3">
               {loading ? (
-                <div className="grid grid-cols-1 gap-3">
-                  {[...Array(3)].map((_, i) => (
-                    <div key={i} className="h-12 animate-pulse bg-zinc-200/60 dark:bg-zinc-900 rounded-lg" />
-                  ))}
-                </div>
+                <SkeletonListRows rows={3} />
               ) : topProjects.length === 0 ? (
                 <div className="text-center text-zinc-500 py-8">No data yet — submissions will appear here.</div>
               ) : (

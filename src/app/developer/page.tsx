@@ -19,12 +19,14 @@ import { FormsDisplayModel } from '@/components/Developer/Modals/Displays/Displa
 import LinkButton from '@/components/Global/LinkButton';
 import PrivateRouter from '@/components/Global/privateRouter';
 import AnalyticsGroup from '@/components/Developer/AnalyticsGroup';
+import { SkeletonGrid } from '@/components/Global/Skeleton';
   
 const Developer= () => {
  
     // Fetch projects from API
 
     const [projects, setProjects] = useState<ProjectType[]>([]);
+    const [loadingProjects, setLoadingProjects] = useState(true);
     const loadProjects = useCallback(() => {
       fetch("/api/projects")
         .then((res) => (res.ok ? res.json() : null))
@@ -33,7 +35,8 @@ const Developer= () => {
             setProjects(data.projects);
           }
         })
-        .catch(() => {});
+        .catch(() => {})
+        .finally(() => setLoadingProjects(false));
     }, []);
 
     useEffect(() => {
@@ -104,7 +107,9 @@ const Developer= () => {
 
             {/* projects cards */}
             <div className="grid grid-cols-3 gap-5">
-              {projects.length > 0 ? (
+              {loadingProjects ? (
+                <SkeletonGrid count={3} />
+              ) : projects.length > 0 ? (
                 projects.map((project) => (
                     <ProjectCard
                       key={project.id}
@@ -143,7 +148,7 @@ const Developer= () => {
             <p className="text-zinc-600 dark:text-zinc-300 mb-5">
             Get started with your first project and form in just a few steps.
             </p>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 mb-5">
+            <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-5 mb-5 mt-6">
               {/* Step 1: Create Project */}
               <GuideCard
               icon="FolderPlus"
