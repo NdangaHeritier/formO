@@ -22,6 +22,8 @@ export type DeliveryBatchResult = {
   sent: number;
   retried: number;
   failed: number;
+  /** Age of the oldest eligible delivery, for monitoring. Null when queue empty. */
+  oldestPendingAgeMinutes: number | null;
 };
 
 type ClaimRow = {
@@ -188,16 +190,14 @@ function buildContext(delivery: DeliveryContext, recipientEmail: string): Render
   };
 }
 
-function classify(error: unknown): "permanent" | "temporary" {
-  if (typeof error !== "object" || error === null) return "temporary";
+/** True only for a permanent (do-not-retry) SMTP failure. */
+function classify(error: unknown): boolean {
+  if (typeof error !== "object" || error === null) return false;
   const code = "responseCode" in error ? Number(error.responseCode) : NaN;
-  if (code >= 550 && code <= 554) return "permanent";
+  if (code >= 550 && code <= 554) return true;
   const name = "code" in error ? String(error.code) : "";
   const message = "message" in error ? String(error.message) : "";
-  if (name === "EINVAL" || /invalid.{0,20}(address|recipient)|no recipients/i.test(message)) {
-    return "permanent";
-  }
-  return "temporary";
+  return name === "EINVAL" || /invalid.{0,20}(address|recipient)|no recipients/i.test(message);
 }
 
 /** Error text is stored verbatim except for CR/LF and an explicit secret scrub. */
@@ -271,7 +271,13 @@ export function retryDelayMinutes(attempt: number): number {
  * returns zero claims, subject to an overall time budget.
  */
 export async function runDeliveryBatch(): Promise<DeliveryBatchResult> {
-  const result: DeliveryBatchResult = { claimed: 0, sent: 0, retried: 0, failed: 0 };
+  const result: DeliveryBatchResult = {
+    claimed: 0,
+    sent: 0,
+    retried: 0,
+    failed: 0,
+    oldestPendingAgeMinutes: null,
+  };
   const deadline = Date.now() + TIME_BUDGET_MS;
   const transporters = new Map<string, Transporter>();
 
@@ -426,6 +432,15 @@ export async function runDeliveryBatch(): Promise<DeliveryBatchResult> {
       )
     );
   }
+
+  const oldest = await prisma.emailDeliveryLog.findFirst({
+    where: { status: { in: ["pending", "retrying"] } },
+    orderBy: { nextRetryAt: "asc" },
+    select: { nextRetryAt: true },
+  });
+  result.oldestPendingAgeMinutes = oldest
+    ? Math.max(0, Math.floor((Date.now() - oldest.nextRetryAt.getTime()) / 60_000))
+    : null;
 
   return result;
 }

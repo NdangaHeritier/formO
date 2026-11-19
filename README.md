@@ -63,10 +63,31 @@ Formo stands out due to its:
 To set up Formo:
 1. Clone the repository (placeholder: [GitHub](https://github.com/NdangaHeritier/formo)).
 2. Install dependencies: `npm install`.
-3. Configure environment variables for SMTP and PocketBase in `.env`.
+3. Copy `.env.example` to `.env` and fill in the values.
 4. Run locally: `npm run dev`.
 
-For detailed setup instructions, refer to the [Next.js documentation](https://nextjs.org/docs) or [PocketBase documentation](https://pocketbase.io/docs).
+### Required server environment
+
+| Variable | Purpose |
+|---|---|
+| `DATABASE_URL` | PostgreSQL 18 connection string |
+| `BETTER_AUTH_SECRET` | Auth signing secret (32+ characters) |
+| `FORMO_ENCRYPTION_KEY` | AES-256-GCM master key for SMTP passwords (32+) |
+| `FORMO_HMAC_PEPPER` | HMAC pepper for IP hashes and API keys (32+) |
+| `CRON_SECRET` | Bearer secret for `/api/cron/*` (32+, **required in production**) |
+
+Optional but recommended:
+
+| Variable | Default | Purpose |
+|---|---|---|
+| `TRUSTED_PROXY_HOPS` | `0` | Trusted proxy hops in `X-Forwarded-For`; `0` ignores the spoofable header |
+| `PARTITION_MONTHS_AHEAD` | `6` | Months of range partitions the maintenance job keeps ahead (2–24) |
+| `TURNSTILE_SECRET_KEY` | — | Cloudflare Turnstile verification for forms that require it |
+| `FORMO_ALLOW_DEV_SECRETS` | unset | Local-development fallback keys only; forbidden in production |
+
+The delivery worker must be called by a scheduler — see [docs/scheduling.md](docs/scheduling.md).
+Partition upkeep and incident steps are in [docs/operations.md](docs/operations.md).
+Public form submissions go to `POST /api/f/{endpoint}`.
 
 ## Future Plans
 Formo is set to expand with:
@@ -75,3 +96,7 @@ Formo is set to expand with:
 - Multi-recipient support for form submissions (upcoming Pro version).
 
 This platform is designed to be a developer-friendly, privacy-focused solution that bridges the gap between technical and non-technical email needs. Whether you’re building an app or sending newsletters, Formo has you covered.
+
+## Live Implementation Notes
+
+For the public form-submission endpoint, SMTP retry workers, monthly partition maintenance, and authenticated API-key sends, see [docs/email-pipeline.md](docs/email-pipeline.md).

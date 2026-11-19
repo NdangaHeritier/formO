@@ -1,6 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { isDatabaseConfigured } from "@/lib/env";
 import { checkDatabaseHealth } from "@/lib/prisma";
+import {
+  collectReadiness,
+  evaluateReadiness,
+} from "@/server/services/health.service";
 
 export const dynamic = "force-dynamic";
 
@@ -14,34 +18,36 @@ export async function GET(request: NextRequest) {
 
   if (!isDatabaseConfigured()) {
     return NextResponse.json(
-      {
-        status: "unconfigured",
-        database: "missing DATABASE_URL",
-        timestamp,
-      },
+      { status: "unconfigured", database: "missing DATABASE_URL", timestamp },
       { status: 503 }
     );
   }
 
   try {
     const db = await checkDatabaseHealth();
+    const collected = await collectReadiness();
+    const report = evaluateReadiness(collected.headroom, true, collected.warnings);
     return NextResponse.json(
       {
-        status: "ok",
+        status: report.ok ? "ok" : "not_ready",
         database: "connected",
         postgresVersion: db.serverVersion,
         timestamp,
+        ...report,
       },
-      { status: 200 }
+      { status: report.ok ? 200 : 503 }
     );
   } catch (error) {
-    console.error("[health] PostgreSQL readiness check failed:", error);
+    console.error("[health] PostgreSQL readiness check failed:", {
+      reason: error instanceof Error ? error.message : "unknown",
+    });
+    const report = evaluateReadiness({}, false, {
+      staleQueue: 0,
+      oldestPendingAgeMinutes: null,
+      defaultRows: {},
+    });
     return NextResponse.json(
-      {
-        status: "error",
-        database: "unreachable",
-        timestamp,
-      },
+      { status: "error", database: "unreachable", timestamp, ...report },
       { status: 503 }
     );
   }
