@@ -5,6 +5,8 @@ something calls it. A scheduler must hit it â€” every minute is a good default â
 maintenance endpoint once a day. Both require the same `CRON_SECRET`.
 
 All examples below assume `CRON_SECRET` is set to the same 32+ character value the server uses.
+For a Vercel + Neon deployment, see [docs/deployment.md](deployment.md) for the database
+environment variables and the `vercel.json` already in this repository.
 
 ## 1. Vercel Cron (`vercel.json`)
 

@@ -70,7 +70,7 @@ To set up Formo:
 
 | Variable | Purpose |
 |---|---|
-| `DATABASE_URL` | PostgreSQL 18 connection string |
+| `DATABASE_URL` | Local Postgres in dev; Neon **pooled** URL in production |
 | `BETTER_AUTH_SECRET` | Auth signing secret (32+ characters) |
 | `FORMO_ENCRYPTION_KEY` | AES-256-GCM master key for SMTP passwords (32+) |
 | `FORMO_HMAC_PEPPER` | HMAC pepper for IP hashes and API keys (32+) |
@@ -80,6 +80,8 @@ Optional but recommended:
 
 | Variable | Default | Purpose |
 |---|---|---|
+| `DATABASE_URL_UNPOOLED` | unset | Neon **direct** URL for Prisma CLI migrations; local dev falls back to `DATABASE_URL` |
+| `DATABASE_DRIVER` | `auto` | `auto` detects Neon by hostname; `neon` / `pg` override it |
 | `TRUSTED_PROXY_HOPS` | `0` | Trusted proxy hops in `X-Forwarded-For`; `0` ignores the spoofable header |
 | `PARTITION_MONTHS_AHEAD` | `6` | Months of range partitions the maintenance job keeps ahead (2–24) |
 | `TURNSTILE_SECRET_KEY` | — | Cloudflare Turnstile verification for forms that require it |
@@ -88,6 +90,10 @@ Optional but recommended:
 The delivery worker must be called by a scheduler — see [docs/scheduling.md](docs/scheduling.md).
 Partition upkeep and incident steps are in [docs/operations.md](docs/operations.md).
 Public form submissions go to `POST /api/f/{endpoint}`.
+
+**Deploying with Neon?** Local Postgres keeps working unchanged; production uses Neon's
+serverless adapter and a direct URL for migrations. Full setup is in
+[docs/deployment.md](docs/deployment.md).
 
 ## Future Plans
 Formo is set to expand with:

@@ -3,6 +3,11 @@ import { z } from "zod";
 const serverEnvSchema = z.object({
   NODE_ENV: z.enum(["development", "test", "production"]).default("development"),
   DATABASE_URL: z.string().url("DATABASE_URL must be a valid PostgreSQL connection URL"),
+  // Direct (unpooled) Neon URL used only by Prisma CLI for migrations.
+  // Locally this is unset and DATABASE_URL is used instead.
+  DATABASE_URL_UNPOOLED: z.string().url().optional(),
+  // Override the driver when Neon is reached through a custom domain.
+  DATABASE_DRIVER: z.enum(["auto", "neon", "pg"]).default("auto"),
   BETTER_AUTH_SECRET: z.string().min(32),
   BETTER_AUTH_URL: z.string().url().default("http://localhost:3000"),
   FORMO_ENCRYPTION_KEY: z.string().min(32),
@@ -54,6 +59,7 @@ const serverEnvSchema = z.object({
 });
 
 export type ServerEnv = z.infer<typeof serverEnvSchema>;
+export type DatabaseDriver = ServerEnv["DATABASE_DRIVER"];
 
 let cachedEnv: ServerEnv | null = null;
 

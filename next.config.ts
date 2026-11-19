@@ -17,7 +17,13 @@ export default function createNextConfig(phase: string): NextConfig {
     reactStrictMode: true,
     poweredByHeader: false,
     compress: true,
-    serverExternalPackages: ["pg", "nodemailer", "@prisma/adapter-pg"],
+    serverExternalPackages: [
+      "pg",
+      "nodemailer",
+      "@prisma/adapter-pg",
+      "@prisma/adapter-neon",
+      "@neondatabase/serverless",
+    ],
     experimental: {
       optimizePackageImports: ["lucide-react", "@react-email/components"],
     },
