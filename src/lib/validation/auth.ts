@@ -23,7 +23,7 @@ export const resetPasswordSchema = z.object({
 
 export const interestSchema = z.object({
   interest: z.enum(["developer", "non_developer"]),
-});
+}).strict();
 
 /**
  * Prevents open redirects after authentication by permitting only relative internal paths.

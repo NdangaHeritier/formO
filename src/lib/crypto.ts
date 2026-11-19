@@ -13,13 +13,26 @@ function toUint8Array(buf: Buffer): Uint8Array<ArrayBuffer> {
   return out;
 }
 
+/** Dev fallbacks are opt-in with an explicit local-only flag, never inferred. */
+function devFallbackAllowed(): boolean {
+  return process.env.FORMO_ALLOW_DEV_SECRETS === "1";
+}
+
+function requireProductionSecrets(): void {
+  if (process.env.NODE_ENV === "production" && devFallbackAllowed()) {
+    throw new Error("FORMO_ALLOW_DEV_SECRETS=1 is not allowed in production");
+  }
+}
+
+/** @internal - called at startup to enforce production secret requirements */ requireProductionSecrets();
+
 function getMasterKey(): Buffer {
   const raw = process.env.FORMO_ENCRYPTION_KEY?.trim();
   if (!raw || raw.length < 32) {
-    if (process.env.NODE_ENV === "production") {
-      throw new Error("FORMO_ENCRYPTION_KEY must be at least 32 characters in production");
+    if (devFallbackAllowed()) {
+      return crypto.createHash("sha256").update("formo-dev-fallback-encryption-key-32b").digest();
     }
-    return crypto.createHash("sha256").update("formo-dev-fallback-encryption-key-32b").digest();
+    throw new Error("FORMO_ENCRYPTION_KEY must be at least 32 characters");
   }
   return crypto.createHash("sha256").update(raw).digest();
 }
@@ -27,10 +40,10 @@ function getMasterKey(): Buffer {
 function getHmacPepper(): Buffer {
   const raw = process.env.FORMO_HMAC_PEPPER?.trim();
   if (!raw || raw.length < 32) {
-    if (process.env.NODE_ENV === "production") {
-      throw new Error("FORMO_HMAC_PEPPER must be at least 32 characters in production");
+    if (devFallbackAllowed()) {
+      return Buffer.from("formo-dev-fallback-hmac-pepper-32bytes", "utf8");
     }
-    return Buffer.from("formo-dev-fallback-hmac-pepper-32bytes", "utf8");
+    throw new Error("FORMO_HMAC_PEPPER must be at least 32 characters");
   }
   return Buffer.from(raw, "utf8");
 }

@@ -33,6 +33,17 @@ export function jsonErrorResponse(error: unknown) {
   if (error instanceof HttpError) {
     return NextResponse.json({ error: error.message }, { status: error.status });
   }
+  // Prisma errors are plain objects with a `code`; detect by duck typing so
+  // this works without importing generated classes.
+  if (typeof error === "object" && error !== null && "code" in error) {
+    const code = (error as { code?: unknown }).code;
+    if (code === "P2002") {
+      return NextResponse.json({ error: "That value is already in use" }, { status: 409 });
+    }
+    if (code === "P2025") {
+      return NextResponse.json({ error: "Resource not found" }, { status: 404 });
+    }
+  }
   console.error("[authz] Unexpected route error:", error);
   return NextResponse.json({ error: "Internal server error" }, { status: 500 });
 }
@@ -188,40 +199,60 @@ export async function requireProjectAccess(
   organizationId: string;
   role: OrgRole;
 }> {
-  const { user } = await requireUser();
+  const { user, activeOrganizationId } = await requireUser();
   const isUuid = UUID_REGEX.test(projectIdOrSlug);
 
-  const project = await prisma.project.findFirst({
-    where: {
-      ...(isUuid
-        ? { id: projectIdOrSlug }
-        : {
-            // Resolve by slug first, falling back to the project's display name
-            // (case-insensitive) so routes like /developer/projects/Rubi%20Badon work.
-            OR: [
-              { slug: projectIdOrSlug },
-              { name: { equals: projectIdOrSlug, mode: "insensitive" } },
-            ],
-          }),
-      deletedAt: null,
-      organization: {
+  // Prefer the active workspace; fall back to the oldest membership when none
+  // is active or the active membership no longer exists.
+  let organizationId = activeOrganizationId;
+  if (organizationId) {
+    const activeMembership = await prisma.member.findUnique({
+      where: { organizationId_userId: { organizationId, userId: user.id } },
+      select: { id: true },
+    });
+    if (!activeMembership) organizationId = null;
+  }
+  if (!organizationId) {
+    const oldest = await prisma.member.findFirst({
+      where: { userId: user.id },
+      orderBy: { createdAt: "asc" },
+      select: { organizationId: true },
+    });
+    organizationId = oldest?.organizationId ?? null;
+  }
+  if (!organizationId) throw new HttpError(404, "Project not found");
+
+  const include = {
+    organization: {
+      include: {
         members: {
-          some: { userId: user.id },
+          where: { userId: user.id },
+          select: { role: true },
+          take: 1,
         },
       },
     },
-    include: {
-      organization: {
-        include: {
-          members: {
-            where: { userId: user.id },
-            select: { role: true },
-            take: 1,
-          },
-        },
-      },
-    },
+  } as const;
+  const baseWhere = { organizationId, deletedAt: null };
+
+  // Order: UUID direct match, then slug, then case-insensitive name.
+  let project = await prisma.project.findFirst({
+    where: isUuid
+      ? { ...baseWhere, id: projectIdOrSlug }
+      : { ...baseWhere, slug: projectIdOrSlug },
+    include,
   });
+
+  if (!project && !isUuid) {
+    const byName = await prisma.project.findMany({
+      where: { ...baseWhere, name: { equals: projectIdOrSlug, mode: "insensitive" } },
+      include,
+    });
+    if (byName.length > 1) {
+      throw new HttpError(409, "More than one project has that name; use its slug or id");
+    }
+    project = byName[0] ?? null;
+  }
 
   if (!project || project.organization.members.length === 0) {
     throw new HttpError(404, "Project not found");

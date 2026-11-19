@@ -25,7 +25,7 @@ export const createProjectSchema = z.object({
     .max(500, "Description must be at most 500 characters")
     .optional()
     .nullable(),
-});
+}).strict();
 
 export const updateProjectSchema = z
   .object({
@@ -54,7 +54,8 @@ export const updateProjectSchema = z
   })
   .refine((data) => Object.keys(data).length > 0, {
     message: "At least one project field must be provided for update",
-  });
+  })
+  .strict();
 
 export type CreateProjectInput = z.infer<typeof createProjectSchema>;
 export type UpdateProjectInput = z.infer<typeof updateProjectSchema>;
