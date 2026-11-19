@@ -15,31 +15,46 @@ import type {
   UpdateFormInput,
 } from "@/lib/validation/forms";
 import { HttpError } from "@/server/auth/authorization";
+import { isUniqueConstraintError } from "@/server/services/submission.service";
+import { getPreset, renderPresetHtml } from "@/server/services/template-presets";
 
 async function allocateUniqueEndpoint(
   tx: Prisma.TransactionClient,
   requestedEndpoint?: string
 ): Promise<string> {
   if (requestedEndpoint) {
-    // Check across ALL ProjectForm rows (including soft-deleted) because endpoint is permanently unique
-    const existing = await tx.projectForm.findUnique({
-      where: { endpoint: requestedEndpoint },
-      select: { id: true },
-    });
-    if (existing) {
-      throw new HttpError(409, `Form endpoint "${requestedEndpoint}" is already in use`);
+    try {
+      const existing = await tx.projectForm.findUnique({
+        where: { endpoint: requestedEndpoint },
+        select: { id: true },
+      });
+      if (existing) {
+        throw new HttpError(409, `Form endpoint "${requestedEndpoint}" is already in use`);
+      }
+      return requestedEndpoint;
+    } catch (error) {
+      if (isUniqueConstraintError(error)) {
+        throw new HttpError(409, `Form endpoint "${requestedEndpoint}" is already in use`);
+      }
+      throw error;
     }
-    return requestedEndpoint;
   }
 
   for (let attempt = 0; attempt < 8; attempt++) {
     const candidate = generateFormEndpoint();
-    const existing = await tx.projectForm.findUnique({
-      where: { endpoint: candidate },
-      select: { id: true },
-    });
-    if (!existing) {
-      return candidate;
+    try {
+      const existing = await tx.projectForm.findUnique({
+        where: { endpoint: candidate },
+        select: { id: true },
+      });
+      if (!existing) {
+        return candidate;
+      }
+    } catch (error) {
+      if (isUniqueConstraintError(error)) {
+        continue;
+      }
+      throw error;
     }
   }
 
@@ -97,9 +112,7 @@ export async function listProjectForms(projectId: string) {
     title: form.title,
     description: form.description,
     endpoint: form.endpoint,
-    emailTo: form.emailTo,
-    email_to: form.emailTo,
-    replyToField: form.replyToField,
+    emailTo: form.emailTo,    replyToField: form.replyToField,
     customSubject: form.customSubject,
     allowedOrigins: form.allowedOrigins,
     honeypotField: form.honeypotField,
@@ -143,9 +156,7 @@ export async function getProjectFormDetail(formId: string) {
     title: form.title,
     description: form.description,
     endpoint: form.endpoint,
-    emailTo: form.emailTo,
-    email_to: form.emailTo,
-    replyToField: form.replyToField,
+    emailTo: form.emailTo,    replyToField: form.replyToField,
     customSubject: form.customSubject,
     allowedOrigins: form.allowedOrigins,
     honeypotField: form.honeypotField,
@@ -225,9 +236,7 @@ export async function createProjectForm(params: {
     });
 
     return {
-      ...created,
-      email_to: created.emailTo,
-      createdAt: created.createdAt.toISOString(),
+      ...created,      createdAt: created.createdAt.toISOString(),
       updatedAt: created.updatedAt.toISOString(),
     };
   });
@@ -272,10 +281,11 @@ export async function updateProjectForm(params: {
       },
     });
 
-    if (input.recipients !== undefined || input.emailTo !== undefined) {
+    if (input.recipients !== undefined) {
+      // Recipients were explicitly provided: replace the entire recipient list.
       const recipientSet = new Map<string, { email: string; type: "to" | "cc" | "bcc" }>();
       recipientSet.set(`to:${updated.emailTo}`, { email: updated.emailTo, type: "to" });
-      for (const r of input.recipients ?? []) {
+      for (const r of input.recipients) {
         const normalized = r.email.trim().toLowerCase();
         recipientSet.set(`${r.type}:${normalized}`, { email: normalized, type: r.type });
       }
@@ -289,6 +299,30 @@ export async function updateProjectForm(params: {
           isActive: true,
         })),
       });
+    } else if (input.emailTo !== undefined) {
+      // Only the primary "to" address changed: update the existing "to" row,
+      // leaving CC and BCC recipients untouched.
+      const previous = await tx.projectForm.findUnique({
+        where: { id: formId },
+        select: { emailTo: true, recipients: { select: { email: true, type: true } } },
+      });
+      const newEmail = updated.emailTo.trim().toLowerCase();
+
+      const oldToRow = previous?.recipients.find(
+        (r) => r.type === "to" && r.email.trim().toLowerCase() === previous.emailTo.trim().toLowerCase()
+      );
+      if (oldToRow) {
+        await tx.formRecipient.update({
+          where: { formId_email_type: { formId, email: oldToRow.email, type: oldToRow.type } },
+          data: { email: newEmail },
+        });
+      } else {
+        await tx.formRecipient.upsert({
+          where: { formId_email_type: { formId, type: "to", email: newEmail } },
+          create: { formId, email: newEmail, type: "to", isActive: true },
+          update: { email: newEmail },
+        });
+      }
     }
 
     await tx.auditLog.create({
@@ -305,9 +339,7 @@ export async function updateProjectForm(params: {
     });
 
     return {
-      ...updated,
-      email_to: updated.emailTo,
-      createdAt: updated.createdAt.toISOString(),
+      ...updated,      createdAt: updated.createdAt.toISOString(),
       updatedAt: updated.updatedAt.toISOString(),
     };
   });
@@ -783,4 +815,108 @@ export async function revokeWorkspaceApiKey(params: {
   ]);
 
   return { id: keyId, revokedAt: now.toISOString() };
+}
+
+function escapeHtml(value: string): string {
+  return value.replace(/[&<>"']/g, (character) => {
+    const entities: Record<string, string> = {
+      "&": "&amp;",
+      "<": "&lt;",
+      ">": "&gt;",
+      '"': "&quot;",
+      "'": "&#39;",
+    };
+    return entities[character] ?? character;
+  });
+}
+
+/** Only {{token}} substitution — no template logic or expression evaluation. */
+function substituteTestValues(input: string, values: Record<string, unknown>, forHtml: boolean): string {
+  return input.replace(/\{\{\s*([\w.\-]+)\s*\}\}/g, (_match, token: string) => {
+    const raw = values[token];
+    const text = raw === null || raw === undefined ? "" : String(raw);
+    return forHtml ? escapeHtml(text) : text;
+  });
+}
+
+/**
+ * Sends a test delivery for a saved template or a preset. Uses the workspace's
+ * own SMTP config; nothing is sent on the public submission path.
+ */
+export async function sendTemplateTestEmail(params: {
+  organizationId: string;
+  actorUserId: string;
+  presetId?: string;
+  templateId?: string;
+  values: Record<string, unknown>;
+  to: string;
+  smtpConfigId: string;
+}): Promise<{ sent: true; messageId: string | null }> {
+  const smtp = await prisma.smtpConfig.findFirst({
+    where: { id: params.smtpConfigId, organizationId: params.organizationId },
+  });
+  if (!smtp) throw new HttpError(404, "SMTP configuration not found");
+
+  let subject: string;
+  let html: string;
+
+  if (params.templateId) {
+    const template = await prisma.emailTemplate.findFirst({
+      where: { id: params.templateId, organizationId: params.organizationId },
+    });
+    if (!template) throw new HttpError(404, "Template not found");
+    subject = substituteTestValues(template.subjectTemplate, params.values, false);
+    html = substituteTestValues(template.htmlTemplate, params.values, true);
+  } else if (params.presetId) {
+    const preset = getPreset(params.presetId);
+    if (!preset) throw new HttpError(404, "Preset not found");
+    subject = substituteTestValues(preset.subject, params.values, false);
+    html = await renderPresetHtml(params.presetId, {
+      ...(params.values as Record<string, string>),
+      siteName: String(params.values.siteName ?? "FormO"),
+    });
+  } else {
+    throw new HttpError(400, "A preset or template is required");
+  }
+
+  const password = decryptSecret({
+    ciphertext: smtp.encryptedPassword,
+    iv: smtp.iv,
+    authTag: smtp.authTag,
+    keyVersion: smtp.keyVersion,
+  });
+  const transporter = nodemailer.createTransport({
+    host: smtp.host,
+    port: smtp.port,
+    secure: smtp.secure,
+    auth: { user: smtp.username, pass: password },
+    connectionTimeout: 8_000,
+    greetingTimeout: 8_000,
+    socketTimeout: 12_000,
+  });
+
+  try {
+    const info = await transporter.sendMail({
+      from: smtp.fromEmail,
+      to: params.to,
+      subject: subject.replace(/[\r\n]+/g, " ").trim().slice(0, 200) || "FormO test email",
+      html,
+      text: html.replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim().slice(0, 20_000),
+    });
+
+    await prisma.auditLog.create({
+      data: {
+        organizationId: params.organizationId,
+        actorUserId: params.actorUserId,
+        action: "email_template.test_sent",
+        targetType: "email_template",
+        targetId: params.templateId ?? params.presetId ?? null,
+        metadata: { to: params.to },
+      },
+    });
+
+    return { sent: true, messageId: info.messageId ?? null };
+  } finally {
+    transporter.close();
+  }
 }

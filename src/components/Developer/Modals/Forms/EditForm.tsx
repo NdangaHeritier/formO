@@ -17,7 +17,7 @@ export default function EditForm({ form, onClick, onSuccess }: Props) {
   const [formData, setFormData] = useState({
     title: form.title,
     description: form.description || "",
-    recipientEmail: form.email_to || "",
+    emailTo: form.emailTo || "",
   });
   const [error, setError] = useState("");
   const [notification, setNotification] = useState("");
@@ -40,7 +40,7 @@ export default function EditForm({ form, onClick, onSuccess }: Props) {
       const res = await fetch(`/api/forms/${form.id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ title: formData.title, description: formData.description, recipientEmail: formData.recipientEmail }),
+        body: JSON.stringify({ title: formData.title, description: formData.description, emailTo: formData.emailTo }),
       });
       const json = (await res.json()) as { error?: string };
       if (!res.ok) {
@@ -72,7 +72,7 @@ export default function EditForm({ form, onClick, onSuccess }: Props) {
         <form onSubmit={handleSubmit} className="pt-5 grid grid-cols-1 gap-5">
           <InputField type="text" name="title" id="title" value={formData.title} placeholder="Form title" onChange={handleChange} label="Title" />
           <TextAreaField name="description" cols={4} id="desc" label="Description" placeholder="Description.." value={formData.description} onChange={handleChange} />
-          <InputField type="email" name="recipientEmail" id="email" value={formData.recipientEmail} placeholder="recipient@email.com" onChange={handleChange} label="Recipient Email" />
+          <InputField type="email" name="emailTo" id="email" value={formData.emailTo} placeholder="recipient@email.com" onChange={handleChange} label="Recipient Email" />
           {error && <div className="text-red-500 text-xs">{error}</div>}
           <div className="actions grid grid-cols-2 gap-3">
             <FormButton onClick={onClick} variant="danger">Close</FormButton>

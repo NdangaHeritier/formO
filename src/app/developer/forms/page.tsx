@@ -24,6 +24,7 @@ const FormsPage = () => {
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState(false);
   const [query, setQuery] = useState("");
+  const [testResult, setTestResult] = useState<{ id: string; ok: boolean; text: string } | null>(null);
 
   useEffect(() => {
     fetch("/api/forms")
@@ -47,9 +48,46 @@ const FormsPage = () => {
     );
   }, [forms, query]);
 
-  const copyEndpoint = (endpoint: string) => {
-    navigator.clipboard.writeText(endpoint);
-    alert("Endpoint copied to clipboard!");
+  const copyText = (value: string, label: string) => {
+    navigator.clipboard.writeText(value);
+    setTestResult({ id: "", ok: true, text: `${label} copied to clipboard` });
+  };
+
+  const publicUrl = (endpoint: string) => `/api/f/${endpoint}`;
+
+  const embedSnippet = (endpoint: string) =>
+    `<form action="${window.location.origin}/api/f/${endpoint}" method="POST">\n` +
+    `  <input name="email" type="email" required />\n` +
+    `  <textarea name="message" required></textarea>\n` +
+    `  <input name="_gotcha" tabindex="-1" autocomplete="off" hidden />\n` +
+    `  <button type="submit">Send</button>\n` +
+    `</form>`;
+
+  const sendTestSubmission = async (form: WorkspaceForm) => {
+    try {
+      const res = await fetch(`/api/f/${form.endpoint}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Accept: "application/json" },
+        body: JSON.stringify({
+          name: "FormO dashboard test",
+          message: "This submission was sent from the FormO dashboard.",
+        }),
+      });
+      const data = (await res.json().catch(() => null)) as {
+        id?: string;
+        error?: string;
+        duplicate?: boolean;
+      } | null;
+      setTestResult({
+        id: form.id,
+        ok: res.ok,
+        text: res.ok
+          ? `Accepted${data?.duplicate ? " (duplicate)" : ""} — ${data?.id ?? "ok"}`
+          : data?.error ?? "Submission rejected",
+      });
+    } catch {
+      setTestResult({ id: form.id, ok: false, text: "Could not reach the submission endpoint" });
+    }
   };
 
   return (
@@ -75,6 +113,19 @@ const FormsPage = () => {
               />
             </div>
           </div>
+
+          {testResult && (
+            <div
+              role="status"
+              className={`text-xs rounded-lg px-3 py-2 ${
+                testResult.ok
+                  ? "text-green-700 dark:text-green-400 bg-green-50 dark:bg-green-950/40"
+                  : "text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-950/40"
+              }`}
+            >
+              {testResult.text}
+            </div>
+          )}
 
           {loading ? (
             <div className="grid grid-cols-1 gap-3">
@@ -123,15 +174,46 @@ const FormsPage = () => {
                         </Link>
                       </td>
                       <td className="px-5 py-4">
-                        <button
-                          type="button"
-                          title="Copy endpoint"
-                          onClick={() => copyEndpoint(form.endpoint)}
-                          className="flex items-center gap-2 bg-zinc-100/70 dark:bg-zinc-900/70 hover:bg-zinc-200/70 dark:hover:bg-zinc-900 px-3 py-1.5 rounded-lg transition cursor-pointer"
-                        >
-                          <span className="text-xs font-mono text-zinc-600 dark:text-zinc-400">{form.endpoint}</span>
-                          <Icon name="Copy" size={13} className="text-zinc-500" />
-                        </button>
+                        <div className="flex items-center gap-2">
+                          <code
+                            className="text-xs font-mono text-zinc-600 dark:text-zinc-400 max-w-[200px] truncate"
+                            title={publicUrl(form.endpoint)}
+                          >
+                            {publicUrl(form.endpoint)}
+                          </code>
+                          <button
+                            type="button"
+                            title="Copy public submission URL"
+                            aria-label={`Copy public submission URL for ${form.title}`}
+                            onClick={() => copyText(`${window.location.origin}${publicUrl(form.endpoint)}`, "Public URL")}
+                            className="p-1.5 rounded-lg bg-zinc-100/70 dark:bg-zinc-900/70 hover:bg-zinc-200/70 dark:hover:bg-zinc-900 cursor-pointer"
+                          >
+                            <Icon name="Copy" size={13} className="text-zinc-500" />
+                          </button>
+                          <button
+                            type="button"
+                            title="Copy HTML embed snippet"
+                            aria-label={`Copy embed HTML for ${form.title}`}
+                            onClick={() => copyText(embedSnippet(form.endpoint), "Embed HTML")}
+                            className="p-1.5 rounded-lg bg-zinc-100/70 dark:bg-zinc-900/70 hover:bg-zinc-200/70 dark:hover:bg-zinc-900 cursor-pointer"
+                          >
+                            <Icon name="Code" size={13} className="text-zinc-500" />
+                          </button>
+                          <button
+                            type="button"
+                            title="Send a test submission"
+                            aria-label={`Send a test submission to ${form.title}`}
+                            onClick={() => sendTestSubmission(form)}
+                            className="p-1.5 rounded-lg bg-zinc-100/70 dark:bg-zinc-900/70 hover:bg-zinc-200/70 dark:hover:bg-zinc-900 cursor-pointer"
+                          >
+                            <Icon name="Send" size={13} className="text-zinc-500" />
+                          </button>
+                        </div>
+                        {testResult?.id === form.id && (
+                          <span className={`text-[11px] ${testResult.ok ? "text-green-600" : "text-red-500"}`}>
+                            {testResult.text}
+                          </span>
+                        )}
                       </td>
                       <td className="px-5 py-4 text-zinc-700 dark:text-zinc-400 whitespace-nowrap">
                         {form._count.submissions}
