@@ -1,0 +1,134 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-11-19T00:00:00.000Z",
+  "title": "Design System: FormO",
+  "extensions": {
+    "colorMeta": {
+      "paper": { "role": "neutral", "displayName": "Warm Paper", "canonical": "#f1eee6" },
+      "ink": { "role": "neutral", "displayName": "Warm Ink", "canonical": "#130b00" },
+      "accent": { "role": "primary", "displayName": "Muted Amber", "canonical": "#ca8a04", "tonalRamp": ["#422006", "#713f12", "#854d0e", "#a16207", "#ca8a04", "#eab308", "#facc15", "#fef9c3"] },
+      "danger": { "role": "consequence", "displayName": "Signal Red", "canonical": "#dc2626", "tonalRamp": ["#450a0a", "#7f1d1d", "#991b1b", "#b91c1c", "#dc2626", "#ef4444", "#f87171", "#fef2f2"] },
+      "success": { "role": "consequence", "displayName": "Signal Green", "canonical": "#16a34a" }
+    },
+    "typographyMeta": {
+      "display": { "displayName": "Display", "purpose": "Page and card headings at 24px, semibold, balanced." },
+      "title": { "displayName": "Title", "purpose": "Modal headings at 18px." },
+      "body": { "displayName": "Body", "purpose": "Controls and table text at 14px; dense text at 12px." },
+      "label": { "displayName": "Label", "purpose": "Field labels at 12px, semibold, capitalized." },
+      "mono": { "displayName": "Mono", "purpose": "Endpoints, IDs and tabular counts." }
+    },
+    "shadows": [
+      { "name": "card", "value": "0 10px 15px -3px rgba(0,0,0,0.10)", "purpose": "Resting cards." },
+      { "name": "card-hover", "value": "0 20px 25px -5px rgba(0,0,0,0.10)", "purpose": "Interactive cards on hover." },
+      { "name": "dialog", "value": "0 25px 50px -12px rgba(0,0,0,0.25)", "purpose": "Focused modal panel above the overlay." }
+    ],
+    "motion": [
+      { "name": "control", "value": "300ms", "purpose": "Button and interaction transitions." },
+      { "name": "card", "value": "200ms ease-in-out", "purpose": "Card hover lift." },
+      { "name": "pulse", "value": "2s infinite", "purpose": "Skeleton loading." }
+    ],
+    "breakpoints": [
+      { "name": "sm", "value": "640px" },
+      { "name": "md", "value": "768px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "The one committed action in a context; inverts between themes.",
+      "html": "<button class=\"ds-btn-primary\">Save changes</button>",
+      "css": ".ds-btn-primary { background:#130b00; color:#f4f4f5; padding:8px 16px; border-radius:8px; font:600 14px 'General Sans',system-ui,sans-serif; display:inline-flex; align-items:center; justify-content:center; gap:8px; cursor:pointer; border:0; transition:background 300ms; } .ds-btn-primary:hover { background:rgba(0,0,0,.8); } .ds-btn-primary:focus-visible { outline:3px solid rgba(82,82,91,.5); outline-offset:2px; } .ds-btn-primary:disabled { opacity:.4; cursor:not-allowed; } @media (prefers-color-scheme:dark){ .ds-btn-primary{ background:#f4f4f5; color:#18181b; } .ds-btn-primary:hover{ background:rgba(244,244,245,.7); } }"
+    },
+    {
+      "name": "Secondary Button",
+      "kind": "button",
+      "refersTo": "button-secondary",
+      "description": "Alternative action; bordered white, flat in dark mode.",
+      "html": "<button class=\"ds-btn-secondary\">Cancel</button>",
+      "css": ".ds-btn-secondary { background:#fff; color:#18181b; border:1px solid #e4e4e7; padding:8px 16px; border-radius:8px; font:600 14px 'General Sans',system-ui,sans-serif; display:inline-flex; align-items:center; justify-content:center; gap:8px; cursor:pointer; transition:background 300ms; } .ds-btn-secondary:hover { background:rgba(228,228,231,.5); } .ds-btn-secondary:focus-visible { outline:3px solid rgba(82,82,91,.5); outline-offset:2px; } @media (prefers-color-scheme:dark){ .ds-btn-secondary{ background:#fff; color:#18181b; border-color:transparent; } .ds-btn-secondary:hover{ background:#e4e4e7; } }"
+    },
+    {
+      "name": "Danger Button",
+      "kind": "button",
+      "refersTo": "button-danger",
+      "description": "Destructive action; tinted red with a hairline red border.",
+      "html": "<button class=\"ds-btn-danger\">Delete</button>",
+      "css": ".ds-btn-danger { background:rgba(239,68,68,.10); color:#dc2626; border:1px solid rgba(239,68,68,.3); padding:8px 16px; border-radius:8px; font:600 14px 'General Sans',system-ui,sans-serif; display:inline-flex; align-items:center; justify-content:center; gap:8px; cursor:pointer; transition:background 300ms; } .ds-btn-danger:hover { background:rgba(239,68,68,.20); } .ds-btn-danger:focus-visible { outline:3px solid rgba(239,68,68,.4); outline-offset:2px; } @media (prefers-color-scheme:dark){ .ds-btn-danger{ color:#f87171; } }"
+    },
+    {
+      "name": "Text Field",
+      "kind": "input",
+      "refersTo": "input",
+      "description": "Single-line field with label above and a border-shift focus state.",
+      "html": "<label class=\"ds-label\" for=\"ds-name\">Name</label><input class=\"ds-input\" id=\"ds-name\" placeholder=\"Form title\">",
+      "css": ".ds-label { display:block; font:600 12px 'General Sans',system-ui,sans-serif; text-transform:capitalize; color:#18181b; margin-bottom:4px; } .ds-input { width:100%; background:#f4f4f5; color:#18181b; border:1px solid #e4e4e7; padding:8px 16px; border-radius:8px; font:400 14px 'General Sans',system-ui,sans-serif; outline:none; } .ds-input:focus { border-color:#18181b; box-shadow:0 0 0 3px rgba(82,82,91,.5); } @media (prefers-color-scheme:dark){ .ds-label{ color:#f4f4f5; } .ds-input{ background:rgba(24,24,27,.5); color:#f4f4f5; border-color:#3f3f46; } .ds-input:focus{ border-color:#f4f4f5; box-shadow:0 0 0 3px rgba(212,212,216,.4); } }"
+    },
+    {
+      "name": "Card",
+      "kind": "card",
+      "refersTo": "card",
+      "description": "Resting container with a hairline border and soft shadow.",
+      "html": "<div class=\"ds-card\"><h3 class=\"ds-card-title\">Submissions</h3><p class=\"ds-card-body\">Track what arrives.</p></div>",
+      "css": ".ds-card { background:#f4f4f5; border:1px solid #e4e4e7; border-radius:16px; padding:20px; box-shadow:0 10px 15px -3px rgba(0,0,0,.10); display:grid; gap:20px; } .ds-card-title { font:600 24px 'General Sans',system-ui,sans-serif; letter-spacing:-.02em; color:#18181b; } .ds-card-body { font:400 14px 'General Sans',system-ui,sans-serif; color:#52525b; } @media (prefers-color-scheme:dark){ .ds-card{ background:#09090b; border-color:#18181b; } .ds-card-title{ color:#f4f4f5; } .ds-card-body{ color:#a1a1aa; } }"
+    },
+    {
+      "name": "Dialog Panel",
+      "kind": "custom",
+      "refersTo": "dialog",
+      "description": "Focused panel above a translucent overlay; one primary action.",
+      "html": "<div class=\"ds-overlay\"><section class=\"ds-dialog\" role=\"dialog\" aria-modal=\"true\" aria-label=\"Confirm action\"><h2 class=\"ds-dialog-title\">Delete template?</h2><p class=\"ds-dialog-body\">This cannot be undone.</p><div class=\"ds-dialog-actions\"><button class=\"ds-btn-secondary\">Cancel</button><button class=\"ds-btn-danger\">Delete</button></div></section></div>",
+      "css": ".ds-overlay { position:fixed; inset:0; z-index:50; display:flex; align-items:center; justify-content:center; padding:20px; background:rgba(255,255,255,.9); } .ds-dialog { width:100%; max-width:448px; background:#fff; border-radius:16px; padding:20px; box-shadow:0 25px 50px -12px rgba(0,0,0,.25); display:grid; gap:12px; } .ds-dialog-title { font:600 18px 'General Sans',system-ui,sans-serif; color:#18181b; } .ds-dialog-body { font:400 14px/1.5 'General Sans',system-ui,sans-serif; color:#52525b; } .ds-dialog-actions { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:8px; } @media (prefers-color-scheme:dark){ .ds-overlay{ background:rgba(0,0,0,.9); } .ds-dialog{ background:#09090b; } .ds-dialog-title{ color:#f4f4f5; } .ds-dialog-body{ color:#a1a1aa; } }"
+    },
+    {
+      "name": "Amber Icon Badge",
+      "kind": "custom",
+      "refersTo": "button-primary",
+      "description": "The only accent surface: a circular amber-tinted icon holder.",
+      "html": "<span class=\"ds-icon-badge\"><svg width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><circle cx=\"12\" cy=\"12\" r=\"9\"></circle></svg></span>",
+      "css": ".ds-icon-badge { width:48px; height:48px; border-radius:9999px; background:rgba(202,138,4,.2); color:#ca8a04; display:inline-flex; align-items:center; justify-content:center; }"
+    },
+    {
+      "name": "Skeleton Loader",
+      "kind": "custom",
+      "refersTo": "card",
+      "description": "Loading placeholder; pulse only, no shimmer gradient.",
+      "html": "<div class=\"ds-skeleton\"></div>",
+      "css": ".ds-skeleton { background:#e4e4e7; border-radius:8px; height:56px; animation:ds-pulse 2s infinite; } @keyframes ds-pulse { 50% { opacity:.5; } } @media (prefers-color-scheme:dark){ .ds-skeleton{ background:#27272a; } }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Warm Workbench",
+    "overview": "A quiet, warm-neutral workspace where the tools recede and the work stays legible. The dashboard is an Operate surface: scanability and predictable controls outrank expression. Nothing shouts. Density is moderate — tight clusters of related controls inside generous containers — and every state change is legible at a glance. The palette is a zinc ladder on warm paper, with a single amber accent reserved for icon badges and brand moments. Theme switching is an inversion, not a rebrand: light uses black controls on white, dark uses white controls on near-black. Hue never changes with the theme; only value does.",
+    "keyCharacteristics": [
+      "Warm off-white paper and deep warm ink as the outer frame, with zinc surfaces inside.",
+      "Inverting monochrome buttons; one amber accent, used sparingly.",
+      "8px controls, 16px cards, 24px panels; Tailwind 4/8/12/20 rhythm.",
+      "One-pixel zinc borders plus soft shadows — depth is soft, never hard-offset.",
+      "Lucide icons at 13–20px, strokeWidth 2, usually inside a rounded-full tinted badge."
+    ],
+    "rules": [
+      { "name": "The One Accent Rule", "body": "Amber appears in circular icon badges and brand marks only. It never becomes a button, a card fill, or a text color for body copy.", "section": "colors" },
+      { "name": "The Inversion Rule", "body": "Light and dark swap value, never hue. A primary button is black on light and white on dark; adding blue or amber in dark mode is a violation.", "section": "colors" },
+      { "name": "The Zinc Ladder Rule", "body": "Every neutral — text, surface, border, placeholder — comes from one zinc step. Mixing slate, gray, or neutral families breaks the system.", "section": "colors" },
+      { "name": "The Weight Rule", "body": "Hierarchy comes from weight and size step, never color intensity or letter-spacing below -0.02em.", "section": "typography" },
+      { "name": "The Label Rule", "body": "Every input has a visible font-semibold capitalize label tied to its id.", "section": "typography" },
+      { "name": "The Soft Shadow Rule", "body": "Shadows always have blur. Hard offset shadows are not part of this system.", "section": "elevation" },
+      { "name": "The Single Frame Rule", "body": "One 1px border defines an edge; never stack multiple borders to fake depth.", "section": "elevation" }
+    ],
+    "dos": [
+      "Do use FormButton, InputField, TextAreaField, SelectField and Layout for new UI rather than rebuilding their class strings.",
+      "Do pair every destructive action with a focused dialog that names the target and the consequence.",
+      "Do use aria-label on icon-only buttons and role=dialog / aria-modal on overlays.",
+      "Do keep amber inside circular badges; let black/white carry primary actions."
+    ],
+    "donts": [
+      "Don't use window.confirm or window.alert — they break the workbench and cannot be styled or focused.",
+      "Don't introduce a second neutral family (slate, gray, neutral) alongside zinc.",
+      "Don't use hard-offset shadows or gradient text.",
+      "Don't put more than one primary button in a dialog.",
+      "Don't change hue between light and dark; swap value only."
+    ]
+  }
+}

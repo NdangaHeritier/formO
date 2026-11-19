@@ -3,6 +3,7 @@ import { Icon } from "../Global/Icon";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import EditProject from "./Modals/Forms/EditProject";
+import ConfirmDialog from "@/components/Global/ConfirmDialog";
 
 type cardProps = {
     id: ProjectType['id'];
@@ -89,15 +90,17 @@ export default function ProjectCard ({name, description, forms, formsCount, subm
         await request("PATCH", { status: nextStatus });
     };
 
-    const deleteProject = async () => {
+    const [pendingDelete, setPendingDelete] = useState(false);
+
+    const deleteProject = () => {
         setMenuOpen(false);
-        if (!window.confirm(`Delete "${name}"? Its forms will be disabled and the project archived.`)) return;
-        await request("DELETE");
+        setPendingDelete(true);
     };
 
     const menuItemClass = "flex items-center justify-start gap-2 w-full text-left px-3 py-2 rounded-lg hover:bg-zinc-200 dark:hover:bg-zinc-900 transition text-zinc-700 dark:text-zinc-200 text-sm cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed";
 
     return (
+        <>
         <div
             className="project-card p-5 bg-white dark:bg-black border border-zinc-200 dark:border-zinc-900 rounded-3xl shadow-lg grid grid-cols-1 gap-3 cursor-pointer"
             role="link"
@@ -244,5 +247,17 @@ export default function ProjectCard ({name, description, forms, formsCount, subm
                 </div>
             )}
         </div>
+        <ConfirmDialog
+            open={pendingDelete}
+            title={`Delete "${name}"?`}
+            description="The project is archived and its forms stop accepting submissions. This cannot be undone from here."
+            confirmLabel="Delete project"
+            onCancel={() => setPendingDelete(false)}
+            onConfirm={async () => {
+                await request("DELETE");
+                setPendingDelete(false);
+            }}
+        />
+        </>
     )
 }

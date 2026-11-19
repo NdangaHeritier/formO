@@ -10,6 +10,7 @@ import EditProject from "@/components/Developer/Modals/Forms/EditProject";
 import { Squares } from "@/components/Global/Squares";
 import FormButton from "@/components/Global/FormButton";
 import { Icon } from "@/components/Global/Icon";
+import ConfirmDialog from "@/components/Global/ConfirmDialog";
 import { ProjectType } from "@/types/Project";
 
 type StatusTab = "all" | "active" | "archived";
@@ -45,6 +46,7 @@ const Projects = () => {
 
   // row ellipsis menu
   const [menuProjectId, setMenuProjectId] = useState<string | null>(null);
+  const [pendingDelete, setPendingDelete] = useState<ProjectType | null>(null);
   const [busy, setBusy] = useState(false);
   const menuRef = useRef<HTMLDivElement | null>(null);
 
@@ -145,8 +147,7 @@ const Projects = () => {
 
   const deleteProject = (project: ProjectType) => {
     setMenuProjectId(null);
-    if (!window.confirm(`Delete "${project.name}"? Its forms will be disabled and the project archived.`)) return;
-    rowRequest(project, "DELETE");
+    setPendingDelete(project);
   };
 
   const tabs: { key: StatusTab; label: string }[] = [
@@ -486,6 +487,17 @@ const Projects = () => {
           </div>
         </div>
       </section>
+      <ConfirmDialog
+        open={pendingDelete !== null}
+        title={`Delete "${pendingDelete?.name ?? ""}"?`}
+        description="The project is archived and its forms stop accepting submissions. This cannot be undone from here."
+        confirmLabel="Delete project"
+        onCancel={() => setPendingDelete(null)}
+        onConfirm={async () => {
+          if (pendingDelete) await rowRequest(pendingDelete, "DELETE");
+          setPendingDelete(null);
+        }}
+      />
     </PrivateRouter>
   );
 };
