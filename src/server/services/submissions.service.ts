@@ -10,7 +10,7 @@ import {
   isRedirectAllowed,
 } from "@/server/submissions/origin";
 import { parseSubmissionBody, readBodyBytes } from "@/server/submissions/parse-body";
-import { enforceRateLimits, ipHashHex } from "@/server/submissions/rate-limit";
+import { enforceRateLimits } from "@/server/submissions/rate-limit";
 import { verifyTurnstile } from "@/server/submissions/turnstile";
 import { getClientIp } from "@/server/submissions/client-ip";
 

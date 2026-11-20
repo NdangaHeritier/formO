@@ -41,7 +41,11 @@ export default function ConfirmDialog({
   }, [onCancel, submitting]);
 
   const cancelRef = useRef(cancel);
-  cancelRef.current = cancel;
+
+  // Keep the latest callback without mutating a ref during render.
+  useEffect(() => {
+    cancelRef.current = cancel;
+  }, [cancel]);
 
   useEffect(() => {
     if (!open) return;

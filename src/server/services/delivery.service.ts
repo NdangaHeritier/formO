@@ -172,7 +172,7 @@ function customTransporter(smtp: SmtpSender): Transporter {
   );
 }
 
-function buildContext(delivery: DeliveryContext, recipientEmail: string): RenderContext {
+function buildContext(delivery: DeliveryContext): RenderContext {
   const { form, id, createdAt } = delivery;
   const data =
     delivery.data !== null && typeof delivery.data === "object" && !Array.isArray(delivery.data)
@@ -335,7 +335,7 @@ export async function runDeliveryBatch(): Promise<DeliveryBatchResult> {
           continue;
         }
 
-        const context = buildContext(delivery, row.recipient_email);
+        const context = buildContext(delivery);
 
         const key = {
           id_createdAt: { id: row.id, createdAt: row.created_at },
@@ -344,7 +344,7 @@ export async function runDeliveryBatch(): Promise<DeliveryBatchResult> {
         try {
           const transporter = await getCachedTransporter(transporters, delivery.form.smtpConfig);
           const subject = renderSubject(context);
-          const { html, text, oversized } = await renderEmail(context);
+          const { html, text } = await renderEmail(context);
           const replyTo = isSingleValidEmail(
             delivery.form.replyToField ? context.data[delivery.form.replyToField] : undefined
           );

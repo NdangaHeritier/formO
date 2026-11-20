@@ -102,7 +102,7 @@ export function renderText(context: RenderContext): string {
  */
 export async function renderEmail(context: RenderContext): Promise<RenderedEmail> {
   const template = context.template;
-  let html = template
+  const html = template
     ? substitute(template.htmlTemplate, context, true)
     : await render(
         createElement(FormSubmission, {
