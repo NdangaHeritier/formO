@@ -4,7 +4,7 @@ import React, { useEffect } from 'react';
 import { useSession } from "@/lib/auth-client";
 import PrivateRouter from '@/components/Global/privateRouter';
 import { useRouter } from 'next/navigation'
-import { Icon } from '@/components/Global/Icon';
+import BrandLoader from '@/components/Global/BrandLoader';
 
 export default function Dashboard() {
 
@@ -42,7 +42,7 @@ export default function Dashboard() {
         <div className="app-viewport h-dvh overflow-y-auto">
             <PrivateRouter>
                 <div className="flex items-center justify-center min-h-full">
-                    <Icon name="Loader" size={50} className="animate-spin text-zinc-500" />
+                    <BrandLoader />
                 </div>
             </PrivateRouter>
         </div>

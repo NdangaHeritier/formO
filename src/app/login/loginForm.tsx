@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { useEffect } from "react";
 import { Icon } from "@/components/Global/Icon";
+import BrandLoader from "@/components/Global/BrandLoader";
 import FormButton from "@/components/Global/FormButton";
 import { InputField } from "@/components/Global/InputField";
 import Header from "@/components/Header";
@@ -113,7 +114,7 @@ export default function LoginForm() {
     if (isLoading) {
         return (
             <div className="app-viewport flex h-dvh items-center justify-center overflow-y-auto">
-                <Icon name="Loader" size={50} className="animate-spin text-zinc-500 dark:text-zinc-400" />
+                <BrandLoader />
             </div>
         );
     }
