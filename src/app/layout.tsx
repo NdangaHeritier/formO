@@ -101,7 +101,7 @@ export default function RootLayout({
         {/* Set the theme before first paint so there is no light/dark flash. */}
         <script
           dangerouslySetInnerHTML={{
-            __html: `try{if(window.matchMedia('(prefers-color-scheme: dark)').matches){document.documentElement.classList.add('dark');document.documentElement.style.colorScheme='dark';}else{document.documentElement.style.colorScheme='light';}}catch(e){}`,
+            __html: `try{var m=localStorage.getItem('formo-theme');var d=m==='dark'||(m!=='light'&&window.matchMedia('(prefers-color-scheme: dark)').matches);document.documentElement.classList.toggle('dark',d);document.documentElement.style.colorScheme=d?'dark':'light';}catch(e){}`,
           }}
         />
       </head>

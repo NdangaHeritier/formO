@@ -29,6 +29,16 @@
   --foreground: #ffffff;
 }
 
+/* One-shot color transition for theme switches. The class is added by the
+   theme helper and removed right after, so first paint is never animated. */
+.theme-transition,
+.theme-transition *,
+.theme-transition *::before,
+.theme-transition *::after {
+  transition: background-color 240ms ease, border-color 240ms ease, color 240ms ease,
+    fill 240ms ease, stroke 240ms ease !important;
+}
+
 @layer base {
   html {
     font-family: var(--font-sans);

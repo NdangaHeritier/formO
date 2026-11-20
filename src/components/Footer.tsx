@@ -1,5 +1,5 @@
-import { Sun, Moon, ScreenShare } from "lucide-react";
 import { Icon } from "./Global/Icon";
+import ThemeToggle from "./Global/ThemeToggle";
 import Link from "next/link";
 import Image from "next/image";
 import LinkButton from "./Global/LinkButton";
@@ -86,20 +86,7 @@ export default function Footer() {
         <div className="text-sm w-full grid grid-cols-1 max-sm:gap-5 sm:grid-cols-2 md:grid-cols-3 p-5 border-t border-t-zinc-300  dark:border-zinc-800 mt-3">
 
             {/* Theme button */}
-            <div className="themes-toggling-buttons inline-flex items-center justify-start max-sm:justify-center">
-                    
-                <div className="grid grid-cols-3 gap-1 bg-black/2 dark:bg-white/2 rounded-md p-1 shadow border border-black/10  dark:border-white/10">
-                    <button className="flex items-center gap-2 bg-zinc-100 dark:bg-zinc-950/2 text-zinc-900 dark:text-zinc-100 hover:border border-zinc-300 dark:border-zinc-800 h-8 w-8 justify-center rounded-md hover:bg-zinc-200 dark:hover:bg-zinc-950">
-                        <Sun size={16} />
-                    </button>
-                    <button className="flex items-center gap-2 bg-zinc-900/10 dark:bg-zinc-100/10 text-zinc-900 dark:text-zinc-100 h-8 w-8 justify-center rounded-md hover:bg-black dark:hover:border border-zinc-500">
-                        <ScreenShare size={16} />
-                    </button>
-                    <button className="flex items-center gap-2 bg-zinc-100 dark:bg-zinc-950/2 text-zinc-900 dark:text-zinc-100 hover:border border-zinc-300 dark:border-zinc-800 h-8 w-8 justify-center rounded-md hover:bg-zinc-200 dark:hover:bg-zinc-950">
-                        <Moon size={16} />
-                    </button>
-                </div>
-            </div>
+            <ThemeToggle />
             <p>&copy; {new Date().getFullYear()} FormO. All rights reserved.</p>
         </div>
     </footer>
