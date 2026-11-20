@@ -33,29 +33,29 @@ export default function ProjectPage (){
     const recentSubmissions = project?.recentSubmissions ?? [];
 
     return (
-        <section className="flex flex-col min-h-screen w-full text-zinc-400">
+        <section className="flex min-h-screen w-full flex-col text-zinc-700 dark:text-zinc-400">
             <Header />
             <div className="flex h-full flex-1">
-                <div className="grid grid-cols-1 sticky bottom-0 p-2 bg-zinc-950 w-20 h-screen overflow-auto border-r border-zinc-800">
+                <div className="grid grid-cols-1 sticky bottom-0 h-screen w-20 grid grid-cols-1 overflow-auto border-r border-zinc-200 bg-white p-2 dark:border-zinc-800 dark:bg-zinc-950">
                     <div className="items-center justify-start flex-col p-3 flex gap-3">
-                        <Link href="/developer/projects" className="text-zinc-500 hover:text-zinc-300 rounded-xl p-2 flex items-center justify-center cursor-pointer gap-2 hover:bg-zinc-900">
+                        <Link href="/developer/projects" className="flex cursor-pointer items-center justify-center gap-2 rounded-xl p-2 text-zinc-500 hover:bg-zinc-100 hover:text-zinc-900 dark:hover:bg-zinc-900 dark:hover:text-zinc-200">
                             <Icon name="LayoutDashboard" size={20} strokeWidth={2} />
                         </Link>
-                        <Link href="/developer/analytics" className="text-zinc-500 hover:text-zinc-300">
+                        <Link href="/developer/analytics" className="text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-200">
                             <Icon name="ChartNoAxesColumn" size={20} strokeWidth={2} />
                         </Link>
                     </div>                    
-                    <div className="flex self-end items-center justify-end flex-col gap-3 p-3 h-full rounded-full bg-black">
-                        <button className="bg-zinc-900/60 text-zinc-400 hover:text-zinc-100 hover:bg-zinc-900 rounded-full flex h-12 w-12 flex items-center justify-center cursor-pointer">
+                    <div className="flex h-full flex-col items-center justify-end gap-2 self-end p-2">
+                        <button className="flex h-11 w-11 cursor-pointer items-center justify-center rounded-full bg-zinc-100 text-zinc-500 hover:bg-zinc-200 hover:text-zinc-900 dark:bg-zinc-900 dark:text-zinc-400 dark:hover:bg-zinc-800 dark:hover:text-zinc-100">
                             <Icon name="Plus" strokeWidth={2} size={22} />
                         </button>
-                        <button className="bg-zinc-900/60 text-zinc-400 hover:text-zinc-100 hover:bg-zinc-900 rounded-full flex h-12 w-12 flex items-center justify-center cursor-pointer">
+                        <button className="flex h-11 w-11 cursor-pointer items-center justify-center rounded-full bg-zinc-100 text-zinc-500 hover:bg-zinc-200 hover:text-zinc-900 dark:bg-zinc-900 dark:text-zinc-400 dark:hover:bg-zinc-800 dark:hover:text-zinc-100">
                             <Icon name="FolderOpen" strokeWidth={2} size={22} />
                         </button>
-                        <button className="bg-zinc-900/60 text-zinc-400 hover:text-zinc-100 hover:bg-zinc-900 rounded-full flex h-12 w-12 flex items-center justify-center cursor-pointer">
+                        <button className="flex h-11 w-11 cursor-pointer items-center justify-center rounded-full bg-zinc-100 text-zinc-500 hover:bg-zinc-200 hover:text-zinc-900 dark:bg-zinc-900 dark:text-zinc-400 dark:hover:bg-zinc-800 dark:hover:text-zinc-100">
                             <Icon name="Bolt" strokeWidth={2} size={22} />
                         </button>
-                         <button className="bg-zinc-900/60 hover:bg-zinc-900 rounded-full flex h-12 w-12 flex items-center justify-center cursor-pointer">
+                         <button className="flex h-11 w-11 cursor-pointer items-center justify-center rounded-full bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-900 dark:hover:bg-zinc-800">
                             <Image
                                 src="/Assets/Avatars/Sleep Mode.png"
                                 alt=""
@@ -68,38 +68,38 @@ export default function ProjectPage (){
                 </div>
                 <div className="re-size relative h-screen">
                     <button className="absolute top-20 -left-3">
-                        <Icon name="FlipHorizontal" className="h-6 w-6 p-1 flex items-center justify-center rounded-full bg-black border border-zinc-800 text-zinc-500 hover:text-zinc-300 cursor-col-resize" />
+                        <Icon name="FlipHorizontal" className="flex h-6 w-6 cursor-col-resize items-center justify-center rounded-full bg-zinc-100 text-zinc-400 hover:text-zinc-700 dark:bg-zinc-900 dark:hover:text-zinc-200" />
                     </button>
                 </div>
                 <div className="flex-1 h-screen overflow-auto block">
-                    <div className="p-10 grid grid-cols-1">
-                        <div className="bg-zinc-950 rounded-2xl p-10">
+                    <div className="grid grid-cols-1 p-panel">
+                        <div className="rounded-card bg-white p-panel dark:bg-zinc-950">
                             <div className="grid grid-cols-2 gap-1">
                                 <div className="title-and-desc">
-                                    <Icon name="Code2" strokeWidth={2} className="w-16 h-16 p-4 rounded-full bg-gradient-to-br from-zinc-900 to-transparent shadow-xl"/>
-                                    <h2 className="text-zinc-200 fnt-bold text-2xl pt-4 pb-2">
+                                    <Icon name="Code2" strokeWidth={2} className="h-14 w-14 rounded-full bg-zinc-100 p-3 dark:bg-zinc-900"/>
+                                    <h2 className="pt-3 pb-2 text-2xl font-bold text-zinc-900 dark:text-zinc-200">
                                         {project?.name ?? name}
                                     </h2>
-                                    <p className="text-zinc-400 text-base">
+                                    <p className="text-sm text-zinc-600 dark:text-zinc-400">
                                         {project?.description ?? (loading ? "" : "No description provided yet.")}
                                     </p>
                                 </div>
                                 <div className="grid grid-cols-2 grid-rows-2 gap-5">
-                                    <div className="bg-zinc-900/70 shadow-lg rounded-lg flex flex-col items-center justify-center">
-                                        <span className="text-2xl font-bold text-zinc-200">{project?.formsCount ?? project?.forms?.length ?? 0}</span>
-                                        <span className="text-xs text-zinc-500">Forms</span>
+                                    <div className="flex flex-col items-center justify-center rounded-lg bg-zinc-100 dark:bg-zinc-900">
+                                        <span className="text-2xl font-bold text-zinc-900 dark:text-zinc-200">{project?.formsCount ?? project?.forms?.length ?? 0}</span>
+                                        <span className="text-xs text-zinc-500 dark:text-zinc-400">Forms</span>
                                     </div>
-                                    <div className="bg-zinc-900/70 shadow-lg rounded-lg flex flex-col items-center justify-center">
-                                        <span className="text-2xl font-bold text-zinc-200">{stats?.total ?? 0}</span>
-                                        <span className="text-xs text-zinc-500">Submissions</span>
+                                    <div className="flex flex-col items-center justify-center rounded-lg bg-zinc-100 dark:bg-zinc-900">
+                                        <span className="text-2xl font-bold text-zinc-900 dark:text-zinc-200">{stats?.total ?? 0}</span>
+                                        <span className="text-xs text-zinc-500 dark:text-zinc-400">Submissions</span>
                                     </div>
-                                    <div className="bg-zinc-900/70 shadow-lg rounded-lg flex flex-col items-center justify-center">
-                                        <span className="text-2xl font-bold text-zinc-200">{stats?.sent ?? 0}</span>
-                                        <span className="text-xs text-zinc-500">Delivered</span>
+                                    <div className="flex flex-col items-center justify-center rounded-lg bg-zinc-100 dark:bg-zinc-900">
+                                        <span className="text-2xl font-bold text-zinc-900 dark:text-zinc-200">{stats?.sent ?? 0}</span>
+                                        <span className="text-xs text-zinc-500 dark:text-zinc-400">Delivered</span>
                                     </div>
-                                    <div className="bg-zinc-900/70 shadow-lg rounded-lg flex flex-col items-center justify-center">
-                                        <span className="text-2xl font-bold text-zinc-200">{stats?.spam ?? 0}</span>
-                                        <span className="text-xs text-zinc-500">Spam</span>
+                                    <div className="flex flex-col items-center justify-center rounded-lg bg-zinc-100 dark:bg-zinc-900">
+                                        <span className="text-2xl font-bold text-zinc-900 dark:text-zinc-200">{stats?.spam ?? 0}</span>
+                                        <span className="text-xs text-zinc-500 dark:text-zinc-400">Spam</span>
                                     </div>
                                 </div>
                             </div>
@@ -110,8 +110,8 @@ export default function ProjectPage (){
                         <div className="grid grid-cols-2 gap-5 py-16">
                             <div className="chart flex items-center jutify-center">
                                 <div className="flex items-center justify-center gap-5">
-                                    <div className="h-50 w-50 bg-zinc-900 overflow-hidden rounded-full grid-cols-2 grid-rows-2 grid gap-0.5 transform">
-                                        <div className="bg-zinc-800" />
+                                    <div className="h-40 w-40 overflow-hidden rounded-full bg-zinc-200 dark:bg-zinc-900 grid-cols-2 grid-rows-2 grid gap-0.5 transform">
+                                        <div className="bg-zinc-300 dark:bg-zinc-800" />
                                         <div className="bg-red-500/40" />
                                         <div className="bg-green-600/40" />
                                         <div className="bg-yellow-600/30" />
@@ -144,9 +144,9 @@ export default function ProjectPage (){
                                     <Icon size={16} strokeWidth={2} name="ClockFading" className="" />
                                     Freqently interacted Forms.
                                 </div>
-                                <div className="bg-zinc-950 rounded-2xl">
+                                <div className="rounded-card bg-white dark:bg-zinc-950">
                                     <div className="sort-and-filters p-5 flex items-center justify-end gap-2">
-                                        <span className="text-xs p-0.5 px-1 rounded-md border border-dashed border-zinc-800 text-green-600">Filter by</span>
+                                        <span className="text-xs p-0.5 px-1 rounded-md border border-dashed border-zinc-300 text-green-600 dark:border-zinc-700">Filter by</span>
                                         <SmallBtn variant="secondary">
                                             <Icon name="CirclePlus" size={15} className="text-sm"/>
                                             project
@@ -166,9 +166,9 @@ export default function ProjectPage (){
                                         ) : (
                                             <ul className="w-full flex flex-col gap-2 px-3">
                                                 {topForms.map((form) => (
-                                                    <li key={form.id} className="flex items-center justify-between text-sm bg-zinc-900/60 rounded-lg px-3 py-2">
-                                                        <span className="text-zinc-300 truncate">{form.title}</span>
-                                                        <span className="text-xs text-zinc-500">{form.submissionsCount ?? 0} submissions</span>
+                                                    <li key={form.id} className="flex items-center justify-between text-sm rounded-lg bg-zinc-100 px-3 py-2 dark:bg-zinc-900">
+                                                        <span className="truncate text-zinc-800 dark:text-zinc-300">{form.title}</span>
+                                                        <span className="text-xs text-zinc-500 dark:text-zinc-400">{form.submissionsCount ?? 0} submissions</span>
                                                     </li>
                                                 ))}
                                             </ul>
@@ -180,19 +180,19 @@ export default function ProjectPage (){
 
                         {/* Recent submissions.. */}
 
-                        <div className="rounded-xl bg-zinc-950 overflow-hidden">
-                            <div className="head flex items-center bg-zinc-950 border-b border-zinc-800 justify-start gap-2 p-5">
+                        <div className="overflow-hidden rounded-card bg-white dark:bg-zinc-950">
+                            <div className="head flex items-center border-b border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-950 justify-start gap-2 p-5">
                                 <Icon name="FileClock" className="" size={16} />
                                 Recent Submissions
                             </div>
-                            <div className="bg-zinc-950 p-5 flex items-center justify-center text-zinc-500 h-54">
+                            <div className="flex h-48 items-center justify-center bg-white p-card text-zinc-500 dark:bg-zinc-950">
                                 {recentSubmissions.length === 0 ? (
                                     "No data found."
                                 ) : (
                                     <ul className="w-full flex flex-col gap-2">
                                         {recentSubmissions.map((submission) => (
-                                            <li key={submission.id} className="flex items-center justify-between text-sm bg-zinc-900/60 rounded-lg px-3 py-2">
-                                                <span className="text-zinc-300 truncate">{submission.formTitle}</span>
+                                            <li key={submission.id} className="flex items-center justify-between text-sm rounded-lg bg-zinc-100 px-3 py-2 dark:bg-zinc-900">
+                                                <span className="truncate text-zinc-800 dark:text-zinc-300">{submission.formTitle}</span>
                                                 <span className="flex items-center gap-3">
                                                     <span className={
                                                         submission.status === "sent"
@@ -205,7 +205,7 @@ export default function ProjectPage (){
                                                     }>
                                                         {submission.status}
                                                     </span>
-                                                    <span className="text-xs text-zinc-500">
+                                                    <span className="text-xs text-zinc-500 dark:text-zinc-400">
                                                         {new Date(submission.createdAt).toLocaleString()}
                                                     </span>
                                                 </span>
