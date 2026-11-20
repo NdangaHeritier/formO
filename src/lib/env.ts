@@ -3,6 +3,9 @@ import { z } from "zod";
 const serverEnvSchema = z.object({
   NODE_ENV: z.enum(["development", "test", "production"]).default("development"),
   DATABASE_URL: z.string().url("DATABASE_URL must be a valid PostgreSQL connection URL"),
+  // Explicit FormO connection string. Takes priority over DATABASE_URL because
+  // some hosts inject their own DATABASE_URL (e.g. a pris:// Accelerate URL).
+  FORMO_DATABASE_URL: z.string().url().optional(),
   // Direct (unpooled) Neon URL used only by Prisma CLI for migrations.
   // Locally this is unset and DATABASE_URL is used instead.
   DATABASE_URL_UNPOOLED: z.string().url().optional(),

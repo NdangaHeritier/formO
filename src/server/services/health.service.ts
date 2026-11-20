@@ -89,7 +89,7 @@ export async function collectReadiness() {
 
   for (const table of PARTITIONED_TABLES) {
     const rows = await prisma.$queryRawUnsafe<BoundRow[]>(
-      `SELECT child.relname AS child, pg_get_expr(child.relpartbound, child.oid) AS bound ` +
+      `SELECT child.relname::text AS child, pg_get_expr(child.relpartbound, child.oid) AS bound ` +
         `FROM pg_inherits i JOIN pg_class child ON child.oid = i.inhrelid ` +
         `JOIN pg_class parent ON parent.oid = i.inhparent ` +
         `WHERE parent.relname = '${table}' AND child.relpartbound IS NOT NULL`

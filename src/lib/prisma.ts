@@ -14,10 +14,12 @@ const globalForPrisma = globalThis as unknown as {
 const LOCAL_FALLBACK = "postgresql://postgres:postgres@127.0.0.1:5432/formo";
 
 function connectionString(): string {
-  if (process.env.NEXT_PHASE === "phase-production-build" && !process.env.DATABASE_URL) {
+  const env = getServerEnv();
+  const configured = env.FORMO_DATABASE_URL || env.DATABASE_URL;
+  if (process.env.NEXT_PHASE === "phase-production-build" && !configured) {
     return LOCAL_FALLBACK;
   }
-  return getServerEnv().DATABASE_URL;
+  return configured;
 }
 
 /**
