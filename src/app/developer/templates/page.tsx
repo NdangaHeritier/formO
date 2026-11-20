@@ -65,7 +65,7 @@ export default function TemplatesPage() {
     <div className="relative rounded-2xl">
       <Squares parLength={100} />
       <div className="projects relative z-10 grid grid-cols-1 gap-card rounded-card bg-gradient-to-tr from-zinc-100 to-zinc-100/50 from-80% to-20% p-panel dark:from-zinc-950 dark:to-zinc-950/50">
-        <header className="flex flex-wrap items-center justify-between gap-3">
+        <div className="flex flex-wrap items-center justify-between gap-3">
           <div className="grid grid-cols-1 gap-2">
             <h1 className="text-xl font-bold">Email Templates</h1>
             <p className="max-w-xl text-sm text-zinc-500 dark:text-zinc-400">
@@ -75,7 +75,7 @@ export default function TemplatesPage() {
           <span className="rounded-full bg-zinc-200/60 px-2 py-0.5 text-xs font-medium text-zinc-600 dark:bg-zinc-800 dark:text-zinc-300">
             {templates.length} saved
           </span>
-        </header>
+        </div>
 
         <section className="rounded-2xl border border-zinc-200 bg-white shadow-lg dark:border-zinc-900 dark:bg-black">
           <div className="flex items-center gap-2 border-b border-zinc-200 px-5 py-4 font-semibold text-zinc-800 dark:border-zinc-800 dark:text-zinc-200">

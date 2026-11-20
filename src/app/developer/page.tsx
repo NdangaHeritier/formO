@@ -1,7 +1,8 @@
-"use client";
+﻿"use client";
+import DeveloperShell from "@/components/Developer/DeveloperShell";
 import { useCallback, useEffect, useState } from 'react';
 import DeveloperBreadcrumb from '@/components/Developer/DeveloperBreadcrumb';
-import Header from '@/components/Header';
+
 // import { IconType } from '@/types/Icon';
 // import { AnalyticCard } from '@/components/Developer/AnalyticCard';
 import FormButton from '@/components/Global/FormButton';
@@ -17,7 +18,7 @@ import NewDeveloperForm from '@/components/Developer/Modals/Forms/NewDeveloper';
 import NewForm from '@/components/Developer/Modals/Forms/NewForm';
 import { FormsDisplayModel } from '@/components/Developer/Modals/Displays/DisplayProjectForms';
 import LinkButton from '@/components/Global/LinkButton';
-import PrivateRouter from '@/components/Global/privateRouter';
+
 import AnalyticsGroup from '@/components/Developer/AnalyticsGroup';
 import { SkeletonGrid } from '@/components/Global/Skeleton';
   
@@ -48,7 +49,7 @@ const Developer= () => {
     const [createNewForm, setCreateNewForm] = useState(false);
 
     // set a project id for which each form can go with..
-    // (kept for the forms modal — these options move to the project details route)
+    // (kept for the forms modal â€” these options move to the project details route)
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [projectID, setProjectID] = useState<string| undefined>(undefined);
 
@@ -65,8 +66,7 @@ const Developer= () => {
     });
 
   return (
-    <PrivateRouter>
-      <Header border='border-0' py='py-3'/>
+    <DeveloperShell>
       <DeveloperBreadcrumb
         navs={[
           { label: "Home", href: "/" },
@@ -190,8 +190,9 @@ const Developer= () => {
         </div>
 
       </section>
-    </PrivateRouter>
+    </DeveloperShell>
   );
 }
 
 export default Developer;
+

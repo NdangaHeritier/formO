@@ -1,8 +1,9 @@
-"use client";
+﻿"use client";
+import DeveloperShell from "@/components/Developer/DeveloperShell";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import Header from "@/components/Header";
-import PrivateRouter from "@/components/Global/privateRouter";
+
+
 import DeveloperBreadcrumb from "@/components/Developer/DeveloperBreadcrumb";
 import ProjectCard from "@/components/Developer/ProjectCard";
 import NewDeveloperForm from "@/components/Developer/Modals/Forms/NewDeveloper";
@@ -133,7 +134,7 @@ const Projects = () => {
       loadProjects();
       return true;
     } catch {
-      alert("Network error — please try again");
+      alert("Network error â€” please try again");
       return false;
     } finally {
       setBusy(false);
@@ -175,8 +176,7 @@ const Projects = () => {
     "flex items-center justify-start gap-2 w-full text-left px-3 py-2 rounded-lg hover:bg-zinc-200 dark:hover:bg-zinc-900 transition text-zinc-700 dark:text-zinc-200 text-sm cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed";
 
   return (
-    <PrivateRouter>
-      <Header border='border-0' py='py-3' />
+    <DeveloperShell>
       <DeveloperBreadcrumb
         navs={[
           { label: "Home", href: "/" },
@@ -233,7 +233,7 @@ const Projects = () => {
                     type="text"
                     value={query}
                     onChange={(e) => setQuery(e.target.value)}
-                    placeholder="Search projects…"
+                    placeholder="Search projectsâ€¦"
                     className="h-9 w-52 rounded-md border border-zinc-300 dark:border-zinc-800 bg-white dark:bg-zinc-950 ps-9 pe-3 text-sm text-zinc-800 dark:text-zinc-200 placeholder:text-zinc-400 outline-none focus:border-zinc-500 transition"
                   />
                 </div>
@@ -283,7 +283,7 @@ const Projects = () => {
 
             {/* Content */}
             {loading ? (
-              /* skeletons — shaped like the active view */
+              /* skeletons â€” shaped like the active view */
               view === "list" ? (
                 <div className="overflow-x-auto rounded-2xl border border-zinc-200 dark:border-zinc-900 bg-white dark:bg-black shadow-lg">
                   <SkeletonTableRows rows={5} />
@@ -335,7 +335,7 @@ const Projects = () => {
                 </div>
               )
             ) : view === "grid" ? (
-              /* Grid view — same cards as the dashboard */
+              /* Grid view â€” same cards as the dashboard */
               <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5">
                 {filtered.map((project) => (
                   <ProjectCard
@@ -357,7 +357,7 @@ const Projects = () => {
                 ))}
               </div>
             ) : (
-              /* List view — data table */
+              /* List view â€” data table */
               <div className="overflow-x-auto rounded-2xl border border-zinc-200 dark:border-zinc-900 bg-white dark:bg-black shadow-lg">
                 <table className="w-full text-sm border-collapse">
                   <thead>
@@ -493,8 +493,9 @@ const Projects = () => {
           setPendingDelete(null);
         }}
       />
-    </PrivateRouter>
+    </DeveloperShell>
   );
 };
 
 export default Projects;
+
