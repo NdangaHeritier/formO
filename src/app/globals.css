@@ -21,7 +21,7 @@
    it in sync with the device. One source of truth: no media-query fallback,
    so the CSS variables and every dark: utility always change together. */
 :root.dark {
-  --background: #130b00;
+  --background: #000000;
   --foreground: #ffffff;
 }
 

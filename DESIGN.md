@@ -1,6 +1,6 @@
 ---
 name: FormO
-description: Self-hosted form-to-email platform — developer-grade control with a calm, warm-neutral dashboard.
+description: Self-hosted form-to-email platform — developer-grade control in a calm zinc dashboard.
 colors:
   paper: "#f1eee6"
   ink: "#130b00"
@@ -93,14 +93,14 @@ components:
 
 ## Overview
 
-**Creative North Star: "The Warm Workbench."**
+**Creative North Star: "The Quiet Workbench."**
 
-A quiet, warm-neutral workspace where the tools recede and the work stays legible. The dashboard is an Operate surface: scanability and predictable controls outrank expression. Nothing shouts. Density is moderate — tight clusters of related controls inside generous containers — and every state change is legible at a glance.
+A quiet, neutral workspace where the tools recede and the work stays legible. The dashboard is an Operate surface: scanability and predictable controls outrank expression. Nothing shouts. Density is moderate — tight clusters of related controls inside generous containers — and every state change is legible at a glance.
 
-The palette is a zinc ladder on warm paper, with a single amber accent reserved for icon badges and brand moments. Theme switching is an inversion, not a rebrand: light uses black controls on white, dark uses white controls on near-black. Hue never changes with the theme; only value does.
+The palette is a single zinc ladder with a black/white canvas and one amber accent reserved for icon badges and brand moments. Theme switching is an inversion, not a rebrand: light uses black controls on white, dark uses white controls on black. No warm or colored surfaces are introduced.
 
 **Key Characteristics:**
-- Warm off-white paper (`#f1eee6`) and deep warm ink (`#130b00`) as the outer frame, with zinc surfaces inside.
+- Black canvas in dark mode (`#000000`) and warm paper (`#f1eee6`) in light mode, with zinc surfaces inside.
 - Inverting monochrome buttons; one amber accent, used sparingly.
 - 8px controls, 16px cards, 24px panels; everything on the Tailwind 4/8/12/20 rhythm.
 - One-pixel zinc borders plus soft `shadow-lg` / `shadow-xl` / `shadow-2xl` — depth is soft, never hard-offset.
@@ -111,7 +111,7 @@ The palette is a zinc ladder on warm paper, with a single amber accent reserved 
 A neutral-first system: zinc carries almost everything, amber marks identity, red/green mark consequence.
 
 ### Primary
-- **Warm Ink / Paper** (`#130b00` / `#f1eee6`): the outer frame. Root background tokens; the dashboard chrome sits inside them.
+- **Canvas** (`#000000` dark / `#f1eee6` light): the outer frame. Root background tokens; zinc chrome sits inside.
 - **Amber Accent** (`#ca8a04`, yellow-600): icon badges (`bg-yellow-600/20 text-yellow-600`) and brand emphasis. Never used as a large fill.
 
 ### Neutral
