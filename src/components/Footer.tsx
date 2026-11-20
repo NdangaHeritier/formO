@@ -6,7 +6,7 @@ import LinkButton from "./Global/LinkButton";
 
 export default function Footer() {
   return (
-    <footer className="flex items-center justify-center flex-col p-4 bg-zinc-100  dark:bg-zinc-900/10  dark:text-zinc-500 dark:border-t  dark:border-zinc-800 text-whitep-10">
+    <footer className="flex items-center justify-center flex-col p-4 bg-zinc-100 dark:bg-zinc-900 text-zinc-600 dark:text-zinc-400 border-t border-zinc-200 dark:border-zinc-800">
         <div className="footer-row grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 p-5 gap-8">
             <div className="logo-and-desc-about-formo flex flex-col items-center justify-start gap-3 px-5">
                 <Image src="/Assets/formo-dark.png" alt="logo" height="50" width="50" className="w-1/4 opacity-60 dark:hidden" />
