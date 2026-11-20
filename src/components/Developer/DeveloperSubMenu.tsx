@@ -12,9 +12,9 @@ type MenuProps ={
 export default function DeveloperSubMenu({
   navs,
   onSelect,
+  // Forms are created from inside a project, so the global menu only creates projects.
   options = [
     { label: "New Project", value: "project", icon: "FolderPlus" },
-    { label: "New Form", value: "form", icon: "SquareCode" },
   ],
 }: MenuProps) {
   const [open, setOpen] = useState(false);

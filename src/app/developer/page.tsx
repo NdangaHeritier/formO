@@ -1,7 +1,7 @@
 ﻿"use client";
 import DeveloperShell from "@/components/Developer/DeveloperShell";
-import { useCallback, useEffect, useState } from 'react';
 import DeveloperBreadcrumb from '@/components/Developer/DeveloperBreadcrumb';
+import { useCallback, useEffect, useState } from 'react';
 
 // import { IconType } from '@/types/Icon';
 // import { AnalyticCard } from '@/components/Developer/AnalyticCard';
@@ -15,8 +15,6 @@ import { Squares } from '@/components/Global/Squares';
 // import FeatureCard from '@/components/Global/FeatureCard';
 import GuideCard from '@/components/Global/GuideCard';
 import NewDeveloperForm from '@/components/Developer/Modals/Forms/NewDeveloper';
-import NewForm from '@/components/Developer/Modals/Forms/NewForm';
-import { FormsDisplayModel } from '@/components/Developer/Modals/Displays/DisplayProjectForms';
 import LinkButton from '@/components/Global/LinkButton';
 
 import AnalyticsGroup from '@/components/Developer/AnalyticsGroup';
@@ -46,25 +44,6 @@ const Developer= () => {
 
     // trigger to show create new project model..
     const [isCreateProjectModelOpen, setIsCreateProjectModelOpen] = useState(false);
-    const [createNewForm, setCreateNewForm] = useState(false);
-
-    // set a project id for which each form can go with..
-    // (kept for the forms modal â€” these options move to the project details route)
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const [projectID, setProjectID] = useState<string| undefined>(undefined);
-
-    // Set Project selected to view forms
-    const [showFormsModal, setShowFormsModal] = useState(false);
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const [selectedProject, setSelectedProject] = useState<ProjectType>({
-      id: '',
-      name: '',
-      description: '',
-      status: 'active',
-      created: new Date().toISOString(),
-      updated: new Date().toISOString(),
-    });
-
   return (
     <DeveloperShell>
       <DeveloperBreadcrumb
@@ -76,16 +55,6 @@ const Developer= () => {
       {/* display createProjectModel */}
       {isCreateProjectModelOpen && (
         <NewDeveloperForm onClick={() => setIsCreateProjectModelOpen(false)} />
-      )}
-
-      {/* Display CreateForm Model */}
-      {createNewForm && (
-        <NewForm onClick={() => setCreateNewForm(false)} project={projectID} />
-      )}
-
-      {/* Show Forms and Project Details Model */}
-      {showFormsModal && (
-        <FormsDisplayModel closeModal={() => setShowFormsModal(false)} project={selectedProject} />
       )}
 
       {/* Dashboard */}

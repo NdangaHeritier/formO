@@ -3,8 +3,6 @@ import { ChevronRight, User2 } from "lucide-react";
 import DeveloperSubMenu from "./DeveloperSubMenu";
 import { useState } from "react";
 import NewDeveloperForm from "./Modals/Forms/NewDeveloper";
-import NewForm from "./Modals/Forms/NewForm";
-    
 
 export default function DeveloperBreadcrumb({
   navs
@@ -14,9 +12,7 @@ export default function DeveloperBreadcrumb({
   createLabel?: string;
 }) {
 
-  
   const [showProjectModal, setShowProjectModal] = useState(false);
-  const [showFormModal, setShowFormModal] = useState(false);
   return (
     <div className="w-full sticky top-0 z-40 bg-zinc-50 dark:bg-zinc-950 border-b border-zinc-200 dark:border-zinc-900 py-3 px-4 grid grid-cols-2 gap-5">
       <nav className="flex items-center gap-2 text-zinc-700 dark:text-zinc-200 text-sm">
@@ -44,20 +40,11 @@ export default function DeveloperBreadcrumb({
           { label: "Settings", href: "/developer/settings" },
         ]}
         onSelect={(value) => {
-          if (value === "project") {
-            setShowProjectModal(true);
-            setShowFormModal(false);
-          } else {
-            setShowProjectModal(false);
-            setShowFormModal(true);
-          }
+          if (value === "project") setShowProjectModal(true);
         }}
       />
-      {showProjectModal && (        
+      {showProjectModal && (
         <NewDeveloperForm onClick={() => setShowProjectModal(false)} />
-      )}
-      {showFormModal && (        
-        <NewForm onClick={() => setShowFormModal(false)} />
       )}
     </div>
   );

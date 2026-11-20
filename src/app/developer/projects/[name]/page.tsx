@@ -2,8 +2,9 @@
 import DeveloperShell from "@/components/Developer/DeveloperShell";
 import { Icon } from "@/components/Global/Icon";
 import SmallBtn from "@/components/Global/smallBtn";
-
-
+import FormButton from "@/components/Global/FormButton";
+import NewForm from "@/components/Developer/Modals/Forms/NewForm";
+import Link from "next/link";
 
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -13,6 +14,8 @@ export default function ProjectPage (){
     const {name} = useParams();
     const [project, setProject] = useState<ProjectType | null>(null);
     const [loading, setLoading] = useState(true);
+    const [createFormOpen, setCreateFormOpen] = useState(false);
+    const [refreshKey, setRefreshKey] = useState(0);
 
     useEffect(() => {
         if (!name) return;
@@ -25,7 +28,7 @@ export default function ProjectPage (){
             })
             .catch(() => {})
             .finally(() => setLoading(false));
-    }, [name]);
+    }, [name, refreshKey]);
 
     const stats = project?.submissionsStats;
     const topForms = [...(project?.forms ?? [])]
@@ -46,6 +49,23 @@ export default function ProjectPage (){
                                     <p className="text-sm text-zinc-600 dark:text-zinc-400">
                                         {project?.description ?? (loading ? "" : "No description provided yet.")}
                                     </p>
+                                    <div className="mt-4 flex flex-wrap items-center gap-3">
+                                        <FormButton
+                                            type="button"
+                                            variant="primary"
+                                            disabled={!project}
+                                            onClick={() => setCreateFormOpen(true)}
+                                        >
+                                            <Icon name="Plus" size={15} className="text-zinc-100 dark:text-zinc-900" />
+                                            Add Form
+                                        </FormButton>
+                                        <Link
+                                            href="/developer/forms"
+                                            className="text-sm text-zinc-700 dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-zinc-100 hover:underline"
+                                        >
+                                            View all forms
+                                        </Link>
+                                    </div>
                                 </div>
                                 <div className="grid grid-cols-2 grid-rows-2 gap-5">
                                     <div className="flex flex-col items-center justify-center rounded-lg bg-zinc-100 dark:bg-zinc-900">
@@ -179,6 +199,14 @@ export default function ProjectPage (){
                             </div>
                         </div>
                     </div>
+            {createFormOpen && project && (
+                <NewForm
+                    project={project.id}
+                    projectName={project.name}
+                    onClick={() => setCreateFormOpen(false)}
+                    onSuccess={() => setRefreshKey((key) => key + 1)}
+                />
+            )}
         </DeveloperShell>
     )
 }

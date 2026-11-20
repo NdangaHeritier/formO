@@ -8,14 +8,17 @@ import { TextAreaField } from "@/components/Global/TextAreaField";
 import { SelectField } from "@/components/Global/SelectField";
 
 type Props = {
+  /** Project id. When set, the form is created in this project and the picker is hidden. */
   project?: string;
+  projectName?: string;
   onClick: () => void;
   onSuccess?: (form: { id: string; endpoint: string }) => void;
 };
 
 type Recipient = { email: string; type: "cc" | "bcc" };
 
-export default function NewForm({ project, onClick, onSuccess }: Props) {
+export default function NewForm({ project, projectName, onClick, onSuccess }: Props) {
+  const scopedToProject = Boolean(project);
   const [formData, setFormData] = useState({
     projectId: project ?? "",
     title: "",
@@ -28,6 +31,7 @@ export default function NewForm({ project, onClick, onSuccess }: Props) {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
+    if (scopedToProject) return;
     fetch("/api/projects")
       .then((res) => (res.ok ? res.json() : null))
       .then((data: { projects?: Array<{ id: string; name: string }> } | null) => {
@@ -39,7 +43,7 @@ export default function NewForm({ project, onClick, onSuccess }: Props) {
         }));
       })
       .catch(() => setError("Could not load projects."));
-  }, []);
+  }, [scopedToProject]);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
@@ -103,25 +107,36 @@ export default function NewForm({ project, onClick, onSuccess }: Props) {
       <div className="bg-white dark:bg-zinc-950 border border-zinc-300 dark:border-zinc-700 p-card rounded-card shadow-lg max-w-md w-full">
         <h2 className="text-lg font-semibold mb-4 text-black dark:text-white">Create New Form</h2>
         <p className="text-sm text-zinc-600 dark:text-zinc-400 mb-6">
-          A FormO form is the backend your real form posts to. The primary recipient is always the
-          address below; add CC or BCC recipients as needed.
+          {scopedToProject
+            ? `This form will be created in ${projectName ?? "this project"}.`
+            : "A FormO form is the backend your real form posts to. The primary recipient is always the address below; add CC or BCC recipients as needed."}
         </p>
 
         <form onSubmit={handleSubmit} className="pt-5 grid grid-cols-1 gap-5">
-          <SelectField
-            name="projectId"
-            value={formData.projectId}
-            onChange={handleChange}
-            id="project"
-            label="Project"
-          >
-            <option value="">Select a project…</option>
-            {projects.map((item) => (
-              <option key={item.id} value={item.id}>
-                {item.name}
-              </option>
-            ))}
-          </SelectField>
+          {scopedToProject ? (
+            <div className="grid grid-cols-1 gap-1">
+              <span className="text-zinc-900 dark:text-zinc-100 font-semibold capitalize">Project</span>
+              <div className="flex items-center gap-2 rounded-md border border-zinc-200 bg-zinc-100/80 px-3 py-2 text-sm text-zinc-800 dark:border-zinc-800 dark:bg-zinc-900/50 dark:text-zinc-200">
+                <Icon name="Folder" size={15} className="text-zinc-500" />
+                {projectName ?? "Current project"}
+              </div>
+            </div>
+          ) : (
+            <SelectField
+              name="projectId"
+              value={formData.projectId}
+              onChange={handleChange}
+              id="project"
+              label="Project"
+            >
+              <option value="">Select a project…</option>
+              {projects.map((item) => (
+                <option key={item.id} value={item.id}>
+                  {item.name}
+                </option>
+              ))}
+            </SelectField>
+          )}
 
           <InputField
             type="text"

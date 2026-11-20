@@ -138,7 +138,7 @@ const FormsPage = () => {
             <div className="text-center text-zinc-500 p-10 flex flex-col items-center gap-3">
               <Icon name="SquareCode" size={28} className="text-zinc-400" />
               {forms.length === 0
-                ? "No forms yet — create one from a project or the rail's + button."
+                ? "No forms yet — open a project and use Add Form to create one."
                 : `No forms match "${query}".`}
             </div>
           ) : (
