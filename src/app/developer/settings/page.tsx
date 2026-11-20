@@ -82,7 +82,7 @@ function Section({ title, icon, count, loading, emptyText, children }: SectionPr
 }
 
 const rowClass =
-  "flex items-center justify-between gap-3 text-sm bg-zinc-50 dark:bg-zinc-900/40 border border-transparent rounded-lg px-4 py-3";
+  "flex flex-wrap items-center justify-between gap-3 text-sm bg-zinc-50 dark:bg-zinc-900/40 border border-transparent rounded-lg px-4 py-3";
 
 const pillClass =
   "text-[11px] px-2 py-0.5 rounded-full font-medium whitespace-nowrap bg-zinc-200/70 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300";

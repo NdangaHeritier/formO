@@ -14,7 +14,7 @@ export default function DeveloperBreadcrumb({
 
   const [showProjectModal, setShowProjectModal] = useState(false);
   return (
-    <div className="w-full sticky top-0 z-40 bg-zinc-50 dark:bg-zinc-950 border-b border-zinc-200 dark:border-zinc-900 py-3 px-4 grid grid-cols-2 gap-5">
+    <div className="w-full sticky top-0 z-40 bg-zinc-50 dark:bg-zinc-950 border-b border-zinc-200 dark:border-zinc-900 py-3 px-4 flex flex-wrap items-center justify-between gap-3">
       <nav className="flex items-center gap-2 text-zinc-700 dark:text-zinc-200 text-sm">
         <div className="first p-1">
           <span className="h-10 w-10 border-zinc-700/70 bg-zinc-200 dark:bg-zinc-900 rounded-full flex items-center justify-center">

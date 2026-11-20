@@ -20,7 +20,7 @@ export default function DeveloperSubMenu({
   const [open, setOpen] = useState(false);
   return (
     <div className="flex p-1 items-center gap-5 justify-between w-full relative">
-      <nav className="flex gap-2">        
+      <nav className="hidden gap-2 md:flex">        
         {navs.map((nav, i) => (
           <Link
             key={i}
@@ -40,7 +40,7 @@ export default function DeveloperSubMenu({
               Create <Icon name="ChevronDown" className="w-4 h-4" />
           </FormButton>
           {open && (
-            <div className="absolute overflow-hidden right-0 mt-2 w-[15vw] p-1 gap-0.5 bg-zinc-100 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-xl shadow-lg z-10">
+            <div className="absolute overflow-hidden right-0 mt-2 w-48 p-1 gap-0.5 bg-zinc-100 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-xl shadow-lg z-10">
             {options.map((opt) => (
                 <button
                 key={opt.value}

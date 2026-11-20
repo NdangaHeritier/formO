@@ -40,7 +40,7 @@ export default function ProjectPage (){
         <DeveloperShell>
                     <div className="grid grid-cols-1 p-panel">
                         <div className="rounded-card bg-white p-panel dark:bg-zinc-950">
-                            <div className="grid grid-cols-2 gap-1">
+                            <div className="grid grid-cols-1 gap-1 lg:grid-cols-2">
                                 <div className="title-and-desc">
                                     <Icon name="Code2" strokeWidth={2} className="h-14 w-14 rounded-full bg-zinc-100 p-3 dark:bg-zinc-900"/>
                                     <h2 className="pt-3 pb-2 text-2xl font-bold text-zinc-900 dark:text-zinc-200">
@@ -67,7 +67,7 @@ export default function ProjectPage (){
                                         </Link>
                                     </div>
                                 </div>
-                                <div className="grid grid-cols-2 grid-rows-2 gap-5">
+                                <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 sm:gap-5">
                                     <div className="flex flex-col items-center justify-center rounded-lg bg-zinc-100 dark:bg-zinc-900">
                                         <span className="text-2xl font-bold text-zinc-900 dark:text-zinc-200">{project?.formsCount ?? project?.forms?.length ?? 0}</span>
                                         <span className="text-xs text-zinc-500 dark:text-zinc-400">Forms</span>
@@ -90,10 +90,10 @@ export default function ProjectPage (){
 
                         {/* charts and frequently used forms */}
 
-                        <div className="grid grid-cols-2 gap-5 py-16">
+                        <div className="grid grid-cols-1 gap-5 py-8 lg:grid-cols-2 lg:py-16">
                             <div className="chart flex items-center jutify-center">
-                                <div className="flex items-center justify-center gap-5">
-                                    <div className="h-40 w-40 overflow-hidden rounded-full bg-zinc-200 dark:bg-zinc-900 grid-cols-2 grid-rows-2 grid gap-0.5 transform">
+                                <div className="flex flex-wrap items-center justify-center gap-5">
+                                    <div className="h-32 w-32 shrink-0 overflow-hidden rounded-full bg-zinc-200 dark:bg-zinc-900 grid-cols-2 grid-rows-2 grid gap-0.5 transform sm:h-40 sm:w-40">
                                         <div className="bg-zinc-300 dark:bg-zinc-800" />
                                         <div className="bg-red-500/40" />
                                         <div className="bg-green-600/40" />
@@ -128,7 +128,7 @@ export default function ProjectPage (){
                                     Freqently interacted Forms.
                                 </div>
                                 <div className="rounded-card bg-white dark:bg-zinc-950">
-                                    <div className="sort-and-filters p-5 flex items-center justify-end gap-2">
+                                    <div className="sort-and-filters flex flex-wrap items-center justify-end gap-2 p-5">
                                         <span className="text-xs p-0.5 px-1 rounded-md border border-dashed border-zinc-300 text-green-600 dark:border-zinc-700">Filter by</span>
                                         <SmallBtn variant="secondary">
                                             <Icon name="CirclePlus" size={15} className="text-sm"/>

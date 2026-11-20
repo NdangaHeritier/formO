@@ -68,7 +68,7 @@ export default function AnalyticsGroup() {
 
   if (loading) {
     return (
-      <div className="analytics grid grid-cols-3 gap-5 py-3">
+      <div className="analytics grid grid-cols-1 gap-5 py-3 sm:grid-cols-2 lg:grid-cols-3">
         {Array.from({ length: 3 }, (_, index) => (
           <SkeletonMetricCard key={index} />
         ))}
@@ -77,7 +77,7 @@ export default function AnalyticsGroup() {
   }
 
   return (
-    <div className="analytics grid grid-cols-3 gap-5 py-3">
+    <div className="analytics grid grid-cols-1 gap-5 py-3 sm:grid-cols-2 lg:grid-cols-3">
       {analyticsList.map((analytic, index) => (
         <AnalyticCard
           key={index}

@@ -234,7 +234,7 @@ const Projects = () => {
                     value={query}
                     onChange={(e) => setQuery(e.target.value)}
                     placeholder="Search projectsâ€¦"
-                    className="h-9 w-52 rounded-md border border-zinc-300 dark:border-zinc-800 bg-white dark:bg-zinc-950 ps-9 pe-3 text-sm text-zinc-800 dark:text-zinc-200 placeholder:text-zinc-400 outline-none focus:border-zinc-500 transition"
+                    className="h-9 w-48 rounded-md sm:w-52 border border-zinc-300 dark:border-zinc-800 bg-white dark:bg-zinc-950 ps-9 pe-3 text-sm text-zinc-800 dark:text-zinc-200 placeholder:text-zinc-400 outline-none focus:border-zinc-500 transition"
                   />
                 </div>
 
