@@ -16,16 +16,30 @@ function trustedOrigins(): string[] {
   return [...new Set([env.BETTER_AUTH_URL, ...extra])];
 }
 
-/** Registers GitHub sign-in only when both credentials are configured. */
-function githubProvider() {
+type SocialProviderConfig = {
+  github?: { clientId: string; clientSecret: string };
+  google?: { clientId: string; clientSecret: string };
+};
+
+/** Registers each provider only when both of its credentials are configured. */
+function socialProviders(): SocialProviderConfig {
   const env = getServerEnv();
-  if (!env.GITHUB_CLIENT_ID || !env.GITHUB_CLIENT_SECRET) return {};
-  return {
-    github: {
+  const providers: SocialProviderConfig = {};
+
+  if (env.GITHUB_CLIENT_ID && env.GITHUB_CLIENT_SECRET) {
+    providers.github = {
       clientId: env.GITHUB_CLIENT_ID,
       clientSecret: env.GITHUB_CLIENT_SECRET,
-    },
-  };
+    };
+  }
+  if (env.GOOGLE_CLIENT_ID && env.GOOGLE_CLIENT_SECRET) {
+    providers.google = {
+      clientId: env.GOOGLE_CLIENT_ID,
+      clientSecret: env.GOOGLE_CLIENT_SECRET,
+    };
+  }
+
+  return providers;
 }
 
 function escapeHtml(value: string): string {
@@ -53,7 +67,7 @@ export const auth = betterAuth({
   }),
   secret: process.env.BETTER_AUTH_SECRET,
   baseURL: process.env.BETTER_AUTH_URL || "http://localhost:3000",
-  socialProviders: githubProvider(),
+  socialProviders: socialProviders(),
   trustedOrigins: trustedOrigins(),
   emailAndPassword: {
     enabled: true,

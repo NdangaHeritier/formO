@@ -24,6 +24,9 @@ const serverEnvSchema = z.object({
   // only registered when both are present).
   GITHUB_CLIENT_ID: z.string().optional(),
   GITHUB_CLIENT_SECRET: z.string().optional(),
+  // Google OAuth client credentials for social sign-in (optional).
+  GOOGLE_CLIENT_ID: z.string().optional(),
+  GOOGLE_CLIENT_SECRET: z.string().optional(),
   // Number of trusted reverse-proxy hops in X-Forwarded-For. 0 ignores the
   // header entirely because clients can spoof it.
   TRUSTED_PROXY_HOPS: z.coerce.number().int().min(0).max(10).default(0),
