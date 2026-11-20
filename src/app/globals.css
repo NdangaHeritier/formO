@@ -29,14 +29,11 @@
   --foreground: #ffffff;
 }
 
-/* One-shot color transition for theme switches. The class is added by the
-   theme helper and removed right after, so first paint is never animated. */
+/* One-shot root-only fade for theme switches. Keeping this off descendants
+   avoids a whole-page style recalculation (and the browser stutter it causes). */
 .theme-transition,
-.theme-transition *,
-.theme-transition *::before,
-.theme-transition *::after {
-  transition: background-color 240ms ease, border-color 240ms ease, color 240ms ease,
-    fill 240ms ease, stroke 240ms ease !important;
+.theme-transition body {
+  transition: background-color 180ms ease, color 180ms ease !important;
 }
 
 @layer base {

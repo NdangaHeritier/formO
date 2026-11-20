@@ -17,21 +17,43 @@ function systemPrefersDark(): boolean {
   return window.matchMedia("(prefers-color-scheme: dark)").matches;
 }
 
+let pendingFrame: number | undefined;
 let transitionTimer: number | undefined;
 
-/** Applies a theme mode to the root element, with an optional color transition. */
+/**
+ * Applies a theme mode to the root element. Animations touch only html/body
+ * and run inside one frame, so switching stays cheap even on long pages.
+ */
 export function applyTheme(mode: ThemeMode, animate = false): void {
   const dark = mode === "dark" || (mode === "system" && systemPrefersDark());
   const root = document.documentElement;
 
-  if (animate) {
-    root.classList.add("theme-transition");
-    if (transitionTimer) window.clearTimeout(transitionTimer);
-    transitionTimer = window.setTimeout(() => root.classList.remove("theme-transition"), 320);
+  const commit = () => {
+    root.classList.toggle("dark", dark);
+    root.style.colorScheme = dark ? "dark" : "light";
+  };
+
+  if (pendingFrame !== undefined) cancelAnimationFrame(pendingFrame);
+  if (transitionTimer !== undefined) window.clearTimeout(transitionTimer);
+  pendingFrame = undefined;
+  transitionTimer = undefined;
+
+  if (!animate) {
+    root.classList.remove("theme-transition");
+    commit();
+    return;
   }
 
-  root.classList.toggle("dark", dark);
-  root.style.colorScheme = dark ? "dark" : "light";
+  // Let the browser commit the transition class before changing colors.
+  root.classList.add("theme-transition");
+  pendingFrame = requestAnimationFrame(() => {
+    pendingFrame = undefined;
+    commit();
+    transitionTimer = window.setTimeout(() => {
+      root.classList.remove("theme-transition");
+      transitionTimer = undefined;
+    }, 200);
+  });
 }
 
 /** Persists the user's choice so it survives reloads and the pre-paint script. */
