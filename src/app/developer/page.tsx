@@ -18,7 +18,6 @@ import NewForm from '@/components/Developer/Modals/Forms/NewForm';
 import { FormsDisplayModel } from '@/components/Developer/Modals/Displays/DisplayProjectForms';
 import LinkButton from '@/components/Global/LinkButton';
 import PrivateRouter from '@/components/Global/privateRouter';
-import DeveloperShell from "@/components/Developer/DeveloperShell";
 import AnalyticsGroup from '@/components/Developer/AnalyticsGroup';
 import { SkeletonGrid } from '@/components/Global/Skeleton';
   
@@ -66,7 +65,8 @@ const Developer= () => {
     });
 
   return (
-    <DeveloperShell>
+    <PrivateRouter>
+      <Header border='border-0' py='py-3'/>
       <DeveloperBreadcrumb
         navs={[
           { label: "Home", href: "/" },
@@ -190,7 +190,7 @@ const Developer= () => {
         </div>
 
       </section>
-    </DeveloperShell>
+    </PrivateRouter>
   );
 }
 

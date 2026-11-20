@@ -3,7 +3,6 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import Header from "@/components/Header";
 import PrivateRouter from "@/components/Global/privateRouter";
-import DeveloperShell from "@/components/Developer/DeveloperShell";
 import DeveloperBreadcrumb from "@/components/Developer/DeveloperBreadcrumb";
 import ProjectCard from "@/components/Developer/ProjectCard";
 import NewDeveloperForm from "@/components/Developer/Modals/Forms/NewDeveloper";
@@ -176,7 +175,8 @@ const Projects = () => {
     "flex items-center justify-start gap-2 w-full text-left px-3 py-2 rounded-lg hover:bg-zinc-200 dark:hover:bg-zinc-900 transition text-zinc-700 dark:text-zinc-200 text-sm cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed";
 
   return (
-    <DeveloperShell>
+    <PrivateRouter>
+      <Header border='border-0' py='py-3' />
       <DeveloperBreadcrumb
         navs={[
           { label: "Home", href: "/" },
@@ -493,7 +493,7 @@ const Projects = () => {
           setPendingDelete(null);
         }}
       />
-    </DeveloperShell>
+    </PrivateRouter>
   );
 };
 
