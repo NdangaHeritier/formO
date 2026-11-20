@@ -6,9 +6,9 @@ type Props = {
 const YellowBorderedSpan = ({title}: Props) => {
     return (
         <>
-            <div className="bg-gradient-to-r from-yellow-700 from-40% to-yellow-700/5 rounded-full p-1">
+            <div className="bg-yellow-700/5 rounded-full ">
                 <div className="dark:bg-black bg-white rounded-full">
-                    <div className="bg-yellow-700/10 rounded-full font-normal p-2 flex items-center justify-center gap-1 text-sm">
+                    <div className="bg-yellow-700/10 rounded-full font-normal p-1.5 flex items-center justify-center gap-1 text-sm">
                         <span className="text-zinc-600 dark:text-zinc-500 px-2">{title}</span>
                         <Icon name="ArrowUpRight" size={25} className="rounded-full text-yellow-600 p-1 bg-yellow-700/10" />
                                               
