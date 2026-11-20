@@ -52,7 +52,7 @@ type SectionProps = {
 
 function Section({ title, icon, count, loading, emptyText, children }: SectionProps) {
   return (
-    <div className="rounded-2xl border border-zinc-200 bg-white dark:border-zinc-800 bg-surface">
+    <div className="rounded-2xl border border-zinc-200 dark:border-zinc-900 bg-white dark:bg-black shadow-lg">
       <div className="head flex items-center justify-between border-b border-zinc-200 dark:border-zinc-800 px-5 py-4">
         <div className="flex items-center gap-2 font-semibold text-zinc-800 dark:text-zinc-200">
           <Icon name={icon} size={16} className="text-yellow-600" />

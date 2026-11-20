@@ -20,7 +20,7 @@ export const Hero : React.FC = () => {
                 </h1>
             
             {/* feature comparations */}
-            <div className="relative pt-10 bg-surface-raised w-full px-8 max-sm:px-2 py-5 rounded-3xl flex items-center justify-center gap-5">
+            <div className="relative pt-10 dark:bg-zinc-900/10 bg-zinc-200/10 w-full px-8 max-sm:px-2 py-5 rounded-3xl flex items-center justify-center gap-5">
                 <div className="absolute right-1/2 top-14 flex items-center justify-center z-0 max-sm:hidden">
                     <div className="relative flex border-2 ring-4 ring-yellow-600/10 dark:ring-yellow-200/10 border-zinc-300 dark:border-zinc-300/10 bg-gradient-to-br from-yellow-700/20 to-zinc-200 dark:to-zinc-950 self-start content-start h-20 w-20 rounded-full font-medium text-sm items-center justify-center gap-x-2">
                         <span className="h-40 absolute mx-auto w-40 bg-yellow-600/8 dark:bg-yellow-200/5 rounded-full grid grid-cols-2 gap-5">
@@ -40,7 +40,7 @@ export const Hero : React.FC = () => {
                         </span>
                         <h2 className="text-2xl font-bold text-zinc-900 dark:text-zinc-300">Codding Simplified</h2>
                         <div className="text-base text-zinc-700 dark:text-zinc-400">FormO empowers developers to simplify form submissions by providing a no-backend-required solution. Just submit your data to a generated API endpoint like:
-                            <div className="rounded-xl border border-zinc-200 bg-surface p-3 my-2.5 dark:border-white/10">
+                            <div className="border border-zinc-200 dark:border-zinc-900 rounded-2xl overflow-hidden dark:bg-zinc-900/10 my-2.5">
                                 <div className="head border-b border-b-zinc-200 dark:border-b-zinc-900 dark:bg-zinc-900/50 bg-zinc-200 p-2">
                                     <Icon name="Link" className="text-zinc-700 dark:text-zinc-400 text-sm" size={14} />
                                 </div>

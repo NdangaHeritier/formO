@@ -59,7 +59,7 @@ export default function NewSenderModal({ onClose, onCreated }: Props) {
         role="dialog"
         aria-modal="true"
         aria-labelledby="new-sender-title"
-        className="w-full max-w-md rounded-2xl bg-white p-5 shadow-2xl bg-surface-raised sm:p-6"
+        className="w-full max-w-md rounded-2xl bg-white p-5 shadow-2xl dark:bg-zinc-950 sm:p-6"
       >
         <div className="grid grid-cols-1 gap-1">
           <div className="flex items-center gap-2">

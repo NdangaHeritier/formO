@@ -6,8 +6,6 @@
     "colorMeta": {
       "paper": { "role": "neutral", "displayName": "Warm Paper", "canonical": "#f1eee6" },
       "ink": { "role": "neutral", "displayName": "Warm Ink", "canonical": "#130b00" },
-      "surface": { "role": "neutral", "displayName": "Warm Surface", "canonical": "#1b1308", "tonalRamp": ["#130b00", "#171005", "#1b1308", "#20160a", "#241a0d", "#2b1f11", "#342716", "#40311d"] },
-      "surface-raised": { "role": "neutral", "displayName": "Warm Raised", "canonical": "#241a0d" },
       "accent": { "role": "primary", "displayName": "Muted Amber", "canonical": "#ca8a04", "tonalRamp": ["#422006", "#713f12", "#854d0e", "#a16207", "#ca8a04", "#eab308", "#facc15", "#fef9c3"] },
       "danger": { "role": "consequence", "displayName": "Signal Red", "canonical": "#dc2626", "tonalRamp": ["#450a0a", "#7f1d1d", "#991b1b", "#b91c1c", "#dc2626", "#ef4444", "#f87171", "#fef2f2"] },
       "success": { "role": "consequence", "displayName": "Signal Green", "canonical": "#16a34a" }

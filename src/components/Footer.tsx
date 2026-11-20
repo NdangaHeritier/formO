@@ -6,7 +6,7 @@ import LinkButton from "./Global/LinkButton";
 
 export default function Footer() {
   return (
-    <footer className="flex items-center justify-center flex-col p-4 bg-surface text-zinc-600 dark:text-zinc-400 border-t border-zinc-200 dark:border-white/10">
+    <footer className="flex items-center justify-center flex-col p-4 bg-zinc-100  dark:bg-zinc-900/10  dark:text-zinc-500 dark:border-t  dark:border-zinc-800 text-whitep-10">
         <div className="footer-row grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 p-5 gap-8">
             <div className="logo-and-desc-about-formo flex flex-col items-center justify-start gap-3 px-5">
                 <Image src="/Assets/formo-dark.png" alt="logo" height="50" width="50" className="w-1/4 opacity-60 dark:hidden" />
@@ -89,13 +89,13 @@ export default function Footer() {
             <div className="themes-toggling-buttons inline-flex items-center justify-start max-sm:justify-center">
                     
                 <div className="grid grid-cols-3 gap-1 bg-black/2 dark:bg-white/2 rounded-md p-1 shadow border border-black/10  dark:border-white/10">
-                    <button className="flex items-center gap-2 bg-zinc-100 bg-surface/2 text-zinc-900 dark:text-zinc-100 hover:border border-zinc-300 dark:border-zinc-800 h-8 w-8 justify-center rounded-md hover:bg-zinc-200 dark:hover:bg-zinc-950">
+                    <button className="flex items-center gap-2 bg-zinc-100 dark:bg-zinc-950/2 text-zinc-900 dark:text-zinc-100 hover:border border-zinc-300 dark:border-zinc-800 h-8 w-8 justify-center rounded-md hover:bg-zinc-200 dark:hover:bg-zinc-950">
                         <Sun size={16} />
                     </button>
-                    <button className="flex items-center gap-2 bg-zinc-200/60 text-zinc-700 h-8 w-8 justify-center rounded-md hover:bg-zinc-300 dark:bg-white/5 dark:text-zinc-300 dark:hover:bg-white/10">
+                    <button className="flex items-center gap-2 bg-zinc-900/10 dark:bg-zinc-100/10 text-zinc-900 dark:text-zinc-100 h-8 w-8 justify-center rounded-md hover:bg-black dark:hover:border border-zinc-500">
                         <ScreenShare size={16} />
                     </button>
-                    <button className="flex items-center gap-2 bg-zinc-100 bg-surface/2 text-zinc-900 dark:text-zinc-100 hover:border border-zinc-300 dark:border-zinc-800 h-8 w-8 justify-center rounded-md hover:bg-zinc-200 dark:hover:bg-zinc-950">
+                    <button className="flex items-center gap-2 bg-zinc-100 dark:bg-zinc-950/2 text-zinc-900 dark:text-zinc-100 hover:border border-zinc-300 dark:border-zinc-800 h-8 w-8 justify-center rounded-md hover:bg-zinc-200 dark:hover:bg-zinc-950">
                         <Moon size={16} />
                     </button>
                 </div>

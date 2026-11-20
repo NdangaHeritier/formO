@@ -100,7 +100,7 @@ export default function NewForm({ project, onClick, onSuccess }: Props) {
 
   return (
     <Layout onClick={onClick}>
-      <div className="bg-surface-raised rounded-2xl border border-zinc-200 p-6 dark:border-zinc-800 max-w-md w-full">
+      <div className="bg-white dark:bg-zinc-950 border border-zinc-300 dark:border-zinc-700 p-6 rounded-lg shadow-lg max-w-md w-full">
         <h2 className="text-lg font-semibold mb-4 text-black dark:text-white">Create New Form</h2>
         <p className="text-sm text-zinc-600 dark:text-zinc-400 mb-6">
           A FormO form is the backend your real form posts to. The primary recipient is always the

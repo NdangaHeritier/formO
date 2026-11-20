@@ -110,7 +110,7 @@ const FormsPage = () => {
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 placeholder="Search forms…"
-                className="h-9 w-52 rounded-md border border-zinc-300 dark:border-zinc-800 bg-surface ps-9 pe-3 text-sm text-zinc-800 dark:text-zinc-200 placeholder:text-zinc-400 outline-none focus:border-zinc-500 transition"
+                className="h-9 w-52 rounded-md border border-zinc-300 dark:border-zinc-800 bg-white dark:bg-zinc-950 ps-9 pe-3 text-sm text-zinc-800 dark:text-zinc-200 placeholder:text-zinc-400 outline-none focus:border-zinc-500 transition"
               />
             </div>
           </div>
@@ -129,7 +129,7 @@ const FormsPage = () => {
           )}
 
           {loading ? (
-            <div className="overflow-x-auto rounded-2xl border border-zinc-200 bg-white dark:border-zinc-800 bg-surface">
+            <div className="overflow-x-auto rounded-2xl border border-zinc-200 dark:border-zinc-900 bg-white dark:bg-black shadow-lg">
               <SkeletonTableRows rows={5} />
             </div>
           ) : loadError ? (
@@ -142,7 +142,7 @@ const FormsPage = () => {
                 : `No forms match "${query}".`}
             </div>
           ) : (
-            <div className="overflow-x-auto rounded-2xl border border-zinc-200 bg-white dark:border-zinc-800 bg-surface">
+            <div className="overflow-x-auto rounded-2xl border border-zinc-200 dark:border-zinc-900 bg-white dark:bg-black shadow-lg">
               <table className="w-full text-sm border-collapse">
                 <thead>
                   <tr className="border-b border-zinc-200 dark:border-zinc-800 text-zinc-500 dark:text-zinc-400 text-xs uppercase tracking-wide">

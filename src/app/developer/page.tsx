@@ -89,7 +89,7 @@ const Developer= () => {
       )}
 
       {/* Dashboard */}
-      <section className="dashboard bg-surface text-zinc-900 dark:text-zinc-100 p-5 grid grid-cols-1 gap-y-10">
+      <section className="dashboard bg-white dark:bg-black text-zinc-900 dark:text-zinc-100 p-5 grid grid-cols-1 gap-y-10">
         {/* Analytics section */}
         <AnalyticsGroup />
 

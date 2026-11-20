@@ -58,7 +58,7 @@ export default function Header({ border = "border-b", py = "py-3" }: prop) {
         // FIX: removed `backdrop-blur-2xl`. The background is already opaque (bg-zinc-950),
         // so it had no visual effect, but backdrop-filter makes the header the containing
         // block for the `max-sm:fixed` mobile menu and breaks its positioning.
-        <header className={`sticky top-0 left-0 right-0 z-40 w-full ${border} border-zinc-200 bg-surface ${py} px-10 max-sm:px-5 flex items-center justify-between gap-5 dark:border-white/10`}>
+        <header className={`sticky top-0 left-0 right-0 z-40 w-full ${border} border-zinc-200 bg-white ${py} px-10 max-sm:px-5 flex items-center justify-between gap-5 dark:border-zinc-800 dark:bg-zinc-950`}>
             <div className="">
                 {mounted ? (
                     <Image src="/Assets/formo-coloured.png" alt="logo" className="w-10 h-10" height="50" width="50" />
@@ -144,7 +144,7 @@ export default function Header({ border = "border-b", py = "py-3" }: prop) {
 
                     {isOpeningUserMenu && currentUser && mounted && typeof window !== "undefined"
                         ? createPortal(
-                            <div className="user-menu fixed z-9999 top-16 right-10 flex flex-col gap-3 rounded-xl border border-zinc-200 bg-white p-3 dark:border-zinc-800 bg-surface shadow-2xl">
+                            <div className="user-menu fixed z-9999 top-16 right-10 flex flex-col gap-3 rounded-xl border border-zinc-200 bg-white p-3 dark:border-zinc-800 dark:bg-zinc-950 shadow-2xl">
                                 <div className="container-user-top-menu p-3 flex items-center justify-center gap-2">
                                     <Image
                                         src={currentUser.image || "/Assets/Avatars/Sleep Mode.png"}

@@ -6,18 +6,13 @@
 
 
 :root {
-  /* Canvas → surface → raised: a warm tonal ramp, never a cool overlay. */
   --background: #f1eee6;
   --foreground: #130b00;
-  --surface: #ffffff;
-  --surface-raised: #f7f4ee;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --color-surface: var(--surface);
-  --color-surface-raised: var(--surface-raised);
   --font-sans: var(--font-general-sans), ui-sans-serif, system-ui, -apple-system, sans-serif;
   --font-mono: var(--font-jetbrains-mono), ui-monospace, SFMono-Regular, Menlo, monospace;
 }
@@ -26,10 +21,8 @@
    it in sync with the device. One source of truth: no media-query fallback,
    so the CSS variables and every dark: utility always change together. */
 :root.dark {
-  --background: #130b00;   /* canvas — deepest warm ink */
+  --background: #130b00;
   --foreground: #ffffff;
-  --surface: #1b1308;      /* footer, nav, panels — one warm step up */
-  --surface-raised: #241a0d; /* cards and dialogs — a second warm step */
 }
 
 @layer base {
