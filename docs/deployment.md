@@ -73,7 +73,9 @@ Client is lazy, so no live connection is required during `next build`.
 
 `vercel.json` registers the two cron jobs:
 
-- `/api/cron/deliver` every minute — sends queued email.
+- `/api/cron/deliver` daily at 04:00 UTC — sends queued email. Hobby plans only
+  allow daily schedules; for near-real-time delivery, call this route from an
+  external scheduler instead.
 - `/api/cron/maintenance` daily at 03:00 UTC — provisions partitions and cleans
   expired rows.
 
