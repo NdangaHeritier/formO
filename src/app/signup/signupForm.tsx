@@ -11,7 +11,7 @@ import Image from "next/image";
 import Link from "next/link";
 import LoadingSpinner from "@/components/Global/LoadingSpiner";
 
-const SignupForm = () => {
+const SignupForm = ({ authError }: { authError?: string }) => {
 
     const [isLoading, setIsLoading] = useState(true);
     const [form, setForm] = useState({ name: "", email: "", password: "", confirmPassword: "" });
@@ -22,7 +22,7 @@ const SignupForm = () => {
 
     const signUpWithGoogle = async () => {
         setError("");
-        const res = await signIn.social({ provider: "google", callbackURL: "/signup/select-interest" });
+        const res = await signIn.social({ provider: "google", callbackURL: "/signup/select-interest", errorCallbackURL: "/signup" });
         if (res?.error) {
             setError(res.error.message || "Google Sign-In is not configured yet.");
         }
@@ -30,7 +30,7 @@ const SignupForm = () => {
 
     const signUpWithGithub = async () => {
         setError("");
-        const res = await signIn.social({ provider: "github", callbackURL: "/signup/select-interest" });
+        const res = await signIn.social({ provider: "github", callbackURL: "/signup/select-interest", errorCallbackURL: "/signup" });
         if (res?.error) {
             setError(res.error.message || "GitHub Sign-In is not configured yet.");
         }
@@ -94,6 +94,11 @@ const SignupForm = () => {
     return (
         <div className="app-viewport h-dvh overflow-y-auto">
             <title>Create Free Account | Start creating beautifull emails.</title>
+            {authError && (
+                <div role="alert" className="mx-auto mt-4 max-w-xl rounded-lg border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-700 dark:text-red-300">
+                    {authError}
+                </div>
+            )}
             <Header />
             <section className="grid grid-cols-1 grid-row-1 sm:grid-cols-3 min-h-[80vh] my-6">
                 <div className="hidden sm:block"></div>

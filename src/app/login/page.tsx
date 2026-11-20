@@ -1,14 +1,12 @@
 import LoginForm from "./loginForm";
-
+import { authErrorMessage, type AuthErrorParams } from "@/lib/auth-error";
 
 export const metadata = {
   title: 'Welcome back | Start creating beautiful emails',
   description: 'Sign in to FormO and continue inventing your email workflows.',
 };
 
-const Login = () => {
-
-    return (<LoginForm />)
-};
-
-export default Login;
+export default async function Login({ searchParams }: { searchParams: Promise<AuthErrorParams> }) {
+    const message = authErrorMessage(await searchParams);
+    return <LoginForm authError={message} />;
+}

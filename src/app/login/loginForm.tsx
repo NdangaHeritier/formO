@@ -25,7 +25,7 @@ async function resolveWorkspaceRoute(): Promise<string> {
     }
 }
 
-export default function LoginForm() {
+export default function LoginForm({ authError }: { authError?: string }) {
     const { data: session } = useSession();
     const currentUser = session?.user ?? null;
     const [isLoading, setIsLoading] = useState(true);
@@ -50,7 +50,7 @@ export default function LoginForm() {
 
     const signInWithGoogle = async () => {
         setError("");
-        const res = await signIn.social({ provider: "google", callbackURL: "/dashboard" });
+        const res = await signIn.social({ provider: "google", callbackURL: "/dashboard", errorCallbackURL: "/login" });
         if (res?.error) {
             setError(res.error.message || "Google Sign-In is not configured yet.");
         }
@@ -58,7 +58,7 @@ export default function LoginForm() {
 
     const signInWithGithub = async () => {
         setError("");
-        const res = await signIn.social({ provider: "github", callbackURL: "/dashboard" });
+        const res = await signIn.social({ provider: "github", callbackURL: "/dashboard", errorCallbackURL: "/login" });
         if (res?.error) {
             setError(res.error.message || "GitHub Sign-In is not configured yet.");
         }
@@ -122,6 +122,11 @@ export default function LoginForm() {
     return (
         <div className="app-viewport h-dvh overflow-y-auto">
             <title>Login</title>
+            {authError && (
+                <div role="alert" className="mx-auto mt-4 max-w-xl rounded-lg border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-700 dark:text-red-300">
+                    {authError}
+                </div>
+            )}
             <Header />
             <section className="grid grid-cols-1 grid-row-1 sm:grid-cols-3 min-h-[80vh] my-6 ">
                 <div className="hidden sm:flex relative -z-1">

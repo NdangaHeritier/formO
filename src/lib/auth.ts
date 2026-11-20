@@ -6,6 +6,7 @@ import { organization } from "better-auth/plugins";
 import { sendTransactionalEmail } from "./mailer";
 import { prisma } from "./prisma";
 import { getServerEnv } from "./env";
+import { rejectSocialSignIn } from "@/server/auth/social-signin";
 
 function trustedOrigins(): string[] {
   const env = getServerEnv();
@@ -142,6 +143,21 @@ export const auth = betterAuth({
     },
   },
   databaseHooks: {
+    account: {
+      create: {
+        // Never link a social provider to an existing email. Tell the user
+        // which method they originally used instead of silently merging.
+        before: async (account) => {
+          if (account.providerId !== "google" && account.providerId !== "github") return;
+          const existing = await prisma.account.findMany({
+            where: { userId: account.userId },
+            select: { providerId: true },
+          });
+          if (existing.length === 0) return;
+          rejectSocialSignIn(existing.map((item) => item.providerId));
+        },
+      },
+    },
     user: {
       create: {
         after: async (user) => {
