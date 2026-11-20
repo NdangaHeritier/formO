@@ -102,7 +102,7 @@ export default function ProjectCard ({name, description, forms, formsCount, subm
     return (
         <>
         <div
-            className="project-card p-5 bg-white dark:bg-black border border-zinc-200 dark:border-zinc-900 rounded-3xl shadow-lg grid grid-cols-1 gap-3 cursor-pointer"
+            className="project-card p-card bg-white dark:bg-black border border-zinc-200 dark:border-zinc-900 rounded-card shadow-lg grid grid-cols-1 gap-3 cursor-pointer"
             role="link"
             tabIndex={0}
             aria-label={`Open project ${name}`}

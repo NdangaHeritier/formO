@@ -74,7 +74,7 @@ export default function NewApiKeyModal({ onClose, onCreated }: Props) {
         role="dialog"
         aria-modal="true"
         aria-labelledby="new-key-title"
-        className="w-full max-w-md rounded-2xl bg-white p-5 shadow-2xl dark:bg-zinc-950 sm:p-6"
+        className="w-full max-w-md rounded-card bg-white p-card shadow-2xl dark:bg-zinc-950 sm:p-6"
       >
         {rawKey ? (
           <div className="grid grid-cols-1 gap-4">

@@ -96,7 +96,7 @@ const Developer= () => {
         {/* Projects Section */}
         <div className="relative rounded-2xl">
           <Squares parLength={100} />
-          <div className="projects relative z-10 grid grid-cols-1 gap-5 bg-gradient-to-tr from-zinc-100 to-zinc-100/50 dark:from-zinc-950 from-80% to-20% dark:to-zinc-950/50 rounded-2xl p-8">
+          <div className="projects relative z-10 grid grid-cols-1 gap-card bg-gradient-to-tr from-zinc-100 to-zinc-100/50 dark:from-zinc-950 from-80% to-20% dark:to-zinc-950/50 rounded-card p-panel">
             <div className="flex items-center justify-between">
               <div className="title text-xl font-bold">Projects</div>
               <FormButton type='button' variant='primary' onClick={() => setIsCreateProjectModelOpen(true)}>

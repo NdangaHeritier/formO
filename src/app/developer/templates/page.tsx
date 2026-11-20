@@ -64,7 +64,7 @@ export default function TemplatesPage() {
     <DeveloperShell>
     <div className="relative rounded-2xl">
       <Squares parLength={100} />
-      <div className="projects relative z-10 grid grid-cols-1 gap-5 rounded-2xl bg-gradient-to-tr from-zinc-100 to-zinc-100/50 from-80% to-20% p-8 dark:from-zinc-950 dark:to-zinc-950/50">
+      <div className="projects relative z-10 grid grid-cols-1 gap-card rounded-card bg-gradient-to-tr from-zinc-100 to-zinc-100/50 from-80% to-20% p-panel dark:from-zinc-950 dark:to-zinc-950/50">
         <header className="flex flex-wrap items-center justify-between gap-3">
           <div className="grid grid-cols-1 gap-2">
             <h1 className="text-xl font-bold">Email Templates</h1>
