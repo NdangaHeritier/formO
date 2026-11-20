@@ -1,4 +1,4 @@
-import DOMPurify from "isomorphic-dompurify";
+import sanitizeHtml from "sanitize-html";
 
 /** Email-safe subset: no scripts, forms, iframes, style blocks or event handlers. */
 const ALLOWED_TAGS = [
@@ -8,17 +8,17 @@ const ALLOWED_TAGS = [
 ];
 const ALLOWED_ATTR = ["href", "src", "alt", "title", "style", "width", "height", "align", "data-cta"];
 
-/** Allows normal links plus `{{placeholder}}` values used by the renderer. */
-const ALLOWED_URI = /^(?:(?:https?:|mailto:)|{{[^{}]+}}|\/|#)/i;
-
+/**
+ * Server-safe HTML sanitizer. `isomorphic-dompurify` pulls in jsdom, which
+ * crashes in the Node runtime; sanitize-html needs no DOM.
+ */
 export function sanitizeTemplateHtml(html: string): string {
-  return DOMPurify.sanitize(html, {
-    ALLOWED_TAGS,
-    ALLOWED_ATTR,
-    ALLOWED_URI_REGEXP: ALLOWED_URI,
-    ALLOW_DATA_ATTR: true,
-    FORBID_TAGS: ["script", "style", "iframe", "object", "embed", "form", "svg", "math"],
-    FORBID_ATTR: ["onerror", "onload", "onclick", "onmouseover", "srcdoc", "formaction"],
+  return sanitizeHtml(html, {
+    allowedTags: ALLOWED_TAGS,
+    allowedAttributes: { "*": ALLOWED_ATTR },
+    allowedSchemes: ["http", "https", "mailto"],
+    allowProtocolRelative: false,
+    disallowedTagsMode: "discard",
   });
 }
 

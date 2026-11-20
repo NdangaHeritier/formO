@@ -1,7 +1,7 @@
 import { render } from "@react-email/render";
 import { generateHTML } from "@tiptap/html/server";
 import type { JSONContent } from "@tiptap/core";
-import DOMPurify from "isomorphic-dompurify";
+import sanitizeHtml from "sanitize-html";
 import {
   BRAND_COLOR_PLACEHOLDER,
   getEditorExtensions,
@@ -106,15 +106,17 @@ export async function renderPresetHtml(
       BRAND_COLOR_PLACEHOLDER,
       merged.brandColor
     );
-    const clean = DOMPurify.sanitize(formatted, {
-      ALLOWED_TAGS: [
+    const clean = sanitizeHtml(formatted, {
+      allowedTags: [
         "a", "b", "blockquote", "br", "div", "em", "h1", "h2", "h3", "hr", "i",
         "img", "li", "ol", "p", "s", "span", "strong", "u", "ul",
       ],
-      ALLOWED_ATTR: [
-        "alt", "class", "data-cta", "height", "href", "rel", "src", "style", "target",
-        "title", "width",
-      ],
+      allowedAttributes: {
+        "*": [
+          "alt", "class", "data-cta", "height", "href", "rel", "src", "style", "target",
+          "title", "width",
+        ],
+      },
     });
 
     return render(
