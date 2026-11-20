@@ -8,6 +8,12 @@ export interface TransactionalEmailPayload {
   text?: string;
 }
 
+/** True when SMTP authentication is configured for transactional email. */
+export function isTransactionalEmailConfigured(): boolean {
+  const env = getServerEnv();
+  return Boolean(env.SMTP_USER && env.SMTP_PASS);
+}
+
 /**
  * Sends transactional system emails (e.g., password reset links) using bounded SMTP timeouts.
  */

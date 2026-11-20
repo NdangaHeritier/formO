@@ -3,7 +3,7 @@ import crypto from "node:crypto";
 import { betterAuth } from "better-auth";
 import { nextCookies } from "better-auth/next-js";
 import { organization } from "better-auth/plugins";
-import { sendTransactionalEmail } from "./mailer";
+import { isTransactionalEmailConfigured, sendTransactionalEmail } from "./mailer";
 import { prisma } from "./prisma";
 import { getServerEnv } from "./env";
 import { rejectSocialSignIn } from "@/server/auth/social-signin";
@@ -62,6 +62,8 @@ function slugifyWorkspace(name: string): string {
   return `${base || "workspace"}-${suffix}`;
 }
 
+const emailConfigured = isTransactionalEmailConfigured();
+
 export const auth = betterAuth({
   database: prismaAdapter(prisma, {
     provider: "postgresql",
@@ -76,7 +78,8 @@ export const auth = betterAuth({
     maxPasswordLength: 128,
     // Verification is mandatory in production; local development stays usable
     // without an SMTP sink.
-    requireEmailVerification: process.env.NODE_ENV === "production",
+    // Only enforce verification when we can actually deliver the email.
+    requireEmailVerification: process.env.NODE_ENV === "production" && emailConfigured,
     async sendVerificationEmail({
       user,
       url,
@@ -84,6 +87,7 @@ export const auth = betterAuth({
       user: { name?: string | null; email: string };
       url: string;
     }) {
+      if (!emailConfigured) return;
       await sendTransactionalEmail({
         to: user.email,
         subject: "Verify your FormO email address",
@@ -92,6 +96,7 @@ export const auth = betterAuth({
       });
     },
     async sendResetPassword({ user, url }) {
+      if (!emailConfigured) return;
       const safeName = escapeHtml(user.name || "there");
       const safeUrl = escapeHtml(url);
 
