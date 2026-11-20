@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { JetBrains_Mono } from 'next/font/google';
 import localFont from 'next/font/local';
 import "./globals.css";
-import Footer from "@/components/Footer";
+import FooterGate from "@/components/Global/FooterGate";
 import { Analytics } from "@vercel/analytics/next";
 import { Icon } from "@/components/Global/Icon";
 import ThemeSync from "@/components/Global/ThemeSync";
@@ -121,7 +121,7 @@ export default function RootLayout({
               </button>
             </div>
           </section>
-          <Footer />
+          <FooterGate />
         </main>
       </body>
     </html>
