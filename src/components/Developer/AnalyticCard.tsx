@@ -10,7 +10,7 @@ export const AnalyticCard = ( {title, icon, desc, data}:AnalyticProps) => {
     const hasRate = rate !== null;
     const isIncrease = (rate ?? 0) >= 0;
     return (
-        <div className="rounded-card grid grid-cols-1 gap-card p-card border border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-950 transition-colors duration-200 hover:border-zinc-400 dark:hover:border-zinc-600">
+        <div className="rounded-2xl grid grid-cols-1 gap-card p-card border border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-950 transition-colors duration-200 hover:border-zinc-400 dark:hover:border-zinc-600">
             <div className="flex items-center justify-between">
               <h1 className="font-semibold text-xl antialiased text-zinc-900 dark:text-zinc-100">
                 {title}

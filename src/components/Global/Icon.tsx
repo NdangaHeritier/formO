@@ -83,9 +83,12 @@ import {
   Webhook,
   X,
   Zap,
+  Trash,
   type LucideIcon,
   type LucideProps,
 } from "lucide-react";
+
+import { Smartphone, Image as ImageIcon } from "lucide-react";
 
 function createBrandIcon(paths: React.ReactNode): LucideIcon {
   const BrandIcon = ({
@@ -218,6 +221,10 @@ const ICON_MAP = {
   Webhook,
   X,
   Zap,
+  Smartphone,
+  Trash,
+  
+  Image: ImageIcon,
 } as const satisfies Record<string, LucideIcon>;
 
 export type LucideIconName = keyof typeof ICON_MAP;

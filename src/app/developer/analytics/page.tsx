@@ -72,7 +72,7 @@ const AnalyticsPage = () => {
             {statusBoxes.map((box) => (
               <div
                 key={box.label}
-                className="bg-white dark:bg-black border border-zinc-200 dark:border-zinc-900 rounded-2xl shadow-lg p-5 grid grid-cols-1 gap-2"
+                className="bg-white dark:bg-black border border-zinc-200 dark:border-zinc-900 rounded-2xl shadow-none p-5 grid grid-cols-1 gap-2"
               >
                 <div className="flex items-center gap-2 text-xs text-zinc-500 dark:text-zinc-400">
                   <span className={`w-3 h-3 rounded-md ${box.dot}`} />

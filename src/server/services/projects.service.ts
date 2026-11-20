@@ -226,7 +226,6 @@ export async function getWorkspaceProjectDetail(projectId: string, organizationI
       description: f.description ?? "",
       endpoint: f.endpoint,
       emailTo: f.emailTo,
-      email_to: f.emailTo,
       isActive: f.isActive,
       submissionsCount: f._count.submissions,
       created: f.createdAt.toISOString(),

@@ -1,6 +1,5 @@
 ﻿"use client";
 import DeveloperShell from "@/components/Developer/DeveloperShell";
-import DeveloperBreadcrumb from '@/components/Developer/DeveloperBreadcrumb';
 import { useCallback, useEffect, useState } from 'react';
 
 // import { IconType } from '@/types/Icon';
@@ -44,14 +43,15 @@ const Developer= () => {
 
     // trigger to show create new project model..
     const [isCreateProjectModelOpen, setIsCreateProjectModelOpen] = useState(false);
+
   return (
     <DeveloperShell>
-      <DeveloperBreadcrumb
+      {/* <DeveloperBreadcrumb
         navs={[
           { label: "Home", href: "/" },
           { label: "Developer", href: "/developer" },
         ]}
-      />
+      /> */}
       {/* display createProjectModel */}
       {isCreateProjectModelOpen && (
         <NewDeveloperForm onClick={() => setIsCreateProjectModelOpen(false)} />

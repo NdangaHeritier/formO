@@ -17,7 +17,7 @@ export function DeviceFrame({ device, children }: Props) {
         <div className="mx-auto mb-2 flex h-6 items-center justify-center">
           <span className="h-4 w-24 rounded-full bg-zinc-800" />
         </div>
-        <div className="studio-scroll @container h-[clamp(480px,72vh,720px)] overflow-y-auto rounded-[32px] bg-zinc-100 p-3">
+        <div className="studio-scroll @container h-[clamp(480px,72vh,720px)] overflow-y-auto rounded-[32px] bg-zinc-100 p-3 dark:bg-zinc-900">
           {children}
         </div>
         <div className="mx-auto mt-2 h-1.5 w-24 rounded-full bg-zinc-700" />

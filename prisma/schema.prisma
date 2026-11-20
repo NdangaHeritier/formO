@@ -246,6 +246,7 @@ model EmailTemplate {
   name            String
   subjectTemplate String   @map("subject_template")
   htmlTemplate    String   @map("html_template")
+  design          Json?    @db.JsonB
   isDefault       Boolean  @default(false) @map("is_default")
   createdAt       DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt       DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
@@ -369,7 +370,7 @@ model ApiKey {
   organizationId String    @map("organization_id") @db.Uuid
   createdById    String?   @map("created_by_id") @db.Uuid
   name           String
-  keyPrefix      String    @map("key_prefix") @db.VarChar(16)
+  keyPrefix      String    @map("key_prefix") @db.VarChar(32)
   keyHash        Bytes     @unique @map("key_hash")
   scopes         String[]  @default(["forms:write", "emails:send"])
   lastUsedAt     DateTime? @map("last_used_at") @db.Timestamptz(6)
