@@ -44,6 +44,21 @@ export default function DeveloperShell({ children }: { children: React.ReactNode
                   <Icon name="ChartNoAxesColumn" size={20} strokeWidth={2} />
                 </Link>
               </Tooltip>
+              <Tooltip label="Forms">
+                <Link href="/developer/forms" className={RAIL_LINK}>
+                  <Icon name="SquareCode" size={20} strokeWidth={2} />
+                </Link>
+              </Tooltip>
+              <Tooltip label="Templates">
+                <Link href="/developer/templates" className={RAIL_LINK}>
+                  <Icon name="Mail" size={20} strokeWidth={2} />
+                </Link>
+              </Tooltip>
+              <Tooltip label="Settings">
+                <Link href="/developer/settings" className={RAIL_LINK}>
+                  <Icon name="Settings" size={20} strokeWidth={2} />
+                </Link>
+              </Tooltip>
             </div>
             <div className="flex h-full flex-col items-center justify-end gap-2 self-end p-2">
               <Tooltip label="New form">
