@@ -8,8 +8,10 @@ type LayoutProps = {
 
 const Layout = ({children, onClick}:LayoutProps) => {
     return (
-        <section className="fixed top-0 bottom-0 left-0 right-0 p-5 z-50 overflow-auto bg-white/90 dark:bg-black/90 flex flex-col items-center justify-center">
-            <div className="closeLink p-5 inline-flex absolute top-10 right-10">
+        <section className="fixed top-0 bottom-0 left-0 right-0 p-5 z-99 overflow-auto bg-black/50 dark:bg-black/90 flex flex-col items-center justify-center"
+       
+        >
+            <div className="closeLink p-5 inline-flex absolute top-10 right-3">
                 <button
                   className="bg-zinc-100 p-3 hover:bg-zinc-200/80 dark:bg-zinc-900 dark:hover:bg-zinc-800/80 rounded-full cursor-pointer border border-zinc-300 dark:border-zinc-700"
                   onClick={onClick}

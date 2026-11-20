@@ -15,7 +15,7 @@ const FeatureCard = ({title, icon, desc, subDesc}: Props) => {
                 <div className="icon h-20 w-20 border border-yellow-700/30 bg-yellow-700/10 text-yellow-700 rounded-full flex items-center justify-center">
                     <Icon name={icon} size={30} className="text-yellow-700" />
                 </div>
-                <div className="flex-2/3 text-content border-t border-zinc-100 bg-zinc-200/50 dark:bg-zinc-900/10 dark:border-none p-5">
+                <div className="flex-2/3 text-content border-t border-zinc-200 bg-surface-raised p-5 dark:border-white/10">
                     <h1 className="title font-semibold text-lg py-2 text-zinc-950 dark:text-zinc-100">
                         {title}
                     </h1>

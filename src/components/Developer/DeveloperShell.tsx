@@ -15,7 +15,7 @@ export default function DeveloperShell({ children }: { children: React.ReactNode
             <section className="flex min-h-screen w-full flex-col text-zinc-700 dark:text-zinc-400">
                 <Header />
                 <div className="flex h-full flex-1">
-                    <div className="sticky bottom-0 grid h-screen w-20 grid-cols-1 overflow-auto border-r border-zinc-200 bg-white p-2 dark:border-zinc-800 dark:bg-zinc-950">
+                    <div className="sticky bottom-0 grid h-screen w-20 grid-cols-1 overflow-auto border-r border-zinc-200 bg-white p-2 dark:border-zinc-800 bg-surface">
                         <div className="items-center justify-start flex-col p-3 flex gap-3">
                             <Link href="/developer" className="flex cursor-pointer items-center justify-center gap-2 rounded-xl p-2 text-zinc-500 hover:bg-zinc-100 hover:text-zinc-900 dark:hover:bg-zinc-900 dark:hover:text-zinc-200">
                                 <Icon name="LayoutDashboard" size={20} strokeWidth={2} />

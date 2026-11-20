@@ -4,9 +4,10 @@ description: Self-hosted form-to-email platform — developer-grade control with
 colors:
   paper: "#f1eee6"
   ink: "#130b00"
-  surface-light: "#ffffff"
-  surface-dark: "#09090b"
-  surface-raised-dark: "#18181b"
+  surface: "#ffffff"
+  surface-dark: "#1b1308"
+  surface-raised: "#f7f4ee"
+  surface-raised-dark: "#241a0d"
   border-light: "#e4e4e7"
   border-dark: "#27272a"
   text-primary-light: "#18181b"

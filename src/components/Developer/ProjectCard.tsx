@@ -102,7 +102,7 @@ export default function ProjectCard ({name, description, forms, formsCount, subm
     return (
         <>
         <div
-            className="project-card p-5 bg-white dark:bg-black border border-zinc-200 dark:border-zinc-900 rounded-3xl shadow-lg grid grid-cols-1 gap-3 cursor-pointer"
+            className="project-card p-5 bg-surface-raised rounded-3xl border border-zinc-200 dark:border-zinc-800 grid grid-cols-1 gap-3 cursor-pointer"
             role="link"
             tabIndex={0}
             aria-label={`Open project ${name}`}
@@ -134,7 +134,7 @@ export default function ProjectCard ({name, description, forms, formsCount, subm
                         <div
                             ref={menuRef}
                             role="menu"
-                            className="absolute right-0 mt-2 w-44 p-1 bg-zinc-100 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-xl shadow-lg z-20"
+                            className="absolute right-0 mt-2 w-44 p-1 bg-zinc-100 bg-surface-raised border border-zinc-200 dark:border-zinc-800 rounded-xl shadow-lg z-20"
                         >
                             <button
                                 type="button"
@@ -200,7 +200,7 @@ export default function ProjectCard ({name, description, forms, formsCount, subm
                 <div className="text-end">{user?.email}</div>
             </div> */}
             <div className="active-and-created-at flex items-center justify-between py-5">
-                <span className="bg-zinc-950 text-zinc-100 px-3 py-1 rounded-full text-xs font-medium dark:bg-zinc-50 dark:text-zinc-950">
+                <span className="bg-surface-raised text-zinc-100 px-3 py-1 rounded-full text-xs font-medium dark:bg-zinc-50 dark:text-zinc-950">
                     {status}
                 </span>
                 <p className="text-xs text-zinc-700 dark:text-zinc-500">

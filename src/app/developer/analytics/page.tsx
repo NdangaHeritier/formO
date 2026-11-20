@@ -72,7 +72,7 @@ const AnalyticsPage = () => {
             {statusBoxes.map((box) => (
               <div
                 key={box.label}
-                className="bg-white dark:bg-black border border-zinc-200 dark:border-zinc-900 rounded-2xl shadow-lg p-5 grid grid-cols-1 gap-2"
+                className="bg-surface rounded-2xl border border-zinc-200 dark:border-zinc-800 p-5 grid grid-cols-1 gap-2"
               >
                 <div className="flex items-center gap-2 text-xs text-zinc-500 dark:text-zinc-400">
                   <span className={`w-3 h-3 rounded-md ${box.dot}`} />
@@ -90,7 +90,7 @@ const AnalyticsPage = () => {
           </div>
 
           {/* top projects by submissions */}
-          <div className="rounded-2xl border border-zinc-200 dark:border-zinc-900 bg-white dark:bg-black shadow-lg">
+          <div className="rounded-2xl border border-zinc-200 bg-white dark:border-zinc-800 bg-surface">
             <div className="head flex items-center justify-between border-b border-zinc-200 dark:border-zinc-800 px-5 py-4">
               <div className="flex items-center gap-2 font-semibold text-zinc-800 dark:text-zinc-200">
                 <Icon name="BarChart" size={16} className="text-yellow-600" />

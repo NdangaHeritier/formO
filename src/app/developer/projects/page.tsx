@@ -208,7 +208,7 @@ const Projects = () => {
       )}
 
       {/* Page */}
-      <section className="dashboard bg-white dark:bg-black text-zinc-900 dark:text-zinc-100 p-5 grid grid-cols-1 gap-y-10">
+      <section className="dashboard bg-surface text-zinc-900 dark:text-zinc-100 p-5 grid grid-cols-1 gap-y-10">
         <div className="relative rounded-2xl">
           <Squares parLength={100} />
           <div className="projects relative z-10 grid grid-cols-1 gap-5 bg-gradient-to-tr from-zinc-100 to-zinc-100/50 dark:from-zinc-950 from-80% to-20% dark:to-zinc-950/50 rounded-2xl p-8">
@@ -234,7 +234,7 @@ const Projects = () => {
                     value={query}
                     onChange={(e) => setQuery(e.target.value)}
                     placeholder="Search projects…"
-                    className="h-9 w-52 rounded-md border border-zinc-300 dark:border-zinc-800 bg-white dark:bg-zinc-950 ps-9 pe-3 text-sm text-zinc-800 dark:text-zinc-200 placeholder:text-zinc-400 outline-none focus:border-zinc-500 transition"
+                    className="h-9 w-52 rounded-md border border-zinc-300 dark:border-zinc-800 bg-surface ps-9 pe-3 text-sm text-zinc-800 dark:text-zinc-200 placeholder:text-zinc-400 outline-none focus:border-zinc-500 transition"
                   />
                 </div>
 
@@ -285,7 +285,7 @@ const Projects = () => {
             {loading ? (
               /* skeletons — shaped like the active view */
               view === "list" ? (
-                <div className="overflow-x-auto rounded-2xl border border-zinc-200 dark:border-zinc-900 bg-white dark:bg-black shadow-lg">
+                <div className="overflow-x-auto rounded-2xl border border-zinc-200 bg-white dark:border-zinc-800 bg-surface">
                   <SkeletonTableRows rows={5} />
                 </div>
               ) : (
@@ -358,7 +358,7 @@ const Projects = () => {
               </div>
             ) : (
               /* List view — data table */
-              <div className="overflow-x-auto rounded-2xl border border-zinc-200 dark:border-zinc-900 bg-white dark:bg-black shadow-lg">
+              <div className="overflow-x-auto rounded-2xl border border-zinc-200 bg-white dark:border-zinc-800 bg-surface">
                 <table className="w-full text-sm border-collapse">
                   <thead>
                     <tr className="border-b border-zinc-200 dark:border-zinc-800 text-zinc-500 dark:text-zinc-400 text-xs uppercase tracking-wide">
@@ -417,7 +417,7 @@ const Projects = () => {
                             {menuProjectId === project.id && (
                               <div
                                 role="menu"
-                                className="absolute right-0 mt-2 w-44 p-1 bg-zinc-100 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-xl shadow-lg z-50"
+                                className="absolute right-0 mt-2 w-44 p-1 bg-zinc-100 bg-surface border border-zinc-200 dark:border-zinc-800 rounded-xl shadow-lg z-50"
                               >
                                 <button
                                   type="button"

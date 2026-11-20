@@ -77,7 +77,7 @@ export default function TemplatesPage() {
           </span>
         </header>
 
-        <section className="rounded-2xl border border-zinc-200 bg-white shadow-lg dark:border-zinc-900 dark:bg-black">
+        <section className="rounded-2xl border border-zinc-200 bg-white dark:border-zinc-800 bg-surface">
           <div className="flex items-center gap-2 border-b border-zinc-200 px-5 py-4 font-semibold text-zinc-800 dark:border-zinc-800 dark:text-zinc-200">
             <Icon name="FileText" size={16} className="text-yellow-600" />
             Your library
@@ -131,7 +131,7 @@ export default function TemplatesPage() {
           </div>
         </section>
 
-        <section className="rounded-2xl border border-zinc-200 bg-white shadow-lg dark:border-zinc-900 dark:bg-black">
+        <section className="rounded-2xl border border-zinc-200 bg-white dark:border-zinc-800 bg-surface">
           <div className="flex items-center gap-2 border-b border-zinc-200 px-5 py-4 font-semibold text-zinc-800 dark:border-zinc-800 dark:text-zinc-200">
             <Icon name="Sparkles" size={16} className="text-yellow-600" />
             Start from a design
@@ -140,7 +140,7 @@ export default function TemplatesPage() {
             {(loading ? [] : presets).map((preset) => (
               <article
                 key={preset.id}
-                className="grid grid-cols-1 gap-3 rounded-xl border border-zinc-200 bg-zinc-50 p-5 dark:border-zinc-800 dark:bg-zinc-950"
+                className="grid grid-cols-1 gap-3 rounded-xl border border-zinc-200 bg-zinc-50 p-5 dark:border-zinc-800 bg-surface"
               >
                 <div className="grid grid-cols-1 gap-2">
                   <h2 className="font-semibold text-zinc-800 dark:text-zinc-200">{preset.name}</h2>

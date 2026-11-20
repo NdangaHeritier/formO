@@ -54,7 +54,7 @@ export function RichTextEditor({ values, onChange, siteName }: Props) {
       {!dialogMode && <SelectionLinkToolbar editor={editor} onOpenLinkDialog={() => setDialogMode("link")} />}
       {dialogMode && <InsertDialog key={dialogMode} editor={editor} mode={dialogMode} onClose={() => setDialogMode(null)} />}
 
-      <div className="mx-auto w-full max-w-2xl overflow-hidden rounded-2xl border border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-950 dark:border-zinc-800">
+      <div className="mx-auto w-full max-w-2xl overflow-hidden rounded-2xl border border-zinc-200 bg-white dark:border-zinc-800 bg-surface-raised dark:border-zinc-800">
         <section className="px-6 py-4 sm:px-8" style={{ backgroundColor: values.brandColor ?? "#18181b" }}>
           <span
             contentEditable

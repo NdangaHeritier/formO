@@ -10,7 +10,7 @@ export const FormsDisplayModel = ({project, closeModal}:DisplayType) => {
     const {name, description, forms, status}: ProjectType = project;
     return(
         <Layout onClick={closeModal}>
-            <div className="bg-white dark:bg-zinc-950 border sm:min-w-4xl border-zinc-300 dark:border-zinc-800 p-6 rounded-lg shadow-lg max-w-md w-full">
+            <div className="bg-surface-raised border sm:min-w-4xl border-zinc-300 dark:border-zinc-800 p-6 rounded-3xl shadow-lg max-w-md w-full">
                 <div className="flex items-start justify-between">
                     <div className="details grid grid-cols-1 gap-2">
                         <h3 className="text-lg font-semibold text-zinc-200">{name}</h3>
@@ -30,7 +30,7 @@ export const FormsDisplayModel = ({project, closeModal}:DisplayType) => {
                     <div className="text-end">{user?.email}</div>
                 </div> */}
                 <div className="active-and-created-at flex items-center justify-between py-5">
-                    <span className="bg-zinc-950 text-zinc-100 px-3 py-1 rounded-full text-xs font-medium dark:bg-zinc-50 dark:text-zinc-950">
+                    <span className="bg-surface-raised text-zinc-100 px-3 py-1 rounded-full text-xs font-medium dark:bg-zinc-50 dark:text-zinc-950">
                         {status}
                     </span>
                     <p className="text-xs text-zinc-500">
