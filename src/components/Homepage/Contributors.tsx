@@ -23,24 +23,24 @@ const MeetTeam: React.FC = () => {
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                     {/* Contributor 1 */}
-                    <div className="bg-zinc-950 p-2 pt-10 rounded-3xl flex items-center justify-center gap-3 flex-col cursor-pointer transform transition duration-300 hover:scale-105">
+                    <div className="bg-white p-2 pt-10 rounded-3xl border border-zinc-200 dark:border-zinc-800 dark:bg-zinc-900 flex items-center justify-center gap-3 flex-col cursor-pointer transform transition duration-300 hover:scale-105">
                         <Image
                             src={`/Assets/Avatars/Live Photos.png`}
                             alt=""
                             width={100}
                             height={100}
-                            className="bg-zinc-900 border-zinc-800 border-2 rounded-full w-15 h-15 flex"
+                            className="bg-zinc-100 border-zinc-200 border-2 rounded-full dark:bg-zinc-900 dark:border-zinc-800 w-15 h-15 flex"
                         />
-                        <h2 className="font-bold text-base text-zinc-200 pt-3 px-5">
+                        <h2 className="font-bold text-base text-zinc-900 dark:text-zinc-200 pt-3 px-5">
                             Ndanga Heritier
                         </h2>
-                        <p className="text-xs text-zinc-500 uppercase px-5">The Real Projectoo-er</p>
-                        <Link href="https://ndanga-heritier.vercel.app" className="text-sm flex items-center gap-1 text-zinc-200 hover:text-zinc-50 hover:underline">
+                        <p className="text-xs text-zinc-500 uppercase dark:text-zinc-400 px-5">The Real Projectoo-er</p>
+                        <Link href="https://ndanga-heritier.vercel.app" className="text-sm flex items-center gap-1 text-zinc-700 hover:text-zinc-900 hover:underline dark:text-zinc-200 dark:hover:text-zinc-50">
                             Visit Page
                             <Icon name= "ArrowUpRightSquare" size={15} />
                         </Link>
                         <div className="stats flex items-center justify-start gap-3 pt-3 w-full">
-                            <div className="contributions text-xs font-semibold grid grid-rows-2 border rounded-2xl border-zinc-900 w-full overflow-hidden">
+                            <div className="contributions text-xs font-semibold grid grid-rows-2 border rounded-2xl border-zinc-200 w-full dark:border-zinc-800 overflow-hidden">
                                 <div className="p-3 bg-transparent text-gray-600 dark:text-gray-200 flex items-center justify-center gap-2 flex-col">
                                     <Icon name="GitCommit" size={24} strokeWidth={2} className="text-green-400" />
                                     Contributions
@@ -53,24 +53,24 @@ const MeetTeam: React.FC = () => {
                     </div>
 
                     {/* contributor two */}                       
-                    <div className="bg-zinc-950 p-2 pt-7 rounded-3xl flex items-center justify-center gap-3 flex-col cursor-pointer transform transition duration-300 hover:scale-105">
+                    <div className="bg-white p-2 pt-7 rounded-3xl border border-zinc-200 dark:border-zinc-800 dark:bg-zinc-900 flex items-center justify-center gap-3 flex-col cursor-pointer transform transition duration-300 hover:scale-105">
                         <Image
                             src={`/Assets/Avatars/Sports Man.png`}
                             alt=""
                             width={100}
                             height={100}
-                            className="bg-zinc-900 border-zinc-800 border-2 rounded-full w-15 h-15 flex"
+                            className="bg-zinc-100 border-zinc-200 border-2 rounded-full dark:bg-zinc-900 dark:border-zinc-800 w-15 h-15 flex"
                         />
-                        <h2 className="font-bold text-base text-zinc-200 pt-5 px-5">
+                        <h2 className="font-bold text-base text-zinc-900 dark:text-zinc-200 pt-5 px-5">
                              Alituan Famous
                         </h2>
-                        <p className="text-xs text-zinc-500 uppercase px-5">Software Developer</p>
-                        <Link href="https://alituan.me" className="text-sm flex items-center gap-1 text-zinc-200 hover:text-zinc-50 hover:underline">
+                        <p className="text-xs text-zinc-500 uppercase dark:text-zinc-400 px-5">Software Developer</p>
+                        <Link href="https://alituan.me" className="text-sm flex items-center gap-1 text-zinc-700 hover:text-zinc-900 hover:underline dark:text-zinc-200 dark:hover:text-zinc-50">
                             Visit Page
                             <Icon name= "ArrowUpRightSquare" size={15} />
                         </Link>
                         <div className="stats flex items-center justify-start gap-3 pt-3 w-full">
-                            <div className="contributions text-xs font-semibold grid grid-rows-2 border rounded-2xl border-zinc-900 w-full overflow-hidden">
+                            <div className="contributions text-xs font-semibold grid grid-rows-2 border rounded-2xl border-zinc-200 w-full dark:border-zinc-800 overflow-hidden">
                                 <div className="p-3 bg-transparent text-gray-600 dark:text-gray-200 flex items-center justify-center gap-2 flex-col">
                                     <Icon name="GitCommit" size={24} strokeWidth={2} className="text-green-400" />
                                     Contributions

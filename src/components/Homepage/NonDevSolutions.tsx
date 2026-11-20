@@ -50,7 +50,7 @@ const NonDevSolutions: React.FC = () => {
                 <span className="w-3 h-3 bg-yellow-500 rounded-full" />
                 <span className="w-3 h-3 bg-green-500 rounded-full" />
                 </div>
-                <span className="text-sm text-zinc-200 font-normal">Template Preview</span>
+                <span className="text-sm text-zinc-900 font-normal dark:text-zinc-200">Template Preview</span>
             </div>
             <div className="h-40 bg-white dark:bg-zinc-950 rounded-lg p-4">
                 <div className="theme overflow-hidden max-h-32 w-full border border-zinc-200 dark:border-zinc-800 shadow rounded-t-2xl cursor-pointer">
@@ -88,12 +88,12 @@ const NonDevSolutions: React.FC = () => {
                 <span className="w-3 h-3 bg-yellow-500 rounded-full" />
                 <span className="w-3 h-3 bg-green-500 rounded-full" />
                 </div>
-                <span className="text-sm text-zinc-200 font-normal">Dashboard View</span>
+                <span className="text-sm text-zinc-900 font-normal dark:text-zinc-200">Dashboard View</span>
             </div>
             <div className="h-40 bg-white dark:bg-zinc-950/80 rounded-2xl p-4 flex flex-col justify-between">
                 <div>
                 <p className="text-sm text-zinc-700 dark:text-zinc-300 font-bold">Campaign Stats</p>
-                <p className="text-xs text-zinc-400">Open rate: <span className="text-green-600">65%</span> • Clicks: <span className="text-red-500">24%</span></p>
+                <p className="text-xs text-zinc-600 dark:text-zinc-400">Open rate: <span className="text-green-600">65%</span> • Clicks: <span className="text-red-500">24%</span></p>
                 </div>
                 <LinkButton variant="primary" href="#">
                     View Full Insights

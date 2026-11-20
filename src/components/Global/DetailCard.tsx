@@ -13,7 +13,7 @@ const DetailCard = ({title, icon, desc}: Props) => {
         <div className="relative border dark:border-zinc-800 border-zinc-200 overflow-hidden rounded-xl">
             <Squares parLength={100} />
             <div className=" card-content relative z-10 bg-gradient-to-br to-30% 
-            from-transparent to-black  flex  flex-col gap-3 p-4">
+            from-transparent to-white dark:to-black  flex  flex-col gap-3 p-4">
                 <div className="flex  gap-4 ">
                    
                         <div className="icon flex p-5 border dark:border-yellow-700/30 rounded-full bg-yellow-700/10">
