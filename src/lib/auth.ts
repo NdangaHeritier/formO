@@ -16,6 +16,18 @@ function trustedOrigins(): string[] {
   return [...new Set([env.BETTER_AUTH_URL, ...extra])];
 }
 
+/** Registers GitHub sign-in only when both credentials are configured. */
+function githubProvider() {
+  const env = getServerEnv();
+  if (!env.GITHUB_CLIENT_ID || !env.GITHUB_CLIENT_SECRET) return {};
+  return {
+    github: {
+      clientId: env.GITHUB_CLIENT_ID,
+      clientSecret: env.GITHUB_CLIENT_SECRET,
+    },
+  };
+}
+
 function escapeHtml(value: string): string {
   return value
     .replaceAll("&", "&amp;")
@@ -41,6 +53,7 @@ export const auth = betterAuth({
   }),
   secret: process.env.BETTER_AUTH_SECRET,
   baseURL: process.env.BETTER_AUTH_URL || "http://localhost:3000",
+  socialProviders: githubProvider(),
   trustedOrigins: trustedOrigins(),
   emailAndPassword: {
     enabled: true,

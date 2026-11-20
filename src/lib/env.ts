@@ -20,6 +20,10 @@ const serverEnvSchema = z.object({
   SMTP_FROM: z.string().default("FormO <noreply@localhost>"),
   CRON_SECRET: z.string().min(24).optional(),
   TURNSTILE_SECRET_KEY: z.string().optional(),
+  // GitHub OAuth app credentials for social sign-in (optional: the provider is
+  // only registered when both are present).
+  GITHUB_CLIENT_ID: z.string().optional(),
+  GITHUB_CLIENT_SECRET: z.string().optional(),
   // Number of trusted reverse-proxy hops in X-Forwarded-For. 0 ignores the
   // header entirely because clients can spoof it.
   TRUSTED_PROXY_HOPS: z.coerce.number().int().min(0).max(10).default(0),
