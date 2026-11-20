@@ -97,22 +97,22 @@ const SignupForm = () => {
             <Header />
             <section className="grid grid-cols-1 grid-row-1 sm:grid-cols-3 min-h-[80vh] my-6">
                 <div className="hidden sm:block"></div>
-                <div className="border-none overflow-hidden  bg-zinc-950 flex-col gap-5 p-5 sm:p-8 rounded-3xl">
-                    <div className="w-full flex p-5 items-start justify-start border-b-zinc-700 gap-4">
+                <div className="border-none overflow-hidden  bg-white flex-col dark:bg-zinc-950 gap-5 p-5 sm:p-8 rounded-3xl">
+                    <div className="w-full flex p-5 items-start justify-start border-b-zinc-200 dark:border-b-zinc-700 gap-4">
                         <div className="">
                             <Image
                                 src="/Assets/formo-coloured.png"
                                 alt="Formo"
-                                className="h-10 w-auto border-2 rounded-md border-yellow-200/20"
+                                className="h-10 w-auto border-2 rounded-md border-yellow-500/30 dark:border-yellow-200/20"
                                 height={60}
                                 width={60} />
                         </div>
                         <div className="flex flex-col">
-                            <h1 className="text-2xl font-semibold text-zinc-200">Register Free Account</h1>
-                            <p className="text-sm text-zinc-500">Welcome back! Please sign in to continue.</p>
+                            <h1 className="text-2xl font-semibold text-zinc-900 dark:text-zinc-200">Register Free Account</h1>
+                            <p className="text-sm text-zinc-500 dark:text-zinc-400">Welcome back! Please sign in to continue.</p>
                         </div>
                     </div>
-                    <form onSubmit={handleSubmit} className="text-zinc-200 flex flex-col gap-4 p-8">
+                    <form onSubmit={handleSubmit} className="text-zinc-900 dark:text-zinc-200 flex flex-col gap-4 p-8">
                         <div className="flex flex-col gap-4 my-2 py-2">
                             <FormButton
                                 type="button"
@@ -179,9 +179,9 @@ const SignupForm = () => {
                         </div>
 
                         <div className="flex items-center gap-2 my-2">
-                            <div className="flex-1 h-px bg-zinc-700" />
-                            <span className="text-xs text-zinc-500">or</span>
-                            <div className="flex-1 h-px bg-zinc-700" />
+                            <div className="flex-1 h-px bg-zinc-200 dark:bg-zinc-700" />
+                            <span className="text-xs text-zinc-500 dark:text-zinc-400">or</span>
+                            <div className="flex-1 h-px bg-zinc-200 dark:bg-zinc-700" />
                         </div>
 
                         <InputField
@@ -217,7 +217,7 @@ const SignupForm = () => {
                             autoComplete="confirm-password"
                         />
                         {error && (
-                            <div className="text-red-500 text-xs">{error}</div>
+                            <div className="text-red-600 dark:text-red-400 text-xs">{error}</div>
                         )}
                         <FormButton
                             type="submit"
@@ -231,19 +231,19 @@ const SignupForm = () => {
                             )}
                         </FormButton>
                     </form>
-                    <div className="grid grid-cols-2 gap-3 border-t border-b border-zinc-700 p-4">
-                        <div className="flex items-center text-xs justify-center gap-1 text-zinc-500">
-                            <Link href="/login" className="text-gray-300 hover:underline">Have Account?</Link>
+                    <div className="grid grid-cols-2 gap-3 border-t border-b border-zinc-200 dark:border-zinc-700 p-4">
+                        <div className="flex items-center text-xs justify-center gap-1 text-zinc-500 dark:text-zinc-400">
+                            <Link href="/login" className="text-zinc-700 dark:text-gray-300 hover:underline">Have Account?</Link>
                         </div>
 
                         {/* forgot password */}
-                        <div className="flex items-center text-xs justify-center gap-1 text-zinc-500 border-l pl-3 border-l-zinc-700">
-                            <Link href="/#" className="text-gray-300 hover:underline">Why choose formo?</Link>
+                        <div className="flex items-center text-xs justify-center gap-1 text-zinc-500 dark:text-zinc-400 border-l pl-3 border-l-zinc-200 dark:border-l-zinc-700">
+                            <Link href="/#" className="text-zinc-700 dark:text-gray-300 hover:underline">Why choose formo?</Link>
                         </div>
                     </div>
 
-                    <div className="text-xs text-zinc-500 text-center pt-5">
-                        By signing up, you agree to our <Link href="/terms" className="text-gray-300 hover:underline">Terms of Service</Link> and <Link href="/privacy" className="text-gray-300 hover:underline">Privacy Policy</Link>.
+                    <div className="text-xs text-zinc-500 dark:text-zinc-400 text-center pt-5">
+                        By signing up, you agree to our <Link href="/terms" className="text-zinc-700 dark:text-gray-300 hover:underline">Terms of Service</Link> and <Link href="/privacy" className="text-zinc-700 dark:text-gray-300 hover:underline">Privacy Policy</Link>.
                     </div>
                 </div>
                 <div className="hidden sm:block"></div>
