@@ -1,5 +1,8 @@
 @import "tailwindcss" source("../../src");
-/* @custom-variant dark (&:where(.dark, .dark *)); */
+
+/* Class-based dark mode. The <html> class is kept in sync with the OS by
+   ThemeScript (before paint) and ThemeSync (on preference change). */
+@custom-variant dark (&:where(.dark, .dark *));
 
 
 :root {
@@ -14,11 +17,12 @@
   --font-mono: var(--font-jetbrains-mono), ui-monospace, SFMono-Regular, Menlo, monospace;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #130b00;
-    --foreground: #ffff;
-  }
+/* The inline script in layout sets .dark before first paint and ThemeSync keeps
+   it in sync with the device. One source of truth: no media-query fallback,
+   so the CSS variables and every dark: utility always change together. */
+:root.dark {
+  --background: #130b00;
+  --foreground: #ffffff;
 }
 
 @layer base {
@@ -75,4 +79,119 @@
   to {
     transform: rotate(360deg);
   }
+}
+
+/* WYSIWYG template studio */
+.studio-scroll {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.studio-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+.formo-editor-canvas .ProseMirror {
+  min-height: 360px;
+  outline: none;
+}
+
+.formo-editor-canvas .ProseMirror p {
+  margin: 0 0 16px;
+}
+
+.formo-editor-canvas .ProseMirror h1,
+.formo-editor-canvas .ProseMirror h2,
+.formo-editor-canvas .ProseMirror h3 {
+  color: #18181b;
+  margin: 0 0 16px;
+  font-weight: bold;
+  line-height: 1.25;
+}
+
+.formo-editor-canvas .ProseMirror h1 { font-size: 26px; }
+.formo-editor-canvas .ProseMirror h2 { font-size: 23px; }
+.formo-editor-canvas .ProseMirror h3 { font-size: 19px; }
+
+.formo-editor-canvas .ProseMirror ul,
+.formo-editor-canvas .ProseMirror ol {
+  padding-left: 24px;
+  margin: 0 0 16px;
+}
+
+.formo-editor-canvas .ProseMirror ul { list-style: disc; }
+.formo-editor-canvas .ProseMirror ol { list-style: decimal; }
+
+.formo-editor-canvas .ProseMirror blockquote {
+  margin: 0 0 16px;
+  padding-left: 12px;
+  border-left: 3px solid #d4d4d8;
+  color: #71717a;
+}
+
+.formo-editor-canvas .ProseMirror hr {
+  border: 0;
+  border-top: 1px solid #e4e4e7;
+  margin: 24px 0;
+}
+
+.formo-editor-canvas .ProseMirror a {
+  color: var(--formo-brand-color, #18181b);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.formo-editor-canvas .ProseMirror a[data-cta="true"] {
+  display: inline-block;
+  padding: 12px 24px;
+  margin: 8px 0;
+  border-radius: 8px;
+  background-color: var(--formo-brand-color, #18181b) !important;
+  color: #fff !important;
+  font-size: 14px;
+  font-weight: bold;
+  text-decoration: none;
+}
+
+.formo-editor-canvas .ProseMirror img {
+  display: block;
+  width: auto !important;
+  max-width: 100% !important;
+  height: auto !important;
+  object-fit: contain;
+  margin: 8px auto;
+  border-radius: 8px;
+}
+
+.studio-control {
+  flex: 1 1 0;
+  min-width: 2.75rem;
+}
+
+.studio-control > button {
+  display: flex;
+  max-width: 100%;
+}
+
+.studio-control > button > span {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Never stretch toolbar controls into oversized gaps on wide canvases. */
+@container (min-width: 640px) {
+  .studio-control {
+    flex: 0 0 auto;
+    min-width: 0;
+  }
+}
+
+.formo-editor-canvas .ProseMirror p.is-editor-empty:first-child::before {
+  content: attr(data-placeholder);
+  float: left;
+  height: 0;
+  color: #a1a1aa;
+  pointer-events: none;
 }

@@ -5,6 +5,7 @@ import "./globals.css";
 import Footer from "@/components/Footer";
 import { Analytics } from "@vercel/analytics/next";
 import { Icon } from "@/components/Global/Icon";
+import ThemeSync from "@/components/Global/ThemeSync";
 
 export const metadata: Metadata = {
   title: 'FormO — Effortless Form Submission and Email Handling',
@@ -95,16 +96,27 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${generalSans.variable} ${jetBrainsMono.variable}`}>
-      <body
-        className="font-sans antialiased dark:bg-black"
-      >   
-        <Analytics />        
-        <main className="dark">
+    <html lang="en" className={`${generalSans.variable} ${jetBrainsMono.variable}`} suppressHydrationWarning>
+      <head>
+        {/* Set the theme before first paint so there is no light/dark flash. */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `try{if(window.matchMedia('(prefers-color-scheme: dark)').matches){document.documentElement.classList.add('dark');document.documentElement.style.colorScheme='dark';}else{document.documentElement.style.colorScheme='light';}}catch(e){}`,
+          }}
+        />
+      </head>
+      <body className="min-h-screen bg-background font-sans text-foreground antialiased">
+        <ThemeSync />
+        <Analytics />
+        <main>
           <section className="min-h-screen p-0">
             {children}
-            <div className="fixed right-0 bottom-0 p-3 inline-block z-[9999]">
-              <button type="button" className="bg-yellow-100 hover:bg-yellow-50 duration-500 cursor-pointer flex items-center justify-center p-3 text-yellow-800 rounded-full shadow-xl shadow-yellow-500 ring-4 ring-yellow-500/30">
+            <div className="fixed right-0 bottom-0 z-[9999] inline-block p-3">
+              <button
+                type="button"
+                aria-label="FormO assistant"
+                className="flex cursor-pointer items-center justify-center rounded-full bg-yellow-100 p-3 text-yellow-800 transition-colors duration-200 hover:bg-yellow-50 shadow-lg dark:bg-yellow-600/20 dark:text-yellow-500 dark:hover:bg-yellow-600/30"
+              >
                 <Icon name="Bot" size={25} strokeWidth={2} />
               </button>
             </div>

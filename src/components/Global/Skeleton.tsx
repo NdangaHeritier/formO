@@ -25,7 +25,7 @@ export function SkeletonMetricCard() {
   return (
     <div
       aria-hidden="true"
-      className="grid grid-cols-1 gap-5 rounded-3xl border border-zinc-200 bg-zinc-50 p-5 shadow-lg dark:border-zinc-900 dark:bg-zinc-950"
+      className="grid grid-cols-1 gap-5 rounded-3xl border border-zinc-200 bg-white p-5 dark:border-zinc-800 dark:bg-zinc-950"
     >
       <div className="flex items-center justify-between">
         <Skeleton className="h-7 w-32" />
@@ -88,7 +88,7 @@ export function SkeletonProjectCard() {
   return (
     <div
       aria-hidden="true"
-      className="grid grid-cols-1 gap-3 rounded-3xl border border-zinc-200 bg-white p-5 shadow-lg dark:border-zinc-900 dark:bg-black"
+      className="grid grid-cols-1 gap-3 rounded-3xl border border-zinc-200 bg-white p-5 dark:border-zinc-800 dark:bg-zinc-950"
     >
       <div className="flex items-center gap-3">
         <Skeleton className="h-10 w-10 rounded-full" />
@@ -119,7 +119,7 @@ export function SkeletonSection({ children }: { children?: ReactNode }) {
   return (
     <div
       aria-hidden="true"
-      className="grid grid-cols-1 gap-3 rounded-2xl border border-zinc-200 bg-white shadow-lg dark:border-zinc-900 dark:bg-black"
+      className="grid grid-cols-1 gap-3 rounded-2xl border border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-950"
     >
       <div className="flex items-center justify-between border-b border-zinc-200 px-5 py-4 dark:border-zinc-800">
         <SkeletonLine width="w-32" />

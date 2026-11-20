@@ -58,7 +58,7 @@ export default function Header({ border = "border-b", py = "py-3" }: prop) {
         // FIX: removed `backdrop-blur-2xl`. The background is already opaque (bg-zinc-950),
         // so it had no visual effect, but backdrop-filter makes the header the containing
         // block for the `max-sm:fixed` mobile menu and breaks its positioning.
-        <header className={`w-full sticky top-0 left-0 right-0 z-40 ${border} border-zinc-950 ${py} px-10 max-sm:px-5 flex items-center justify-between gap-5 bg-zinc-950 py-1.5`}>
+        <header className={`sticky top-0 left-0 right-0 z-40 w-full ${border} border-zinc-200 bg-white ${py} px-10 max-sm:px-5 flex items-center justify-between gap-5 dark:border-zinc-800 dark:bg-zinc-950`}>
             <div className="">
                 {mounted ? (
                     <Image src="/Assets/formo-coloured.png" alt="logo" className="w-10 h-10" height="50" width="50" />
@@ -75,13 +75,13 @@ export default function Header({ border = "border-b", py = "py-3" }: prop) {
                         <SkeletonBox customStyle="w-20 h-6 rounded-md" shown={authLoading} />
                     </div>
                 ) : !currentUser ? (
-                    <ul className={`flex items-center justify-center max-sm:flex-col max-sm:justify-start gap-5 max-sm:gap-0 max-sm:fixed max-sm:top-16 max-sm:left-0 max-sm:right-0 max-sm:bottom-0 max-sm:bg-zinc-950 max-sm:p-3 max-sm:min-h-screen max-sm:pb-20  ${isNavOpen ? `max-sm:visible` : `max-sm:invisible max-sm:h-0`}`}>
+                    <ul className={`flex items-center justify-center max-sm:flex-col max-sm:justify-start gap-5 max-sm:gap-0 max-sm:fixed max-sm:top-16 max-sm:left-0 max-sm:right-0 max-sm:bottom-0 max-sm:bg-white dark:max-sm:bg-zinc-950 max-sm:p-3 max-sm:min-h-screen max-sm:pb-20  ${isNavOpen ? `max-sm:visible` : `max-sm:invisible max-sm:h-0`}`}>
                         {NAV_LINKS.map((item) => (
-                            <li key={item.label} className="list-item max-sm:w-full sm:px-1 max-sm:border-b max-sm:border-zinc-800 max-sm:grid max-sm:grid-cols-1">
+                            <li key={item.label} className="list-item max-sm:w-full sm:px-1 max-sm:border-b max-sm:border-zinc-200 dark:max-sm:border-zinc-800 max-sm:grid max-sm:grid-cols-1">
                                 {/* FIX: close the mobile menu after tapping a link */}
-                                <Link href={item.href} onClick={closeNav} className="text-zinc-300 font-normal max-sm:py-4 flex items-center justify-between text-[15px]">
+                                <Link href={item.href} onClick={closeNav} className="text-zinc-600 font-normal max-sm:py-4 dark:text-zinc-300 flex items-center justify-between text-[15px]">
                                     <span className="">{item.label}</span>
-                                    <Icon name="ArrowRight" size={15} strokeWidth={2} className="text-zinc-500 max-sm:block hidden" />
+                                    <Icon name="ArrowRight" size={15} strokeWidth={2} className="text-zinc-400 max-sm:block hidden dark:text-zinc-500" />
                                 </Link>
                             </li>
                         ))}
@@ -119,22 +119,22 @@ export default function Header({ border = "border-b", py = "py-3" }: prop) {
                         <>
 
                          <LinkButton href="/developer" variant="primary">
-                        <Icon name="Webhook" size={15} className="text-zinc-300 dark:text-zinc-700 max-sm:hidden" />
+                        <Icon name="Webhook" size={15} className="text-zinc-500 max-sm:hidden dark:text-zinc-400" />
                         Get API
                     </LinkButton>
                     <LinkButton href="/non-dev" variant="secondary">
-                        <Icon name="Text" size={15} className="text-zinc-300 max-sm:hidden" />
+                        <Icon name="Text" size={15} className="text-zinc-500 max-sm:hidden dark:text-zinc-400" />
                         Send Emails
                     </LinkButton>
 
                         <button
                             onClick={() => setIsOpeningUserMenu(!isOpeningUserMenu)}
                             type="button"
-                            className="h-10 w-10 cursor-pointer bg-violet-500/20 p-0.5 rounded-full hover:bg-violet-200/30 dark:hover:bg-violet-800/30 transition-colors duration-300 focus:outline-none focus:ring-1 focus:ring-zinc-300 dark:focus:ring-zinc-800">
+                            className="h-10 w-10 cursor-pointer rounded-full bg-zinc-100 p-0.5 transition-colors duration-200 hover:bg-zinc-200 dark:bg-zinc-800 dark:hover:bg-zinc-700">
                             <Image
                                 src={currentUser.image || "/Assets/Avatars/Night Landscape.png"}
                                 alt=""
-                                className="h-9 w-9 focus:border border-zinc-700 dark:hover:bg-zinc-800 rounded-full transition-colors duration-300 flex items-center justify-center"
+                                className="flex h-9 w-9 items-center justify-center rounded-full"
                                 height={50}
                                 width={50}
                             />
@@ -144,12 +144,12 @@ export default function Header({ border = "border-b", py = "py-3" }: prop) {
 
                     {isOpeningUserMenu && currentUser && mounted && typeof window !== "undefined"
                         ? createPortal(
-                            <div className="user-menu fixed z-9999 top-16 right-10 bg-white dark:bg-zinc-900 border border-zinc-200 shadow dark:border-zinc-800 rounded-xl shadow-lg p-3 flex flex-col gap-3">
+                            <div className="user-menu fixed z-9999 top-16 right-10 flex flex-col gap-3 rounded-xl border border-zinc-200 bg-white p-3 dark:border-zinc-800 dark:bg-zinc-950 shadow-2xl">
                                 <div className="container-user-top-menu p-3 flex items-center justify-center gap-2">
                                     <Image
                                         src={currentUser.image || "/Assets/Avatars/Sleep Mode.png"}
                                         alt=""
-                                        className="h-10 w-10 rounded-full bg-zinc-300 dark:bg-zinc-800 flex items-center justify-center"
+                                        className="flex h-10 w-10 items-center justify-center rounded-full bg-zinc-200 dark:bg-zinc-800"
                                         height={50}
                                         width={50}
                                     />
@@ -160,11 +160,11 @@ export default function Header({ border = "border-b", py = "py-3" }: prop) {
                                 </div>
 
                                 {/* links */}
-                                <div className="links relative rounded-xl bg-zinc-950 p-2">
+                                <div className="links relative rounded-xl bg-zinc-100 p-2 dark:bg-zinc-900">
                                     <ul className="list-none text-sm">
                                         {MENU_LINKS.map((item) => (
                                             <li key={item.label} className="list-item">
-                                                <a href="#" className="text-zinc-500 p-2 rounded-lg hover:text-zinc-400 flex items-center justify-start gap-2 hover:bg-zinc-900">
+                                                <a href="#" className="flex items-center justify-start gap-2 rounded-lg p-2 text-zinc-600 hover:bg-zinc-200 dark:text-zinc-400 dark:hover:bg-zinc-800">
                                                     <Icon name={item.icon} strokeWidth={item.strokeWidth} size={17} />
                                                     {item.label}
                                                 </a>
@@ -173,14 +173,14 @@ export default function Header({ border = "border-b", py = "py-3" }: prop) {
                                         <li className="pt-1 grid grid-cols-2 gap-2">
                                             <button
                                                 onClick={handleSignOut}
-                                                className="text-zinc-900 font-semibold cursor-pointer p-2 flex items-center justify-center rounded-sm gap-2 bg-zinc-50 hover:bg-zinc-100"
+                                                className="flex cursor-pointer items-center justify-center gap-2 rounded-md bg-white p-2 font-semibold text-zinc-900 hover:bg-zinc-100 dark:bg-zinc-800 dark:text-zinc-100 dark:hover:bg-zinc-700"
                                             >
                                                 <Icon name="ArrowRightLeft" strokeWidth={2} size={16} />
                                                 <span className="">Switch</span>
                                             </button>
                                             <button
                                                 onClick={handleSignOut}
-                                                className="font-semibold cursor-pointer p-2 flex items-center justify-center rounded-sm text-red-600 dark:text-red-400 gap-2 bg-red-500/10 hover:bg-red-500/20"
+                                                className="flex cursor-pointer items-center justify-center gap-2 rounded-md bg-red-500/10 p-2 font-semibold text-red-600 hover:bg-red-500/20 dark:text-red-400"
                                             >
                                                 <span className="">Logout</span>
                                             </button>
@@ -195,8 +195,8 @@ export default function Header({ border = "border-b", py = "py-3" }: prop) {
                 </div>
             </div>
             <div className={`navbar-toogle ${currentUser ? `hidden` : `hidden max-sm:flex`}`}>
-                <button type="button" className="toggleNav" onClick={() => setIsNavOpen(!isNavOpen)}>
-                    <Icon name={!isNavOpen ? "PanelRightOpen" : "X"} className="text-zinc-500 hover:text-zinc-300 duration-500 cursor-pointer" size={20} strokeWidth={2} />
+                <button type="button" className="toggleNav rounded-md p-2 hover:bg-zinc-100 dark:hover:bg-zinc-900" onClick={() => setIsNavOpen(!isNavOpen)}>
+                    <Icon name={!isNavOpen ? "PanelRightOpen" : "X"} className="cursor-pointer text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-200" size={20} strokeWidth={2} />
                 </button>
             </div>
         </header>
