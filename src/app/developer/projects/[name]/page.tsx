@@ -35,7 +35,6 @@ export default function ProjectPage (){
 
     return (
         <DeveloperShell>
-                <div className="flex-1 h-screen overflow-auto block">
                     <div className="grid grid-cols-1 p-panel">
                         <div className="rounded-card bg-white p-panel dark:bg-zinc-950">
                             <div className="grid grid-cols-2 gap-1">
@@ -180,7 +179,6 @@ export default function ProjectPage (){
                             </div>
                         </div>
                     </div>
-                </div>
         </DeveloperShell>
     )
 }

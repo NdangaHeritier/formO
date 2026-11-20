@@ -85,12 +85,14 @@ const SignupForm = () => {
 
     if (isLoading) {
         return (
-            <LoadingSpinner />
+            <div className="app-viewport h-dvh overflow-y-auto">
+                <LoadingSpinner />
+            </div>
         );
     }
 
     return (
-        <div className="">
+        <div className="app-viewport h-dvh overflow-y-auto">
             <title>Create Free Account | Start creating beautifull emails.</title>
             <Header />
             <section className="grid grid-cols-1 grid-row-1 sm:grid-cols-3 min-h-[80vh] my-6">

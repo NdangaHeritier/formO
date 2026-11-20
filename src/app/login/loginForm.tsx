@@ -112,14 +112,14 @@ export default function LoginForm() {
 
     if (isLoading) {
         return (
-            <div className="flex items-center justify-center h-screen">
+            <div className="app-viewport flex h-dvh items-center justify-center overflow-y-auto">
                 <Icon name="Loader" size={50} className="animate-spin text-zinc-500" />
             </div>
         );
     }
 
     return (
-        <div className="">
+        <div className="app-viewport h-dvh overflow-y-auto">
             <title>Login</title>
             <Header />
             <section className="grid grid-cols-1 grid-row-1 sm:grid-cols-3 min-h-[80vh] my-6 ">

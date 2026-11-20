@@ -39,10 +39,12 @@ export default function Dashboard() {
 
     // Optionally, show aaka loader while processing
     return (
-        <PrivateRouter>
-            <div className="flex items-center justify-center min-h-screen">
-                <Icon name="Loader" size={50} className="animate-spin text-zinc-500" />
-            </div>
-        </PrivateRouter>
+        <div className="app-viewport h-dvh overflow-y-auto">
+            <PrivateRouter>
+                <div className="flex items-center justify-center min-h-full">
+                    <Icon name="Loader" size={50} className="animate-spin text-zinc-500" />
+                </div>
+            </PrivateRouter>
+        </div>
     );
 }

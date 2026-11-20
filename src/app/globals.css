@@ -64,6 +64,19 @@
   }
 }
 
+/* App-shell routes (developer console, auth flows) own the viewport and a
+   single inner scroll region. The global marketing footer and document-level
+   scrolling are disabled for them, so they never produce a second scrollbar.
+   Any route that renders an `.app-viewport` wrapper gets this automatically. */
+html:has(.app-viewport),
+body:has(.app-viewport) {
+  overflow: hidden;
+}
+
+body:has(.app-viewport) main > footer {
+  display: none;
+}
+
 .stroke {
   -webkit-text-stroke: 1px var(--foreground);
   font-family: var(--font-sans);
