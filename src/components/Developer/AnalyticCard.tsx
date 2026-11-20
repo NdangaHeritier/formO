@@ -12,25 +12,25 @@ export const AnalyticCard = ( {title, icon, desc, data}:AnalyticProps) => {
     return (
         <div className="rounded-card grid grid-cols-1 gap-card p-card border border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-950 transition-colors duration-200 hover:border-zinc-400 dark:hover:border-zinc-600">
             <div className="flex items-center justify-between">
-              <h1 className="font-semibold text-2xl antialiased text-zinc-900 dark:text-zinc-100">
+              <h1 className="font-semibold text-xl antialiased text-zinc-900 dark:text-zinc-100">
                 {title}
               </h1>
               <div className="flex items-center justify-right">
-                <span className="h-12 w-12 flex items-center justify-center rounded-full bg-yellow-600/20 text-yellow-600">
-                  <Icon name={icon} strokeWidth={2} size={18} />
+                <span className="h-9 w-9 flex items-center justify-center rounded-full bg-yellow-600/20 text-yellow-600">
+                  <Icon name={icon} strokeWidth={2} size={15} />
                 </span>
               </div>
             </div>
-            <p className="text-zinc-600 dark:text-zinc-500">
+            <p className="text-sm text-zinc-600 dark:text-zinc-500">
                 {desc}
             </p>
             <div className="analytic grid grid-cols-1 gap-3">
                 <div className="amount flex items-center justify-start gap-1">
-                    <span className="text-5xl font-bold p-2">
+                    <span className="text-4xl font-bold p-1">
                         {data.amount}
                     </span>
-                    <Icon name="Slash" size={12} className="text-zinc-600 dark:text-zinc-500" />
-                    <span className="period text-zinc-600 dark:text-zinc-500 text-base">
+                    <Icon name="Slash" size={11} className="text-sm text-zinc-600 dark:text-zinc-500" />
+                    <span className="period text-zinc-600 dark:text-zinc-500 text-sm">
                         {data.period}
                     </span>
                 </div>
