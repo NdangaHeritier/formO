@@ -77,11 +77,25 @@ function isBlockedIp(ip: string, allowLoopback: boolean): boolean {
  * metadata or otherwise non-public addresses. Pass a resolver to test without
  * touching DNS. Throws SmtpEndpointError before any socket is opened.
  */
-export async function assertSmtpEndpoint(
+export type SmtpAddress = { address: string; family: number };
+
+export type SmtpEndpoint = {
+  /** Host exactly as configured (used for TLS SNI and logging). */
+  host: string;
+  port: number;
+  addresses: SmtpAddress[];
+};
+
+/**
+ * Resolves and validates an SMTP endpoint in one step. Callers must connect to
+ * one of the returned addresses rather than re-resolving the hostname, so the
+ * validated address and the connected address cannot diverge (DNS rebinding).
+ */
+export async function resolveSmtpEndpoint(
   host: string,
   port: number,
   options: { allowLocal?: boolean; resolver?: Resolver } = {}
-): Promise<void> {
+): Promise<SmtpEndpoint> {
   const trimmed = host.trim();
   if (!trimmed || trimmed.length > 253 || /[\r\n]/.test(trimmed)) {
     throw new SmtpEndpointError("Invalid SMTP host");
@@ -113,4 +127,36 @@ export async function assertSmtpEndpoint(
   if (addresses.some(({ address }) => isBlockedIp(address, allowLocal))) {
     throw new SmtpEndpointError("SMTP host is not allowed");
   }
+
+  return { host: trimmed, port, addresses };
+}
+
+/**
+ * Rejects SMTP endpoints that resolve to private, loopback, link-local,
+ * metadata or otherwise non-public addresses. Pass a resolver to test without
+ * touching DNS. Throws SmtpEndpointError before any socket is opened.
+ */
+export async function assertSmtpEndpoint(
+  host: string,
+  port: number,
+  options: { allowLocal?: boolean; resolver?: Resolver } = {}
+): Promise<void> {
+  await resolveSmtpEndpoint(host, port, options);
+}
+
+/**
+ * Nodemailer connection target for an already-validated endpoint. The socket is
+ * opened against a validated IP while TLS still verifies the configured
+ * hostname.
+ */
+export function connectionTarget(endpoint: SmtpEndpoint): {
+  host: string;
+  servername?: string;
+} {
+  const first = endpoint.addresses[0];
+  if (!first) throw new SmtpEndpointError("SMTP host could not be resolved");
+
+  return isIP(endpoint.host) > 0
+    ? { host: first.address }
+    : { host: first.address, servername: endpoint.host };
 }

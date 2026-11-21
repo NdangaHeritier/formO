@@ -1,7 +1,7 @@
 import nodemailer, { type Transporter } from "nodemailer";
 import type { Prisma } from "@/generated/prisma/client";
 import { decryptSecret } from "@/lib/crypto";
-import { assertSmtpEndpoint } from "@/lib/smtp-guard";
+import { connectionTarget, resolveSmtpEndpoint } from "@/lib/smtp-guard";
 import { getServerEnv } from "@/lib/env";
 import { prisma } from "@/lib/prisma";
 import {
@@ -93,28 +93,69 @@ function transporterOptions(config: {
   secure: boolean;
   username: string;
   password: string;
+  /** Validated address to dial and the hostname TLS must verify. */
+  target?: { host: string; servername?: string };
 }) {
   return {
-    host: stripCrlf(config.host),
+    host: stripCrlf(config.target?.host ?? config.host),
     port: config.port,
     secure: config.secure,
     auth: { user: stripCrlf(config.username), pass: config.password },
+    ...(config.target?.servername ? { tls: { servername: config.target.servername } } : {}),
     connectionTimeout: 8_000,
     greetingTimeout: 8_000,
     socketTimeout: 12_000,
   };
 }
 
-function systemTransporter(): Transporter {
+/**
+ * Message-ID domain for a From header. `.local` is not resolvable and does not
+ * match the sending domain, which weakens receiver-side deduplication of
+ * at-least-once retries.
+ */
+export function messageIdDomain(from: string): string {
+  const match = /@([A-Za-z0-9.-]+)/.exec(from);
+  const candidate = match?.[1]?.replace(/[>.]+$/, "").toLowerCase();
+  const valid =
+    candidate !== undefined &&
+    /^[a-z0-9]([a-z0-9-]*[a-z0-9])?(\.[a-z0-9]([a-z0-9-]*[a-z0-9])?)+$/.test(candidate);
+  return valid ? candidate : "formo.local";
+}
+
+/**
+ * Builds (and validates) one transporter. The socket always opens against an
+ * address that passed the SSRF guard, and TLS still verifies the configured
+ * hostname, closing the resolve-then-connect window.
+ */
+export async function createSmtpTransporter(sender: SmtpSender | null): Promise<Transporter> {
   const env = getServerEnv();
+  const config = sender
+    ? {
+        host: sender.host,
+        port: sender.port,
+        secure: sender.secure,
+        username: sender.username,
+        password: decryptSecret({
+          ciphertext: sender.encryptedPassword,
+          iv: sender.iv,
+          authTag: sender.authTag,
+          keyVersion: sender.keyVersion,
+        }),
+      }
+    : {
+        host: env.SMTP_HOST,
+        port: env.SMTP_PORT,
+        secure: env.SMTP_SECURE === "true",
+        username: env.SMTP_USER ?? "",
+        password: env.SMTP_PASS ?? "",
+      };
+
+  const endpoint = await resolveSmtpEndpoint(config.host, config.port, {
+    allowLocal: env.FORMO_ALLOW_LOCAL_SMTP,
+  });
+
   return nodemailer.createTransport(
-    transporterOptions({
-      host: env.SMTP_HOST,
-      port: env.SMTP_PORT,
-      secure: env.SMTP_SECURE === "true",
-      username: env.SMTP_USER ?? "",
-      password: env.SMTP_PASS ?? "",
-    })
+    transporterOptions({ ...config, target: connectionTarget(endpoint) })
   );
 }
 
@@ -130,7 +171,7 @@ export type SmtpSender = {
   keyVersion: number;
 };
 
-/** Shared by the delivery worker and the test-send route. */
+/** Shared by the delivery worker, the test-send route and workspace SMTP setup. */
 export async function getCachedTransporter(
   cache: Map<string, Transporter>,
   smtp: SmtpSender | null
@@ -138,38 +179,10 @@ export async function getCachedTransporter(
   const key = smtp?.id ?? "system";
   let transporter = cache.get(key);
   if (!transporter) {
-    const env = getServerEnv();
-    if (smtp) {
-      await assertSmtpEndpoint(smtp.host, smtp.port, {
-        allowLocal: env.FORMO_ALLOW_LOCAL_SMTP,
-      });
-    } else {
-      await assertSmtpEndpoint(env.SMTP_HOST, env.SMTP_PORT, {
-        allowLocal: env.FORMO_ALLOW_LOCAL_SMTP,
-      });
-    }
-    transporter = smtp ? customTransporter(smtp) : systemTransporter();
+    transporter = await createSmtpTransporter(smtp);
     cache.set(key, transporter);
   }
   return transporter;
-}
-
-function customTransporter(smtp: SmtpSender): Transporter {
-  const password = decryptSecret({
-    ciphertext: smtp.encryptedPassword,
-    iv: smtp.iv,
-    authTag: smtp.authTag,
-    keyVersion: smtp.keyVersion,
-  });
-  return nodemailer.createTransport(
-    transporterOptions({
-      host: smtp.host,
-      port: smtp.port,
-      secure: smtp.secure,
-      username: smtp.username,
-      password,
-    })
-  );
 }
 
 function buildContext(delivery: DeliveryContext): RenderContext {
@@ -353,15 +366,14 @@ export async function runDeliveryBatch(): Promise<DeliveryBatchResult> {
           // SMTP accepted the message but before the database recorded it will
           // resend after the 10-minute stale-claim recovery. A stable Message-ID
           // lets receiving servers deduplicate those retries.
+          const from = stripCrlf(delivery.form.smtpConfig?.fromEmail ?? getServerEnv().SMTP_FROM);
           const info = await transporter.sendMail({
-            from: stripCrlf(
-              delivery.form.smtpConfig?.fromEmail ?? getServerEnv().SMTP_FROM
-            ),
+            from,
             to: stripCrlf(row.recipient_email),
             subject: stripCrlf(subject),
             html,
             text,
-            messageId: `<${row.id}@formo.local>`,
+            messageId: `<${row.id}@${messageIdDomain(from)}>`,
             ...(replyTo ? { replyTo: stripCrlf(replyTo) } : {}),
           });
 

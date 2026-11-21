@@ -35,6 +35,13 @@ const serverEnvSchema = z.object({
   TRUSTED_PROXY_HOPS: z.coerce.number().int().min(0).max(10).default(0),
   // How many months of range partitions the maintenance job keeps ahead.
   PARTITION_MONTHS_AHEAD: z.coerce.number().int().min(2).max(24).default(6),
+  // Public intake limits: per (form, client IP) and per form across all clients.
+  FORMO_RATE_LIMIT_PER_CLIENT: z.coerce.number().int().min(1).max(10_000).optional(),
+  FORMO_RATE_LIMIT_PER_FORM: z.coerce.number().int().min(1).max(100_000).optional(),
+  // Opt-in submission retention. Unset keeps every submission forever.
+  FORMO_SUBMISSION_RETENTION_DAYS: z.coerce.number().int().min(1).max(3_650).optional(),
+  // Optional keyring for FORMO_ENCRYPTION_KEY rotation: {"1":"<32+ chars>","2":"..."}.
+  FORMO_ENCRYPTION_KEYS: z.string().optional(),
   // Local SMTP sinks are only reachable with an explicit opt-in.
   FORMO_ALLOW_LOCAL_SMTP: z
     .enum(["true", "false"])
@@ -65,6 +72,30 @@ const serverEnvSchema = z.object({
       path: ["FORMO_ALLOW_DEV_SECRETS"],
       message: "FORMO_ALLOW_DEV_SECRETS=1 is not allowed in production",
     });
+  }
+
+  const keyring = data.FORMO_ENCRYPTION_KEYS?.trim();
+  if (keyring) {
+    try {
+      const parsed = JSON.parse(keyring) as Record<string, unknown>;
+      const entries = Object.entries(parsed);
+      if (entries.length === 0) throw new Error("empty");
+      for (const [version, key] of entries) {
+        if (!/^\d+$/.test(version) || typeof key !== "string" || key.trim().length < 32) {
+          ctx.addIssue({
+            code: "custom",
+            path: ["FORMO_ENCRYPTION_KEYS"],
+            message: `FORMO_ENCRYPTION_KEYS entry "${version}" must be a string of at least 32 characters`,
+          });
+        }
+      }
+    } catch {
+      ctx.addIssue({
+        code: "custom",
+        path: ["FORMO_ENCRYPTION_KEYS"],
+        message: "FORMO_ENCRYPTION_KEYS must be a JSON object mapping version to key",
+      });
+    }
   }
 });
 

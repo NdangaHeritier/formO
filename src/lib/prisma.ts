@@ -2,6 +2,7 @@ import { PrismaPg } from "@prisma/adapter-pg";
 import { PrismaNeon } from "@prisma/adapter-neon";
 import { Pool } from "pg";
 import { PrismaClient } from "@/generated/prisma/client";
+import { applyAuditContext } from "@/server/audit/audit-context";
 import { getServerEnv } from "./env";
 import { resolveDatabaseDriver } from "./db-target";
 
@@ -78,10 +79,12 @@ export function getPrisma(): PrismaClient {
   if (globalForPrisma.formoPrisma) return globalForPrisma.formoPrisma;
 
   const { client, pool } = createClientAndPool();
+  // The audit extension stamps `audit_logs.ip_hash` from the ambient request.
+  const extended = applyAuditContext(client);
   globalForPrisma.formoPool = pool;
-  globalForPrisma.formoPrisma = client;
+  globalForPrisma.formoPrisma = extended;
   registerShutdownHooks();
-  return client;
+  return extended;
 }
 
 /**

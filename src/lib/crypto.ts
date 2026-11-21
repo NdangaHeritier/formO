@@ -26,7 +26,22 @@ function requireProductionSecrets(): void {
 
 /** @internal - called at startup to enforce production secret requirements */ requireProductionSecrets();
 
-function getMasterKey(): Buffer {
+function getMasterKey(version = currentKeyVersion()): Buffer {
+  const keyring = encryptionKeyring();
+  if (keyring) {
+    const key = keyring.get(version)?.trim();
+    if (!key || key.length < 32) {
+      throw new Error(`No encryption key configured for version ${version}`);
+    }
+    return crypto.createHash("sha256").update(key).digest();
+  }
+
+  if (version !== 1) {
+    throw new Error(
+      `Encryption key version ${version} requires FORMO_ENCRYPTION_KEYS; only version 1 is available`
+    );
+  }
+
   const raw = process.env.FORMO_ENCRYPTION_KEY?.trim();
   if (!raw || raw.length < 32) {
     if (devFallbackAllowed()) {
@@ -35,6 +50,41 @@ function getMasterKey(): Buffer {
     throw new Error("FORMO_ENCRYPTION_KEY must be at least 32 characters");
   }
   return crypto.createHash("sha256").update(raw).digest();
+}
+
+/**
+ * Optional keyring for rotation: `FORMO_ENCRYPTION_KEYS={"1":"old","2":"new"}`.
+ * When present it is authoritative, so every version still in use must be listed.
+ */
+function encryptionKeyring(): Map<number, string> | null {
+  const raw = process.env.FORMO_ENCRYPTION_KEYS?.trim();
+  if (!raw) return null;
+
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(raw);
+  } catch {
+    throw new Error("FORMO_ENCRYPTION_KEYS must be a JSON object mapping version to key");
+  }
+  if (typeof parsed !== "object" || parsed === null || Array.isArray(parsed)) {
+    throw new Error("FORMO_ENCRYPTION_KEYS must be a JSON object mapping version to key");
+  }
+
+  const keyring = new Map<number, string>();
+  for (const [version, key] of Object.entries(parsed as Record<string, unknown>)) {
+    if (!/^\d+$/.test(version) || typeof key !== "string") {
+      throw new Error("FORMO_ENCRYPTION_KEYS must map numeric versions to string keys");
+    }
+    keyring.set(Number(version), key);
+  }
+  return keyring;
+}
+
+/** The version written for new secrets: highest configured, else 1. */
+export function currentKeyVersion(): number {
+  const keyring = encryptionKeyring();
+  if (!keyring || keyring.size === 0) return 1;
+  return Math.max(...keyring.keys());
 }
 
 function getHmacPepper(): Buffer {
@@ -51,8 +101,8 @@ function getHmacPepper(): Buffer {
 /**
  * Encrypts sensitive strings (e.g., custom SMTP passwords) using AES-256-GCM with a random 96-bit IV.
  */
-export function encryptSecret(plaintext: string, keyVersion = 1): EncryptedPayload {
-  const key = getMasterKey();
+export function encryptSecret(plaintext: string, keyVersion = currentKeyVersion()): EncryptedPayload {
+  const key = getMasterKey(keyVersion);
   const iv = crypto.randomBytes(12);
   const cipher = crypto.createCipheriv("aes-256-gcm", key, iv);
   const encrypted = Buffer.concat([cipher.update(plaintext, "utf8"), cipher.final()]);
@@ -75,7 +125,7 @@ export function decryptSecret(record: {
   authTag: Uint8Array;
   keyVersion?: number;
 }): string {
-  const key = getMasterKey();
+  const key = getMasterKey(record.keyVersion ?? 1);
   const decipher = crypto.createDecipheriv("aes-256-gcm", key, Buffer.from(record.iv));
   decipher.setAuthTag(Buffer.from(record.authTag));
   const decrypted = Buffer.concat([
