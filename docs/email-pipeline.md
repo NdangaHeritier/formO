@@ -60,22 +60,22 @@ Presets and raw HTML are separate representations: structured preset edits store
 
 ## Retry and maintenance workers
 
-Two authenticated routes run scheduled work:
+Two authenticated routes are scheduled in `vercel.json`:
 
 | Route | Vercel schedule | Purpose |
 | --- | --- | --- |
-| `/api/cron/email-deliveries` | Every 5 minutes | Retry pending deliveries, reclaim stalled claims, provision upcoming partitions |
-| `/api/cron/partitions` | Daily at midnight | Provision 12 months of partitions and remove expired rate-limit/idempotency rows |
+| `/api/cron/deliver` | Daily 04:00 UTC | Claim and send queued email deliveries, retry failures |
+| `/api/cron/maintenance` | Daily 03:00 UTC | Provision partitions and clean expired rate-limit/idempotency rows |
 
-`vercel.json` declares both schedules. Set `CRON_SECRET` in production; Vercel supplies it as `Authorization: Bearer <CRON_SECRET>`. Production routes return `503` when the secret is not configured and `401` for an incorrect secret.
+`/api/cron/partitions` is also available for on-demand partition provisioning but is not scheduled. There is no second delivery worker — all delivery goes through `runDeliveryBatch`.
 
-The every-five-minute worker schedule requires a Vercel plan that supports that cron frequency. Hobby plans are limited to daily schedules; adjust the two schedules accordingly before deploying there.
+Set `CRON_SECRET` in production; Vercel supplies it as `Authorization: Bearer <CRON_SECRET>`. Production routes return `503` when the secret is not configured and `401` for an incorrect secret. On Vercel Hobby, cron schedules must run at most once per day; use an external scheduler for a shorter delivery cadence.
 
 To run a worker locally:
 
 ```sh
-curl -X POST http://localhost:3000/api/cron/email-deliveries -H "Authorization: Bearer $CRON_SECRET"
-curl -X POST http://localhost:3000/api/cron/partitions -H "Authorization: Bearer $CRON_SECRET"
+curl -X POST http://localhost:3000/api/cron/deliver -H "Authorization: Bearer $CRON_SECRET"
+curl -X POST http://localhost:3000/api/cron/maintenance -H "Authorization: Bearer $CRON_SECRET"
 ```
 
 ## API-key sends

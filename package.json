@@ -19,7 +19,9 @@
     "test:e2e": "tsx scripts/e2e-submission.ts",
     "test:e2e:maintenance": "tsx scripts/e2e-maintenance.ts",
     "test:e2e:recipients": "tsx scripts/e2e-recipients.ts",
-    "clean": "rmdir /s /q .next"
+    "clean": "rmdir /s /q .next",
+    "check": "npm run lint && tsc --noEmit && vitest run",
+    "security": "npm audit --omit=dev --audit-level=high"
   },
   "dependencies": {
     "@prisma/adapter-neon": "^7.10.1",
@@ -39,7 +41,6 @@
     "@vercel/analytics": "^2.0.1",
     "better-auth": "^1.7.25",
     "dotenv": "^18.0.10",
-    "isomorphic-dompurify": "^3.19.0",
     "lucide-react": "^1.73.0",
     "next": "^16.4.6",
     "nodemailer": "^10.5.0",
@@ -47,7 +48,6 @@
     "react": "^19.3.1",
     "react-dom": "^19.3.1",
     "sanitize-html": "^2.18.2",
-    "uuid": "^14.0.3",
     "zod": "^4.6.7"
   },
   "devDependencies": {

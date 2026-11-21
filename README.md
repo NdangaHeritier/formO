@@ -1,108 +1,90 @@
-# Formo: A Self-Hosted Email Platform for Developers and Non-Developers
+# FormO
 
-Formo is a comprehensive, self-hosted email platform designed to empower both developers and non-developers with a versatile solution for managing email communications. Built with [Next.js](https://nextjs.org/), it offers a modern, efficient framework for both the frontend and backend, ensuring a seamless user experience. Developers can leverage Formo’s email API, located at `/api/send-email/route.ts`, to integrate email sending capabilities into their applications. This API utilizes [Nodemailer](https://nodemailer.com/) to send emails via SMTP, ensuring secure and reliable delivery. Data management is facilitated by [PocketBase](https://pocketbase.io/), a self-hosted backend solution that stores user data, email logs, and other operational records, accessible through the `lib/pocketbase.ts` module. For non-developers, such as marketers or business owners, Formo provides an intuitive dashboard at `/dashboard/non-dev/page.tsx`, where they can choose from a selection of pre-built email templates stored in the `emails/` directory, customize them with their content, and send emails to their audiences without requiring any technical expertise. The platform includes dedicated dashboards for both user types—`/dashboard/dev/page.tsx` for developers to manage API keys and logs, and `/dashboard/non-dev/page.tsx` for non-developers to handle template customization and sending. Additionally, Formo supports form submissions through the `/api/forms/[formId]/route.ts` endpoint, allowing users to process and respond to form data seamlessly. As a fully self-hosted solution, Formo ensures users maintain complete control over their email infrastructure and data privacy, making it ideal for those prioritizing security and independence from third-party services. With its scalable architecture and dual focus on technical flexibility and user-friendly design, Formo is a comprehensive solution for anyone looking to take charge of their email communications.
+FormO is a self-hosted, developer-grade form backend. Projects contain forms; forms own a unique submission endpoint; submissions are persisted in Postgres and delivered to configured email recipients through a durable delivery queue. A dashboard provides projects, forms, analytics, settings, and a template studio.
 
-## Purpose
-Formo’s primary goal is to provide a flexible, privacy-focused email platform that caters to two distinct audiences:
-- **Developers**: Those who need a robust, customizable email API to integrate into their applications, with full control over the infrastructure.
-- **Non-Developers**: Marketers, educators, or business owners who want to send professional emails using pre-built templates without coding.
+## Stack
 
-By being self-hosted, Formo eliminates reliance on third-party email services, reducing costs and enhancing data security. It’s designed to scale from small personal projects to large enterprise solutions.
+| Concern | Implementation |
+| --- | --- |
+| App | Next.js 16 App Router, React 19, Tailwind CSS 4 |
+| Database | PostgreSQL via Prisma 7 — `pg` pool locally, Neon WebSocket adapter in production |
+| Auth | Better Auth: email/password plus Google and GitHub OAuth, organizations and members |
+| Email | Nodemailer/SMTP with a persisted delivery queue and retries |
+| Templates | React Email presets and a Tiptap-based studio |
+| Hosting | Vercel (or any Node host), with cron routes for delivery and maintenance |
 
-## Technology Stack
-The following table outlines the core technologies used in Formo:
+## How it works
 
-| **Component**            | **Technology**       | **Purpose**                                                                 |
-|--------------------------|---------------------|-----------------------------------------------------------------------------|
-| Frontend & Backend       | Next.js             | Powers the web application, including API routes and dashboards.            |
-| Email Sending            | Nodemailer          | Sends emails via SMTP, ensuring secure and reliable delivery.               |
-| Data Storage             | PocketBase          | Self-hosted backend for storing user data, email logs, and form submissions.|
-| Authentication           | Next.js (Custom)    | Manages user login and access to dashboards (`/login/page.tsx`).           |
-| Email Templates          | React Email         | Pre-built templates stored in `emails/` for non-developer customization.    |
-| Form Handling            | Next.js API Routes  | Processes form submissions via `/api/forms/[formId]/route.ts`.             |
+1. Create a **project**, then a **form** inside that project.
+2. Post your HTML form (or JSON) to `POST /api/f/{endpoint}`. The endpoint is permanent and unique per form.
+3. The submission is written to a partitioned `form_submissions` table before any email work starts.
+4. Each active recipient gets an `email_deliveries` row; the delivery worker sends and retries them.
+5. Honeypot, Turnstile, allowed origins, payload caps, custom subjects, reply-to fields, CC/BCC recipients and SMTP/template bindings are form settings.
 
-## Project Structure
-Formo’s architecture is organized to support its dual-purpose functionality. Key components include:
+## Route map
 
-- **Landing Page**: `/app/page.tsx` – A homepage showcasing solutions, features, and how it works for both audiences.
-- **Login/Auth UI**: `/app/login/page.tsx` – Entry point for user authentication.
-- **Developer Dashboard**: `/app/developer/page.tsx` – Interface for managing API keys, viewing logs, and configuring settings.
-- **Non-Developer Dashboard**: `/app/templates/page.tsx` – Interface for selecting, customizing, and sending email templates.
-- **Email Templates**: `/emails/` – Directory containing pre-built templates (e.g., `Newsletter.tsx`, `Announcement.tsx`) for non-developers.
-- **Email API**: `/app/api/send-email/route.ts` – Endpoint for sending emails programmatically.
-- **Form Submission API**: `/app/api/forms/[formId]/route.ts` – Endpoint for handling form submissions.
-- **PocketBase Integration**: `/lib/pocketbase.ts` – Client for interacting with the PocketBase backend.
-- **Mailer Setup**: `/lib/mailer.ts` – Configures Nodemailer for email sending.
+| Route | Purpose |
+| --- | --- |
+| `/developer` | Workspace overview and quick start |
+| `/developer/projects` | Projects list, create/edit/archive/delete |
+| `/developer/projects/[slug]` | Project detail: stats, forms, recent submissions |
+| `/developer/forms` | Workspace-wide form list and endpoint utilities |
+| `/developer/analytics` | Submission and delivery analytics |
+| `/developer/settings` | SMTP senders, API keys, email templates |
+| `/developer/templates` | Template library and presets |
+| `/api/f/{endpoint}` | **Public** form submission endpoint |
+| `/api/forms`, `/api/forms/{id}` | List, read, update, delete forms |
+| `/api/forms/{id}/submissions`, `/api/forms/{id}/rotate-endpoint` | Form submissions, endpoint rotation |
+| `/api/projects`, `/api/projects/{id}`, `/api/projects/slug/{slug}` | Project management |
+| `/api/projects/{id}/forms` | Create and list a project's forms |
+| `/api/submissions/{id}`, `/api/submissions/{id}/retry` | Submission detail and delivery retry |
+| `/api/settings/*`, `/api/templates/*`, `/api/analytics` | Workspace settings, templates, analytics |
+| `/api/auth/*` | Better Auth handlers |
+| `/api/cron/deliver`, `/api/cron/maintenance` | Authenticated scheduled workers |
+| `/api/health` | Liveness; add `?ready=1` for readiness |
 
-## Features for Developers
-- **Email API**: Integrate email sending into your apps using a simple POST request to `/api/send-email/route.ts`. Example:
-  ```javascript
-  await fetch('/api/send-email', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ to: 'recipient@example.com', subject: 'Hello', text: 'Hi!' })
-  });
-  ```
-- **Dashboard**: Manage API keys, view email logs, and monitor usage at `/dashboard/dev/page.tsx`.
-- **Self-Hosted**: Run Formo on your own servers, ensuring data privacy and control.
-- **Form Handling**: Process form submissions via `/api/forms/[formId]/route.ts`, ideal for contact forms or feedback systems.
+## Local development
 
-## Features for Non-Developers
-- **Template Library**: Choose from 5-7 pre-built email templates in `/emails/`, customizable with text and paragraphs.
-- **Dashboard**: Use `/dashboard NONDEV/page.tsx` to edit templates and send emails without coding.
-- **Future Enhancements**: Upcoming features include color and font variants for templates, enhancing customization options.
+Requires Node 24+ and a local PostgreSQL database.
 
-## Why Formo?
-Formo stands out due to its:
-- **Dual Focus**: Caters to both technical and non-technical users.
-- **Self-Hosted Nature**: Eliminates third-party dependencies, reducing costs and enhancing privacy.
-- **Scalability**: Suitable for small projects to large-scale enterprise needs.
-- **Security**: Built with secure practices, including token-based authentication and rate limiting.
+```sh
+npm install
+cp .env.example .env.local   # fill in the required values
+npx prisma migrate deploy
+npm run dev
+```
 
-## Getting Started
-To set up Formo:
-1. Clone the repository (placeholder: [GitHub](https://github.com/NdangaHeritier/formo)).
-2. Install dependencies: `npm install`.
-3. Copy `.env.example` to `.env` and fill in the values.
-4. Run locally: `npm run dev`.
+Keep `DATABASE_URL` pointing at local Postgres. Do not set `DATABASE_URL_UNPOOLED` locally — Prisma falls back to `DATABASE_URL`.
 
-### Required server environment
+## Production (Neon + Vercel)
 
-| Variable | Purpose |
-|---|---|
-| `DATABASE_URL` | Local Postgres in dev; Neon **pooled** URL in production |
-| `BETTER_AUTH_SECRET` | Auth signing secret (32+ characters) |
-| `FORMO_ENCRYPTION_KEY` | AES-256-GCM master key for SMTP passwords (32+) |
-| `FORMO_HMAC_PEPPER` | HMAC pepper for IP hashes and API keys (32+) |
-| `CRON_SECRET` | Bearer secret for `/api/cron/*` (32+, **required in production**) |
+Create a Neon project and set these Vercel environment variables (Production and Preview):
 
-Optional but recommended:
+| Variable | Value |
+| --- | --- |
+| `DATABASE_URL` | Neon **pooled** connection string |
+| `DATABASE_URL_UNPOOLED` | Neon **direct** connection string, used by Prisma CLI |
+| `FORMO_DATABASE_URL` | Optional explicit app connection string when the host injects its own `DATABASE_URL` |
+| `BETTER_AUTH_SECRET`, `FORMO_ENCRYPTION_KEY`, `FORMO_HMAC_PEPPER`, `CRON_SECRET` | 32+ character secrets |
+| `BETTER_AUTH_URL` | Deployed origin, e.g. `https://form-o.vercel.app` |
+| `GOOGLE_CLIENT_ID/SECRET`, `GITHUB_CLIENT_ID/SECRET` | OAuth app credentials |
+| `SMTP_*` | SMTP transport and credentials for verification and delivery email |
+| `TURNSTILE_SECRET_KEY` | Optional bot protection |
 
-| Variable | Default | Purpose |
-|---|---|---|
-| `DATABASE_URL_UNPOOLED` | unset | Neon **direct** URL for Prisma CLI migrations; local dev falls back to `DATABASE_URL` |
-| `DATABASE_DRIVER` | `auto` | `auto` detects Neon by hostname; `neon` / `pg` override it |
-| `TRUSTED_PROXY_HOPS` | `0` | Trusted proxy hops in `X-Forwarded-For`; `0` ignores the spoofable header |
-| `PARTITION_MONTHS_AHEAD` | `6` | Months of range partitions the maintenance job keeps ahead (2–24) |
-| `TURNSTILE_SECRET_KEY` | — | Cloudflare Turnstile verification for forms that require it |
-| `FORMO_ALLOW_DEV_SECRETS` | unset | Local-development fallback keys only; forbidden in production |
+Register the exact OAuth callbacks `{BETTER_AUTH_URL}/api/auth/callback/google` and `/api/auth/callback/github` with the providers.
 
-The delivery worker must be called by a scheduler — see [docs/scheduling.md](docs/scheduling.md).
-Partition upkeep and incident steps are in [docs/operations.md](docs/operations.md).
-Public form submissions go to `POST /api/f/{endpoint}`.
+`vercel.json` schedules `/api/cron/maintenance` at 03:00 UTC and `/api/cron/deliver` at 04:00 UTC. Vercel Hobby allows at most daily schedules; use an external scheduler for a shorter delivery cadence. Both routes require `Authorization: Bearer $CRON_SECRET`.
 
-**Deploying with Neon?** Local Postgres keeps working unchanged; production uses Neon's
-serverless adapter and a direct URL for migrations. Full setup is in
-[docs/deployment.md](docs/deployment.md).
+See [docs/deployment.md](docs/deployment.md), [docs/email-pipeline.md](docs/email-pipeline.md) and [docs/scheduling.md](docs/scheduling.md) for details.
 
-## Future Plans
-Formo is set to expand with:
-- Advanced analytics for email tracking (e.g., opens, clicks).
-- Enhanced template customization (color/font variants).
-- Multi-recipient support for form submissions (upcoming Pro version).
+## Checks
 
-This platform is designed to be a developer-friendly, privacy-focused solution that bridges the gap between technical and non-technical email needs. Whether you’re building an app or sending newsletters, Formo has you covered.
+```sh
+npm run lint
+npx tsc --noEmit
+npx vitest run
+npm run build
+npm run test:unit
+```
 
-## Live Implementation Notes
-
-For the public form-submission endpoint, SMTP retry workers, monthly partition maintenance, and authenticated API-key sends, see [docs/email-pipeline.md](docs/email-pipeline.md).
+End-to-end scripts (`npm run test:e2e`, `test:e2e:maintenance`, `test:e2e:recipients`) expect local Postgres and Mailpit as described in `docs/deployment.md`.

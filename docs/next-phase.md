@@ -67,7 +67,7 @@ codes; service tests pass in CI.
 4. One error shape `{ error, code, fields }`, camelCase only, ISO dates everywhere.
 5. SMTP `PATCH` and last-test result; template `PATCH`; block deleting an SMTP config in use.
 6. Per-workspace retention setting and a partition-drop job; request ids in logs.
-7. Service tests on a throwaway Postgres in CI. Update README/metadata that still mentions PocketBase.
+7. Service tests on a throwaway Postgres in CI.
 8. Frontend wiring order: create-form flow with copyable endpoint snippet, edit form, submissions
    table, settings pages, login `next` handling, toasts.
 

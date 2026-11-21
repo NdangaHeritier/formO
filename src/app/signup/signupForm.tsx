@@ -9,7 +9,7 @@ import { signIn, signUp } from "@/lib/auth-client";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
-import LoadingSpinner from "@/components/Global/LoadingSpiner";
+import LoadingSpinner from "@/components/Global/LoadingSpinner";
 
 const SignupForm = ({ authError }: { authError?: string }) => {
 
@@ -258,3 +258,4 @@ const SignupForm = ({ authError }: { authError?: string }) => {
 };
 
 export default SignupForm;
+

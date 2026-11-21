@@ -25,14 +25,13 @@ export const metadata: Metadata = {
     { rel: 'manifest', url: '/site.webmanifest' },
   ],
   description:
-    'FormO lets developers and non-developers collect form data and send styled emails with ease. Built with Next.js, Tailwind CSS, and PocketBase.',
+    'FormO is a self-hosted form backend with durable email delivery, built with Next.js, Tailwind CSS and PostgreSQL.',
   keywords: [
     'FormO',
     'form backend',
     'email forms',
     'form submissions',
     'no-code email tool',
-    'PocketBase',
     'Next.js',
     'NodeMailer',
     'form to email',
