@@ -73,7 +73,7 @@ async function promise<T>(
 export const toast = { show, success, error, info, warning, loading, dismiss, promise };
 
 export function ToastProvider() {
-  return <HeroToast.Provider placement="top end" />;
+  return <HeroToast.Provider placement="bottom" />;
 }
 
 export function useToast() {

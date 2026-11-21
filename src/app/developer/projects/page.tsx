@@ -4,7 +4,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 
 
-import DeveloperBreadcrumb from "@/components/Developer/DeveloperBreadcrumb";
+// import DeveloperBreadcrumb from "@/components/Developer/DeveloperBreadcrumb";
 import ProjectCard from "@/components/Developer/ProjectCard";
 import NewDeveloperForm from "@/components/Developer/Modals/Forms/NewDeveloper";
 import EditProject from "@/components/Developer/Modals/Forms/EditProject";
@@ -177,13 +177,14 @@ const Projects = () => {
 
   return (
     <DeveloperShell>
+      {/* Never uncomment this breadcumb,
       <DeveloperBreadcrumb
         navs={[
           { label: "Home", href: "/" },
           { label: "Developer", href: "/developer" },
           { label: "Projects", href: "/developer/projects" },
         ]}
-      />
+      /> */}
 
       {/* display createProjectModel */}
       {createOpen && (

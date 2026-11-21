@@ -30,7 +30,7 @@ export const InputField = ({type, name, id, value, placeholder, autoComplete, on
                 <input
                     id={id}
                     type={showPassword ? "text" : "password"}
-                    className="border border-zinc-200 bg-zinc-100/80 dark:border-zinc-800 dark:bg-zinc-900/50 text-zinc-800 dark:text-zinc-200 py-2 px-4 rounded-md w-full outline-0 focus:border-zinc-900 focus:ring-zinc-600/40 dark:focus:border-zinc-100 focus:ring-3 dark:focus:ring-zinc-300/40"
+                    className="border border-zinc-200 bg-zinc-100/80 dark:border-zinc-800 dark:bg-zinc-900/50 text-zinc-800 dark:text-zinc-200 py-2 px-4 rounded-xl w-full outline-0 focus:border-zinc-900 focus:ring-zinc-600/40 dark:focus:border-zinc-100 focus:ring-3 dark:focus:ring-zinc-300/40"
                     name={name}
                     placeholder={placeholder}
                     value={value}
@@ -55,7 +55,7 @@ export const InputField = ({type, name, id, value, placeholder, autoComplete, on
                 <input
                     id={id}
                     type={type}
-                    className="border border-zinc-200 bg-zinc-100/80 dark:border-zinc-800 dark:bg-zinc-900/50 text-zinc-800 dark:text-zinc-200 py-2 px-4 rounded-md w-full outline-0 focus:border-zinc-900 focus:ring-zinc-600/40 dark:focus:border-zinc-100 focus:ring-3 dark:focus:ring-zinc-300/40"
+                    className="border border-zinc-200 bg-zinc-100/80 dark:border-zinc-800 dark:bg-zinc-900/50 text-zinc-800 dark:text-zinc-200 py-2 px-4 rounded-xl w-full outline-0 focus:border-zinc-900 focus:ring-zinc-600/40 dark:focus:border-zinc-100 focus:ring-3 dark:focus:ring-zinc-300/40"
                     name={name}
                     placeholder={placeholder}
                     value={value}

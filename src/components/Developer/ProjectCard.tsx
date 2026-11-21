@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import EditProject from "./Modals/Forms/EditProject";
 import ConfirmDialog from "@/components/Global/ConfirmDialog";
+import { toast } from "@/components/Global/Toast";
 
 type cardProps = {
     id: ProjectType['id'];
@@ -102,7 +103,7 @@ export default function ProjectCard ({name, description, forms, formsCount, subm
     return (
         <>
         <div
-            className="project-card p-card bg-white dark:bg-black border border-zinc-200 dark:border-zinc-900 rounded-card shadow-lg grid grid-cols-1 gap-3 cursor-pointer"
+            className="project-card p-card bg-white dark:bg-black border border-zinc-200 dark:border-zinc-900 rounded-3xl shadow-lg grid grid-cols-1 gap-3 cursor-pointer"
             role="link"
             tabIndex={0}
             aria-label={`Open project ${name}`}
@@ -222,7 +223,7 @@ export default function ProjectCard ({name, description, forms, formsCount, subm
                         <button className="flex items-center justify-center h-10 w-10 cursor-pointer rounded-full hover:bg-zinc-100 dark:hover:bg-zinc-900/50 transition">
                             <Icon name="Copy" size={16} className="text-zinc-600 hover:text-zinc-800 dark:text-zinc-500 dark:hover:text-zinc-300 transition" onClick={() => {
                                 navigator.clipboard.writeText(endpoint);
-                                alert('Endpoint copied to clipboard!');
+                                toast.success("Endpoint copied to clipboard", { duration: 2000 });
                             }} />
                         </button>
                     )}

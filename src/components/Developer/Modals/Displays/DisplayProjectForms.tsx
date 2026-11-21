@@ -10,7 +10,7 @@ export const FormsDisplayModel = ({project, closeModal}:DisplayType) => {
     const {name, description, forms, status}: ProjectType = project;
     return(
         <Layout onClick={closeModal}>
-            <div className="bg-white dark:bg-zinc-950 border sm:min-w-4xl border-zinc-300 dark:border-zinc-800 p-6 rounded-lg shadow-lg max-w-md w-full">
+            <div className="bg-white dark:bg-zinc-950 border sm:min-w-4xl border-zinc-300 dark:border-zinc-900 p-6 rounded-3xl shadow-lg max-w-md w-full">
                 <div className="flex items-start justify-between">
                     <div className="details grid grid-cols-1 gap-2">
                         <h3 className="text-lg font-semibold text-zinc-200">{name}</h3>

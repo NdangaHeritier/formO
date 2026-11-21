@@ -4,7 +4,7 @@ type Props = {
 export const Squares = ({parLength}: Props) => {
     
     return (
-        <div className={`bg-transparent w-full h-full absolute right-0 top-0 z-0 grid grid-cols-12 max-sm:grid-cols-4 p-0 overflow-hidden rounded-2xl`}>
+        <div className={`bg-transparent w-full h-full absolute right-0 top-0 z-0 grid grid-cols-12 max-sm:grid-cols-4 p-0 overflow-hidden rounded-3xl`}>
             {Array.from({length: parLength}, (_, i) => (
                 <span className="bg-transparent border dark:border-white/5 border-black/10 flex items-center justify-center gap-0.5 flex-wrap" key={i}>
                     {Array.from({length: parLength/2}, (_, i) => (
