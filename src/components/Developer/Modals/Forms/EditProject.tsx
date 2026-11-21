@@ -65,7 +65,7 @@ export default function EditProject({ project, onClick, onSuccess }: Props) {
           <div className="text-green-500">{notification}</div>
         </div>
       )}
-      <div className="form-enter-animation bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-900 p-card rounded-card shadow-lg max-w-md w-full">
+      <div className="form-enter-animation bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-900 p-6 rounded-3xl shadow-lg max-w-md w-full">
         <h2 className="text-lg font-semibold mb-4 text-black dark:text-white">Edit Project</h2>
         <p className="text-sm text-zinc-600 dark:text-zinc-400 mb-6">Update your project name and description.</p>
         <form onSubmit={handleSubmit} className="pt-5 grid grid-cols-1 gap-5">

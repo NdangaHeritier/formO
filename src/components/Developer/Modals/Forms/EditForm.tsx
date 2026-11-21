@@ -104,7 +104,7 @@ export default function EditForm({ form, onClick, onSuccess }: Props) {
           <div className="text-green-500">{notification}</div>
         </div>
       )}
-      <div className="bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-900 p-card rounded-card shadow-lg max-w-md w-full">
+      <div className="bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-900 p-6 rounded-3xl shadow-lg max-w-md w-full">
         <h2 className="text-lg font-semibold mb-4 text-black dark:text-white">Edit Form</h2>
         <p className="text-sm text-zinc-600 dark:text-zinc-400 mb-6">
           Update the title, primary recipient and CC/BCC recipients.
