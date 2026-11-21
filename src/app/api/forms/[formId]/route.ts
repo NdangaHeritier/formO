@@ -20,7 +20,7 @@ export async function GET(
   try {
     const { formId } = await context.params;
     const access = await requireFormAccess(formId, "member");
-    const form = await getProjectFormDetail(access.form.id);
+    const form = await getProjectFormDetail(access.form.id, access.organizationId);
     return NextResponse.json({ form });
   } catch (error) {
     return jsonErrorResponse(error);

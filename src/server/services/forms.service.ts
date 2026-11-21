@@ -146,12 +146,14 @@ export async function listProjectForms(projectId: string) {
   }));
 }
 
-export async function getProjectFormDetail(formId: string) {
+/** Every form lookup is scoped to the caller's workspace, never just the id. */
+function scopedFormWhere(formId: string, organizationId: string) {
+  return { id: formId, deletedAt: null, project: { organizationId } } as const;
+}
+
+export async function getProjectFormDetail(formId: string, organizationId: string) {
   const form = await prisma.projectForm.findFirst({
-    where: {
-      id: formId,
-      deletedAt: null,
-    },
+    where: scopedFormWhere(formId, organizationId),
     include: {
       recipients: {
         orderBy: { createdAt: "asc" },
@@ -267,6 +269,12 @@ export async function updateProjectForm(params: {
   const { formId, organizationId, actorUserId, input } = params;
 
   return prisma.$transaction(async (tx) => {
+    const scoped = await tx.projectForm.findFirst({
+      where: scopedFormWhere(formId, organizationId),
+      select: { id: true },
+    });
+    if (!scoped) throw new HttpError(404, "Form not found");
+
     await verifyOrgResources(tx, organizationId, input.smtpConfigId, input.emailTemplateId);
 
     // Read the old primary address BEFORE the update; reading it afterwards
@@ -387,6 +395,12 @@ export async function deleteProjectForm(params: {
   const now = new Date();
 
   return prisma.$transaction(async (tx) => {
+    const scoped = await tx.projectForm.findFirst({
+      where: scopedFormWhere(formId, organizationId),
+      select: { id: true },
+    });
+    if (!scoped) throw new HttpError(404, "Form not found");
+
     const updated = await tx.projectForm.update({
       where: { id: formId },
       data: {
@@ -425,7 +439,7 @@ export async function rotateProjectFormEndpoint(params: {
 
   return prisma.$transaction(async (tx) => {
     const existing = await tx.projectForm.findFirst({
-      where: { id: formId, deletedAt: null },
+      where: scopedFormWhere(formId, organizationId),
       select: { id: true, endpoint: true },
     });
 

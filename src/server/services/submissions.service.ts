@@ -97,11 +97,22 @@ export async function acceptSubmission(
 
   // 4. Two rate-limit buckets.
   const ip = getClientIp(request);
-  const retryAfter = await enforceRateLimits(form.id, request);
-  if (retryAfter !== null) {
-    return outcome(429, { ...baseHeaders, "Retry-After": String(retryAfter) }, {
-      error: "Too many submissions. Please try again later.",
-    });
+  const decision = await enforceRateLimits(form.id, request);
+  if (!decision.allowed) {
+    const unavailable = "unavailable" in decision && decision.unavailable;
+    const retryAfterSeconds = "retryAfterSeconds" in decision ? decision.retryAfterSeconds : 0;
+    return outcome(
+      429,
+      unavailable
+        ? baseHeaders
+        : { ...baseHeaders, "Retry-After": String(retryAfterSeconds) },
+      unavailable
+        ? {
+            error: "Submission intake is temporarily unavailable. Please try again shortly.",
+            code: "RATE_LIMITER_UNAVAILABLE",
+          }
+        : { error: "Too many submissions. Please try again later." }
+    );
   }
 
   // 5. Parse by content type; 6. reserved fields are removed in the parser.
