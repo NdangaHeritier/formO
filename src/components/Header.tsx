@@ -8,6 +8,7 @@ import { useState, useSyncExternalStore } from "react";
 import { createPortal } from "react-dom";
 import { useRouter } from "next/navigation";
 import SkeletonBox from "./skeleton";
+import UserAvatar from "./Global/UserAvatar";
 
 type prop = { border?: string; py?: string };
 
@@ -131,12 +132,10 @@ export default function Header({ border = "border-b", py = "py-3" }: prop) {
                             onClick={() => setIsOpeningUserMenu(!isOpeningUserMenu)}
                             type="button"
                             className="h-10 w-10 cursor-pointer rounded-full bg-zinc-100 p-0.5 transition-colors duration-200 hover:bg-zinc-200 dark:bg-zinc-800 dark:hover:bg-zinc-700">
-                            <Image
-                                src={currentUser.image || "/Assets/Avatars/Night Landscape.png"}
-                                alt=""
-                                className="flex h-9 w-9 items-center justify-center rounded-full"
-                                height={50}
-                                width={50}
+                            <UserAvatar
+                                src={currentUser.image}
+                                size={36}
+                                className="h-9 w-9"
                             />
                         </button>
                         </>
@@ -146,12 +145,10 @@ export default function Header({ border = "border-b", py = "py-3" }: prop) {
                         ? createPortal(
                             <div className="user-menu fixed z-9999 top-16 right-10 flex flex-col gap-3 rounded-xl border border-zinc-200 bg-white p-3 dark:border-zinc-800 dark:bg-zinc-950 shadow-2xl">
                                 <div className="container-user-top-menu p-3 flex items-center justify-center gap-2">
-                                    <Image
-                                        src={currentUser.image || "/Assets/Avatars/Sleep Mode.png"}
-                                        alt=""
-                                        className="flex h-10 w-10 items-center justify-center rounded-full bg-zinc-200 dark:bg-zinc-800"
-                                        height={50}
-                                        width={50}
+                                    <UserAvatar
+                                        src={currentUser.image}
+                                        size={40}
+                                        className="h-10 w-10 bg-zinc-200 dark:bg-zinc-800"
                                     />
                                     <div className="flex flex-col pt-3">
                                         <h1 className="text-lg font-semibold text-zinc-800 dark:text-zinc-200">{currentUser.name || currentUser.email}</h1>

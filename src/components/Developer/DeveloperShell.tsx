@@ -1,10 +1,11 @@
 "use client";
 import Link from "next/link";
-import Image from "next/image";
 import Header from "@/components/Header";
 import PrivateRouter from "@/components/Global/privateRouter";
 import { Icon } from "@/components/Global/Icon";
 import { usePathname } from "next/navigation";
+import { useSession } from "@/lib/auth-client";
+import UserAvatar from "@/components/Global/UserAvatar";
 
 const MOBILE_NAV = [
   { href: "/developer/projects", label: "Projects", icon: "FolderOpen" },
@@ -19,6 +20,7 @@ const MOBILE_NAV = [
  */
 export default function DeveloperShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
+  const { data: session } = useSession();
 
   return (
     <div className="app-viewport h-dvh overflow-hidden bg-background">
@@ -46,12 +48,10 @@ export default function DeveloperShell({ children }: { children: React.ReactNode
                   <Icon name="Bolt" strokeWidth={2} size={22} />
                 </button>
                 <button className="flex h-11 w-11 cursor-pointer items-center justify-center rounded-full bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-900 dark:hover:bg-zinc-800">
-                  <Image
-                    src="/Assets/Avatars/Sleep Mode.png"
-                    alt=""
-                    width={60}
-                    height={60}
-                    className="rounded-full"
+                  <UserAvatar
+                    src={session?.user?.image}
+                    size={44}
+                    className="h-11 w-11"
                   />
                 </button>
               </div>

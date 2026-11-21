@@ -29,6 +29,12 @@ export default function createNextConfig(phase: string): NextConfig {
     },
     images: {
       formats: ["image/avif", "image/webp"],
+      // Social sign-in stores the provider's avatar URL on the user. Allow the
+      // hosts Google and GitHub use so next/image can render those avatars.
+      remotePatterns: [
+        { protocol: "https", hostname: "*.googleusercontent.com" },
+        { protocol: "https", hostname: "*.githubusercontent.com" },
+      ],
     },
     async headers() {
       return [
