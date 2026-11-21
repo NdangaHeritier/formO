@@ -29,6 +29,13 @@
   --foreground: #ffffff;
 }
 
+/* Keep the assistant button clear of the developer tab bar on phones. */
+@media (max-width: 767px) {
+  html:has(.app-viewport) [aria-label="FormO assistant"] {
+    bottom: 5.5rem;
+  }
+}
+
 /* One-shot root-only fade for theme switches. Keeping this off descendants
    avoids a whole-page style recalculation (and the browser stutter it causes). */
 .theme-transition,
