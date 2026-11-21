@@ -6,13 +6,14 @@ import Footer from "@/components/Footer";
 import { Analytics } from "@vercel/analytics/next";
 import { Icon } from "@/components/Global/Icon";
 import ThemeSync from "@/components/Global/ThemeSync";
+import { ToastProvider } from "@/components/Global/Toast";
 
 export const metadata: Metadata = {
   title: 'FormO — Effortless Form Submission and Email Handling',
   authors: [
     {
       name: 'Dev Ndanga',
-      url: 'https://ndangaheritier.vercel.app',
+      url: 'https://ndanga.me',
     },
   ],
   creator: 'Ndanga Heritier',
@@ -100,12 +101,13 @@ export default function RootLayout({
         {/* Set the theme before first paint so there is no light/dark flash. */}
         <script
           dangerouslySetInnerHTML={{
-            __html: `try{var m=localStorage.getItem('formo-theme');var d=m==='dark'||(m!=='light'&&window.matchMedia('(prefers-color-scheme: dark)').matches);document.documentElement.classList.toggle('dark',d);document.documentElement.style.colorScheme=d?'dark':'light';}catch(e){}`,
+            __html: `try{var m=localStorage.getItem('formo-theme');var d=m==='dark'||(m!=='light'&&window.matchMedia('(prefers-color-scheme: dark)').matches);document.documentElement.classList.toggle('dark',d);document.documentElement.dataset.theme=d?'dark':'light';document.documentElement.style.colorScheme=d?'dark':'light';}catch(e){}`,
           }}
         />
       </head>
       <body className="min-h-screen bg-background font-sans text-foreground antialiased">
         <ThemeSync />
+        <ToastProvider />
         <Analytics />
         <main>
           <section className="min-h-screen p-0">

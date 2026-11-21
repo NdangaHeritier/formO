@@ -3,6 +3,7 @@ import { useState } from "react";
 import { useEffect } from "react";
 import { Icon } from "@/components/Global/Icon";
 import BrandLoader from "@/components/Global/BrandLoader";
+import { useToast } from "@/components/Global/Toast";
 import FormButton from "@/components/Global/FormButton";
 import { InputField } from "@/components/Global/InputField";
 import Header from "@/components/Header";
@@ -30,7 +31,7 @@ export default function LoginForm({ authError }: { authError?: string }) {
     const currentUser = session?.user ?? null;
     const [isLoading, setIsLoading] = useState(true);
     const [form, setForm] = useState({ email: "", password: "" });
-    const [error, setError] = useState("");
+    const toast = useToast();
     const [signinLoading, setSigninLoading] = useState(false);
     const [signedIn, setSignedIn] = useState(false);
     const isSignedIn = signedIn || Boolean(currentUser);
@@ -48,19 +49,21 @@ export default function LoginForm({ authError }: { authError?: string }) {
         }
     }, [currentUser, router]);
 
+    useEffect(() => {
+        if (authError) toast.error(authError);
+    }, [authError, toast]);
+
     const signInWithGoogle = async () => {
-        setError("");
         const res = await signIn.social({ provider: "google", callbackURL: "/dashboard", errorCallbackURL: "/login" });
         if (res?.error) {
-            setError(res.error.message || "Google Sign-In is not configured yet.");
+            toast.error(res.error.message || "Google Sign-In is not configured yet.");
         }
     };
 
     const signInWithGithub = async () => {
-        setError("");
         const res = await signIn.social({ provider: "github", callbackURL: "/dashboard", errorCallbackURL: "/login" });
         if (res?.error) {
-            setError(res.error.message || "GitHub Sign-In is not configured yet.");
+            toast.error(res.error.message || "GitHub Sign-In is not configured yet.");
         }
     };
 
@@ -88,12 +91,11 @@ export default function LoginForm({ authError }: { authError?: string }) {
             if (result.error) {
                 setSigninLoading(false);
                 setSignedIn(false);
-                setError(result.error.message || "Incorrect email or password. Please try again.");
+                toast.error(result.error.message || "Incorrect email or password. Please try again.");
                 return;
             }
             setSigninLoading(false);
             setSignedIn(true);
-            setError("");
             // Redirect to the dashboard or home page after successful sign-in
             const route = await resolveWorkspaceRoute(); // wait for DB result
             router.push(route);
@@ -103,10 +105,10 @@ export default function LoginForm({ authError }: { authError?: string }) {
             setSigninLoading(false);
             setSignedIn(false);
             if (err instanceof Error) {
-                setError("Incorrect email or password. Please try again.");
+                toast.error("Incorrect email or password. Please try again.");
                 console.info(err);
             } else {
-                setError("An unexpected error occurred. Please try again.");
+                toast.error("An unexpected error occurred. Please try again.");
             }
         }
     };
@@ -122,11 +124,6 @@ export default function LoginForm({ authError }: { authError?: string }) {
     return (
         <div className="app-viewport h-dvh overflow-y-auto">
             <title>Login</title>
-            {authError && (
-                <div role="alert" className="mx-auto mt-4 max-w-xl rounded-lg border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-700 dark:text-red-300">
-                    {authError}
-                </div>
-            )}
             <Header />
             <section className="grid grid-cols-1 grid-row-1 sm:grid-cols-3 min-h-[80vh] my-6 ">
                 <div className="hidden sm:flex relative -z-1">
@@ -227,11 +224,6 @@ export default function LoginForm({ authError }: { authError?: string }) {
                                 <div className="flex-1 h-px bg-zinc-200 dark:bg-zinc-700" />
                                 <span className="text-xs text-zinc-500 dark:text-zinc-400">or</span>
                                 <div className="flex-1 h-px bg-zinc-200 dark:bg-zinc-700" />
-                            </div>
-                            <div>
-                                {error && (
-                                    <div className="text-red-600 dark:text-red-400 text-xs">{error}</div>
-                                )}
                             </div>
                             <InputField
                                 type="email"

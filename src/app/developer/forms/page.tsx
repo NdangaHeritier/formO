@@ -6,6 +6,7 @@ import { Squares } from "@/components/Global/Squares";
 import { Icon } from "@/components/Global/Icon";
 import { relativeTime } from "@/lib/format";
 import { SkeletonTableRows } from "@/components/Global/Skeleton";
+import { useToast } from "@/components/Global/Toast";
 
 type WorkspaceForm = {
   id: string;
@@ -25,7 +26,7 @@ const FormsPage = () => {
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState(false);
   const [query, setQuery] = useState("");
-  const [testResult, setTestResult] = useState<{ id: string; ok: boolean; text: string } | null>(null);
+  const toast = useToast();
 
   useEffect(() => {
     fetch("/api/forms")
@@ -51,7 +52,7 @@ const FormsPage = () => {
 
   const copyText = (value: string, label: string) => {
     navigator.clipboard.writeText(value);
-    setTestResult({ id: "", ok: true, text: `${label} copied to clipboard` });
+    toast.success(`${label} copied to clipboard`);
   };
 
   const publicUrl = (endpoint: string) => `/api/f/${endpoint}`;
@@ -64,32 +65,31 @@ const FormsPage = () => {
     `  <button type="submit">Send</button>\n` +
     `</form>`;
 
-  const sendTestSubmission = async (form: WorkspaceForm) => {
-    try {
-      const res = await fetch(`/api/f/${form.endpoint}`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json", Accept: "application/json" },
-        body: JSON.stringify({
-          name: "FormO dashboard test",
-          message: "This submission was sent from the FormO dashboard.",
-        }),
-      });
-      const data = (await res.json().catch(() => null)) as {
-        id?: string;
-        error?: string;
-        duplicate?: boolean;
-      } | null;
-      setTestResult({
-        id: form.id,
-        ok: res.ok,
-        text: res.ok
-          ? `Accepted${data?.duplicate ? " (duplicate)" : ""} — ${data?.id ?? "ok"}`
-          : data?.error ?? "Submission rejected",
-      });
-    } catch {
-      setTestResult({ id: form.id, ok: false, text: "Could not reach the submission endpoint" });
-    }
-  };
+  const sendTestSubmission = (form: WorkspaceForm) =>
+    toast.promise(
+      async () => {
+        const res = await fetch(`/api/f/${form.endpoint}`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json", Accept: "application/json" },
+          body: JSON.stringify({
+            name: "FormO dashboard test",
+            message: "This submission was sent from the FormO dashboard.",
+          }),
+        });
+        const data = (await res.json().catch(() => null)) as {
+          id?: string;
+          error?: string;
+          duplicate?: boolean;
+        } | null;
+        if (!res.ok) throw new Error(data?.error ?? "Submission rejected");
+        return data;
+      },
+      {
+        loading: "Sending test submission…",
+        success: (data) => `Accepted${data?.duplicate ? " (duplicate)" : ""} — ${data?.id ?? "ok"}`,
+        error: (error) => error instanceof Error ? error.message : "Could not reach the submission endpoint",
+      }
+    );
 
   return (
     <DeveloperShell>
@@ -114,19 +114,6 @@ const FormsPage = () => {
               />
             </div>
           </div>
-
-          {testResult && (
-            <div
-              role="status"
-              className={`text-xs rounded-lg px-3 py-2 ${
-                testResult.ok
-                  ? "text-green-700 dark:text-green-400 bg-green-50 dark:bg-green-950/40"
-                  : "text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-950/40"
-              }`}
-            >
-              {testResult.text}
-            </div>
-          )}
 
           {loading ? (
             <div className="overflow-x-auto rounded-2xl border border-zinc-200 dark:border-zinc-900 bg-white dark:bg-black shadow-lg">
@@ -209,11 +196,6 @@ const FormsPage = () => {
                             <Icon name="Send" size={13} className="text-zinc-500" />
                           </button>
                         </div>
-                        {testResult?.id === form.id && (
-                          <span className={`text-[11px] ${testResult.ok ? "text-green-600" : "text-red-500"}`}>
-                            {testResult.text}
-                          </span>
-                        )}
                       </td>
                       <td className="px-5 py-4 text-zinc-700 dark:text-zinc-400 whitespace-nowrap">
                         {form._count.recipients}

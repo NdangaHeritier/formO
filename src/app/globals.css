@@ -1,4 +1,5 @@
 @import "tailwindcss" source("../../src");
+@import "@heroui/styles";
 
 /* Class-based dark mode. The <html> class is kept in sync with the OS by
    ThemeScript (before paint) and ThemeSync (on preference change). */

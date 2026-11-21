@@ -30,6 +30,7 @@ export function applyTheme(mode: ThemeMode, animate = false): void {
 
   const commit = () => {
     root.classList.toggle("dark", dark);
+    root.dataset.theme = dark ? "dark" : "light";
     root.style.colorScheme = dark ? "dark" : "light";
   };
 

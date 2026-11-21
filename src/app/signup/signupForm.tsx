@@ -10,29 +10,32 @@ import { useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import LoadingSpinner from "@/components/Global/LoadingSpinner";
+import { useToast } from "@/components/Global/Toast";
 
 const SignupForm = ({ authError }: { authError?: string }) => {
 
     const [isLoading, setIsLoading] = useState(true);
     const [form, setForm] = useState({ name: "", email: "", password: "", confirmPassword: "" });
-    const [error, setError] = useState("");
+    const toast = useToast();
     const [signupLoading, setSignupLoading] = useState(false);
 
     const router = useRouter();
 
+    useEffect(() => {
+        if (authError) toast.error(authError);
+    }, [authError, toast]);
+
     const signUpWithGoogle = async () => {
-        setError("");
         const res = await signIn.social({ provider: "google", callbackURL: "/signup/select-interest", errorCallbackURL: "/signup" });
         if (res?.error) {
-            setError(res.error.message || "Google Sign-In is not configured yet.");
+            toast.error(res.error.message || "Google Sign-In is not configured yet.");
         }
     };
 
     const signUpWithGithub = async () => {
-        setError("");
         const res = await signIn.social({ provider: "github", callbackURL: "/signup/select-interest", errorCallbackURL: "/signup" });
         if (res?.error) {
-            setError(res.error.message || "GitHub Sign-In is not configured yet.");
+            toast.error(res.error.message || "GitHub Sign-In is not configured yet.");
         }
     };
 
@@ -52,7 +55,7 @@ const SignupForm = ({ authError }: { authError?: string }) => {
         e.preventDefault();
         setSignupLoading(true);
         if (form.password !== form.confirmPassword) {
-            setError("Passwords do not match.");
+            toast.error("Passwords do not match.");
             setSignupLoading(false);
             return;
         }
@@ -66,9 +69,9 @@ const SignupForm = ({ authError }: { authError?: string }) => {
             if (result.error) {
                 setSignupLoading(false);
                 if (result.error.code === "USER_ALREADY_EXISTS" || result.error.message?.toLowerCase().includes("already")) {
-                    setError("This email is already registered. Please log in instead.");
+                    toast.error("This email is already registered. Please log in instead.");
                 } else {
-                    setError(result.error.message || "Signup failed. Please try again.");
+                    toast.error(result.error.message || "Signup failed. Please try again.");
                 }
                 return;
             }
@@ -79,7 +82,7 @@ const SignupForm = ({ authError }: { authError?: string }) => {
         catch (err) {
             setSignupLoading(false);
             console.error("Unexpected error:", err);
-            setError("An unknown error occurred.");
+            toast.error("An unknown error occurred.");
         }
     };
 
@@ -94,11 +97,6 @@ const SignupForm = ({ authError }: { authError?: string }) => {
     return (
         <div className="app-viewport h-dvh overflow-y-auto">
             <title>Create Free Account | Start creating beautifull emails.</title>
-            {authError && (
-                <div role="alert" className="mx-auto mt-4 max-w-xl rounded-lg border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-700 dark:text-red-300">
-                    {authError}
-                </div>
-            )}
             <Header />
             <section className="grid grid-cols-1 grid-row-1 sm:grid-cols-3 min-h-[80vh] my-6">
                 <div className="hidden sm:block"></div>
@@ -221,9 +219,6 @@ const SignupForm = ({ authError }: { authError?: string }) => {
                             placeholder="re-enter Password"
                             autoComplete="confirm-password"
                         />
-                        {error && (
-                            <div className="text-red-600 dark:text-red-400 text-xs">{error}</div>
-                        )}
                         <FormButton
                             type="submit"
                             variant="secondary"

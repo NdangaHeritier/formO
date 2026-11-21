@@ -10,6 +10,7 @@ import ConfirmDialog from "@/components/Global/ConfirmDialog";
 import NewSenderModal from "@/components/Developer/Modals/Settings/NewSenderModal";
 import NewApiKeyModal from "@/components/Developer/Modals/Settings/NewApiKeyModal";
 import LinkButton from "@/components/Global/LinkButton";
+import { useToast } from "@/components/Global/Toast";
 
 type SmtpConfig = {
   id: string;
@@ -92,8 +93,7 @@ const SettingsPage = () => {
   const [apiKeys, setApiKeys] = useState<ApiKey[]>([]);
   const [templates, setTemplates] = useState<EmailTemplate[]>([]);
   const [loading, setLoading] = useState(true);
-  const [actionError, setActionError] = useState("");
-  const [notice, setNotice] = useState("");
+  const toast = useToast();
   const [pendingRevoke, setPendingRevoke] = useState<ApiKey | null>(null);
   const [pendingSmtpDelete, setPendingSmtpDelete] = useState<SmtpConfig | null>(null);
   const [showSenderModal, setShowSenderModal] = useState(false);
@@ -108,7 +108,7 @@ const SettingsPage = () => {
       if (smtp?.smtpConfigs) setSmtpConfigs(smtp.smtpConfigs);
       if (keys?.apiKeys) setApiKeys(keys.apiKeys);
       if (tpl?.templates) setTemplates(tpl.templates);
-    }).catch(() => setActionError("Could not reload settings."));
+    }).catch(() => toast.error("Could not reload settings."));
   };
 
   const revokeKey = async () => {
@@ -116,10 +116,10 @@ const SettingsPage = () => {
     try {
       const res = await fetch(`/api/settings/api-keys/${pendingRevoke.id}`, { method: "DELETE" });
       if (!res.ok) throw new Error("Could not revoke API key");
-      setNotice("API key revoked.");
+      toast.success("API key revoked.");
       reload();
     } catch (error) {
-      setActionError(error instanceof Error ? error.message : "Could not revoke API key");
+      toast.error(error instanceof Error ? error.message : "Could not revoke API key");
     } finally {
       setPendingRevoke(null);
     }
@@ -130,10 +130,10 @@ const SettingsPage = () => {
     try {
       const res = await fetch(`/api/settings/smtp/${pendingSmtpDelete.id}`, { method: "DELETE" });
       if (!res.ok) throw new Error("Could not delete SMTP sender");
-      setNotice("SMTP sender deleted.");
+      toast.success("SMTP sender deleted.");
       reload();
     } catch (error) {
-      setActionError(error instanceof Error ? error.message : "Could not delete SMTP sender");
+      toast.error(error instanceof Error ? error.message : "Could not delete SMTP sender");
     } finally {
       setPendingSmtpDelete(null);
     }
@@ -165,19 +165,6 @@ const SettingsPage = () => {
               Workspace
             </span>
           </div>
-
-          {(actionError || notice) && (
-            <p
-              role="status"
-              className={`text-xs rounded-lg px-3 py-2 ${
-                actionError
-                  ? "text-red-600 bg-red-500/10"
-                  : "text-green-600 bg-green-600/10"
-              }`}
-            >
-              {actionError || notice}
-            </p>
-          )}
 
           {/* SMTP senders */}
           <div className="flex justify-end">
@@ -325,7 +312,7 @@ const SettingsPage = () => {
         <NewSenderModal
           onClose={() => setShowSenderModal(false)}
           onCreated={() => {
-            setNotice("SMTP sender added.");
+            toast.success("SMTP sender added.");
             reload();
           }}
         />
