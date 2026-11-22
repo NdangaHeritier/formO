@@ -248,7 +248,10 @@ export default function LoginForm({ authError }: { authError?: string }) {
                                 disabled={signinLoading || !form.email || !form.password}
                             >
                                 {signinLoading ? (
+                                    <>
                                     <Icon name="Loader" size={20} className="animate-spin" />
+                                    <p>Sign In</p>
+                                    </>
                                 ) : (
                                     "Sign In"
                                 )}
