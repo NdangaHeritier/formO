@@ -132,20 +132,29 @@ export default function LoginForm({ authError }: { authError?: string }) {
                     <BackGraphicsLayout />
                 </div>
                 {isSignedIn ? (
-                    <div className="border-none overflow-hidden  bg-white flex flex-col dark:bg-zinc-950 gap-10 p-5 sm:p-8 pt-10 sm:pt-16 items-center align-middle justify-center rounded-3xl">
-                        <Image
-                            src="/Assets/forms/checked.svg"
-                            alt="Thanks"
-                            width={100}
-                            height={100}
-                            className="mb-1"
-                        />
-                        <h1 className="text-2xl font-semibold text-zinc-900 dark:text-zinc-200 text-center">Successfully Signed In!</h1>
-                        <div className="flex items-center justify-center gap-2 flex-col-reverse sm:flex-row">
-                            <BrandLoader />
-                            <p className="text-zinc-600 dark:text-zinc-200 text-center font-normal ">Redirecting to your dashboard...</p>
+                    <div className="flex items-center justify-center sm:col-span-2">
+                        <div
+                            role="status"
+                            aria-live="polite"
+                            className="flex w-full max-w-md flex-col items-center gap-6 rounded-3xl bg-white px-5 py-12 text-center dark:bg-zinc-950 sm:px-8 sm:py-16"
+                        >
+                            <Image
+                                src="/Assets/forms/checked.svg"
+                                alt=""
+                                width={80}
+                                height={80}
+                                priority
+                            />
+                            <div className="grid grid-cols-1 gap-2">
+                                <h1 className="text-2xl font-semibold text-zinc-900 dark:text-zinc-100">
+                                    Successfully Signed In!
+                                </h1>
+                                <p className="text-sm text-zinc-500 dark:text-zinc-400">
+                                    Redirecting to your dashboard...
+                                </p>
+                            </div>
+                            <BrandLoader size={32} label="Redirecting to your dashboard" />
                         </div>
-
                     </div>
                 ) : (
                     <div className="border-none overflow-hidden bg-white flex-col dark:bg-zinc-950 gap-5 p-5 sm:p-8 rounded-3xl">
