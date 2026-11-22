@@ -1,5 +1,5 @@
 "use client";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import DeveloperShell from "@/components/Developer/DeveloperShell";
 import ConfirmDialog from "@/components/Global/ConfirmDialog";
@@ -9,6 +9,7 @@ import { InputField } from "@/components/Global/InputField";
 import UserAvatar from "@/components/Global/UserAvatar";
 import { useToast } from "@/components/Global/Toast";
 import { authClient, signOut, useSession } from "@/lib/auth-client";
+import { resizeAvatar } from "@/lib/avatar";
 
 type SessionView = {
   id: string;
@@ -61,6 +62,7 @@ export default function AccountPage() {
   const [sessions, setSessions] = useState<SessionView[]>([]);
   const [busy, setBusy] = useState<string | null>(null);
   const [confirmDelete, setConfirmDelete] = useState(false);
+  const fileRef = useRef<HTMLInputElement>(null);
 
   const loadSessions = useCallback(() => {
     authClient
@@ -80,16 +82,13 @@ export default function AccountPage() {
   }, [session, loadSessions]);
 
   const profileName = name ?? session?.user?.name ?? "";
-  const profileImage = image ?? session?.user?.image ?? "";
+  const avatarSrc = image ?? session?.user?.image ?? "";
   const emailValue = newEmail ?? session?.user?.email ?? "";
 
   const saveProfile = async () => {
     setBusy("profile");
     try {
-      const result = await authClient.updateUser({
-        name: profileName.trim(),
-        image: profileImage.trim() || undefined,
-      });
+      const result = await authClient.updateUser({ name: profileName.trim() });
       if (result.error) {
         toast.error(errorMessage(result, "Could not update profile."));
         return;
@@ -99,6 +98,32 @@ export default function AccountPage() {
       toast.error("Could not update profile.");
     } finally {
       setBusy(null);
+    }
+  };
+
+  const uploadAvatar = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+    if (file.size > 8 * 1024 * 1024) {
+      toast.error("Choose an image smaller than 8 MB.");
+      event.target.value = "";
+      return;
+    }
+    setBusy("avatar");
+    try {
+      const dataUrl = await resizeAvatar(file);
+      const result = await authClient.updateUser({ image: dataUrl });
+      if (result.error) {
+        toast.error(errorMessage(result, "Could not upload avatar."));
+        return;
+      }
+      setImage(dataUrl);
+      toast.success("Avatar updated.");
+    } catch (cause) {
+      toast.error(cause instanceof Error ? cause.message : "Could not upload avatar.");
+    } finally {
+      setBusy(null);
+      event.target.value = "";
     }
   };
 
@@ -197,7 +222,7 @@ export default function AccountPage() {
     <DeveloperShell>
       <div className="mx-auto grid w-full max-w-2xl grid-cols-1 gap-card">
         <div className="flex items-center gap-3">
-          <UserAvatar src={session?.user?.image} size={48} className="h-12 w-12" />
+          <UserAvatar src={avatarSrc} size={48} className="h-12 w-12" />
           <div className="grid grid-cols-1 gap-0.5">
             <h1 className="text-xl font-bold text-zinc-900 dark:text-zinc-100">Account settings</h1>
             <p className="text-sm text-zinc-500 dark:text-zinc-400">{session?.user?.email}</p>
@@ -233,7 +258,23 @@ export default function AccountPage() {
               <h2 className="text-lg font-semibold text-zinc-900 dark:text-zinc-100">Profile</h2>
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <InputField type="text" name="name" id="account-name" label="Name" placeholder="Your name" value={profileName} onChange={(e) => setName(e.target.value)} />
-                <InputField type="text" name="image" id="account-image" label="Avatar URL" placeholder="https://…" value={profileImage} onChange={(e) => setImage(e.target.value)} />
+                <div className="grid grid-cols-1 gap-2">
+                  <span className="text-zinc-900 dark:text-zinc-100 font-semibold capitalize">Avatar</span>
+                  <div className="flex items-center gap-3">
+                    <UserAvatar src={avatarSrc} size={48} className="h-12 w-12" />
+                    <input
+                      ref={fileRef}
+                      type="file"
+                      accept="image/*"
+                      aria-label="Upload avatar image"
+                      className="hidden"
+                      onChange={uploadAvatar}
+                    />
+                    <FormButton variant="secondary" disabled={busy !== null} onClick={() => fileRef.current?.click()}>
+                      <Busy active={busy === "avatar"} label="Upload image" busyLabel="Uploading…" />
+                    </FormButton>
+                  </div>
+                </div>
               </div>
               <div>
                 <FormButton variant="primary" disabled={busy !== null} onClick={saveProfile}>
