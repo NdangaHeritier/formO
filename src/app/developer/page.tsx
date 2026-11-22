@@ -123,7 +123,7 @@ const Developer= () => {
               icon="FolderPlus"
               title="Create a Project"
               desc="Spin up a new project to modularize and manage your forms with ease."
-              subDesc="Projects help you organize forms, submissions, and API endpoints for scalable development."
+              // subDesc="Projects help you organize forms, submissions, and API endpoints for scalable development."
               />
               {/* Step 2: Add Forms */}
               <GuideCard
@@ -131,7 +131,7 @@ const Developer= () => {
               color='pink'
               title="Add Dynamic Forms"
               desc="Design and deploy robust forms inside your project."
-              subDesc="Leverage our intuitive builder to create forms that capture exactly the data you need, ready for instant integration."
+              // subDesc="Leverage our intuitive builder to create forms that capture exactly the data you need, ready for instant integration."
               />
               {/* Step 3: Integrate API */}
               <GuideCard
@@ -139,7 +139,7 @@ const Developer= () => {
               color='orange'
               title="Integrate with Auto-Generated API"
               desc="Plug your forms into any frontend using our RESTful API endpoints."
-              subDesc="Copy-paste the endpoint into your codebase and start collecting submissions in real-time, with developer-friendly docs and code samples."
+              // subDesc="Copy-paste the endpoint into your codebase and start collecting submissions in real-time, with developer-friendly docs and code samples."
               />
               {/* Step 4: Real-Time Email Notifications */}
               <GuideCard
@@ -147,7 +147,7 @@ const Developer= () => {
               color='green'
               title="Collect Beautiful Email Notifications"
               desc="Receive instant, customizable email alerts for every new submission."
-              subDesc="Stay in the loop with actionable, well-designed notifications that keep your workflow efficient and responsive."
+              // subDesc="Stay in the loop with actionable, well-designed notifications that keep your workflow efficient and responsive."
               />
             </div>
           <div className='items-start justify-start flex'>

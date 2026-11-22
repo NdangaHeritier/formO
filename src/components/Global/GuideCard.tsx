@@ -9,7 +9,7 @@ type Props = {
     subDesc?: string,
     color?: "orange" | "yellow" | "green" | "pink" | "violet",
 }
-const GuideCard = ({title, icon, desc, subDesc, color="yellow" }: Props) => {
+const GuideCard = ({title, icon, desc, color="yellow" }: Props) => {
     const colors ={
         yellow: {bg: "bg-yellow-500", text: "text-yellow-600"},
         violet: {bg: "bg-violet-500", text: "text-violet-600"},
@@ -35,9 +35,9 @@ const GuideCard = ({title, icon, desc, subDesc, color="yellow" }: Props) => {
                     <p className="pb-5 text-zinc-700 dark:text-zinc-300 text-base">
                         {desc}
                     </p>
-                    <p className="text-zinc-600 dark:text-zinc-500 text-[15px]">
+                    {/* <p className="text-zinc-600 dark:text-zinc-500 text-[15px]">
                         {subDesc}
-                    </p>
+                    </p> */}
                 </div>
             </div>
         </div>
