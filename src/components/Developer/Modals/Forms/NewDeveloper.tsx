@@ -21,7 +21,7 @@ export default function NewDeveloperForm ({onClick}:onClick) {
     const [loading, setLoading] = useState(false);
     // setError("null");
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-        e.preventDefault();
+        setError("");
         setFormData({ ...FormData, [e.target.name]: e.target.value });
     };
 
@@ -133,7 +133,7 @@ export default function NewDeveloperForm ({onClick}:onClick) {
                         >
                             Close
                         </FormButton>
-                        <FormButton type="submit" variant="primary" disabled={loading || !!error}>
+                        <FormButton type="submit" variant="primary" disabled={loading}>
                             {loading ? <><Icon name="Loader" size={20} className="animate-spin" /> <span>Add Project</span></> : (
                                 <>
                                     <Icon name="Plus" size={16} strokeWidth={2} />

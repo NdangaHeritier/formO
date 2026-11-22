@@ -23,6 +23,7 @@ export default function EditProject({ project, onClick, onSuccess }: Props) {
   const [loading, setLoading] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+    setError("");
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
@@ -74,7 +75,7 @@ export default function EditProject({ project, onClick, onSuccess }: Props) {
           {error && <div className="text-red-500 text-xs">{error}</div>}
           <div className="actions grid grid-cols-2 gap-3">
             <FormButton onClick={onClick} variant="danger">Close</FormButton>
-            <FormButton type="submit" variant="primary" disabled={loading || !!error}>
+            <FormButton type="submit" variant="primary" disabled={loading}>
               {loading ? <Icon name="Loader" size={20} className="animate-spin" /> : (<><Icon name="Check" size={16} strokeWidth={2} /> Save Changes</>)}
             </FormButton>
           </div>

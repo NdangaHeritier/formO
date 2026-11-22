@@ -33,10 +33,12 @@ export default function EditForm({ form, onClick, onSuccess }: Props) {
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
   ) => {
+    setError("");
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
   const updateRecipient = (index: number, patch: Partial<Recipient>) => {
+    setError("");
     setRecipients((current) =>
       current.map((recipient, i) => (i === index ? { ...recipient, ...patch } : recipient))
     );
@@ -187,7 +189,7 @@ export default function EditForm({ form, onClick, onSuccess }: Props) {
             <FormButton onClick={onClick} variant="danger" type="button">
               Close
             </FormButton>
-            <FormButton type="submit" disabled={loading || !!error}>
+            <FormButton type="submit" disabled={loading}>
               {loading ? (
                 <Icon name="Loader" size={20} className="animate-spin" />
               ) : (

@@ -96,12 +96,6 @@ export default function ConfirmDialog({
         aria-labelledby="formo-confirm-title"
         aria-describedby="formo-confirm-description"
         className="w-full max-w-md rounded-3xl bg-white p-5 shadow-2xl dark:bg-zinc-950 sm:p-6"
-        onKeyDown={(event) => {
-          if (event.key === "Enter") {
-            event.preventDefault();
-            void confirm();
-          }
-        }}
       >
         <div className="flex items-start gap-3">
           <span className={badgeClass} aria-hidden="true">
