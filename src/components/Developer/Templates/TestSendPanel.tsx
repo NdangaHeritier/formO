@@ -18,6 +18,7 @@ type Props = {
 
 export function TestSendPanel({ presetId, values, templateId, canSend }: Props) {
   const [senders, setSenders] = useState<Sender[]>([]);
+  const [allowed, setAllowed] = useState(true);
   const [loading, setLoading] = useState(true);
   const [senderId, setSenderId] = useState("");
   const [recipient, setRecipient] = useState("");
@@ -26,7 +27,10 @@ export function TestSendPanel({ presetId, values, templateId, canSend }: Props) 
 
   useEffect(() => {
     fetch("/api/settings/smtp")
-      .then((res) => (res.ok ? res.json() : null))
+      .then((res) => {
+        setAllowed(res.ok);
+        return res.ok ? res.json() : null;
+      })
       .then((data: { smtpConfigs?: Sender[] } | null) => {
         const configs = data?.smtpConfigs ?? [];
         setSenders(configs);
@@ -71,9 +75,13 @@ export function TestSendPanel({ presetId, values, templateId, canSend }: Props) 
       </div>
       {loading ? (
         <Icon name="Loader" size={20} className="animate-spin text-zinc-400" />
+      ) : !allowed ? (
+        <p className="text-xs leading-5 text-zinc-500 dark:text-zinc-400">
+          Test delivery is available to workspace admins.
+        </p>
       ) : senders.length === 0 ? (
         <p className="text-xs leading-5 text-zinc-500 dark:text-zinc-400">
-          Add an SMTP sender in <Link href="/developer/settings" className="underline">Settings</Link> to send a test.
+          Add a sending identity in <Link href="/developer/settings" className="underline">Settings</Link> to send a test.
         </p>
       ) : (
         <>

@@ -479,13 +479,11 @@ export async function rotateProjectFormEndpoint(params: {
 export async function listWorkspaceSmtpConfigs(organizationId: string) {
   return prisma.smtpConfig.findMany({
     where: { organizationId },
+    // Transport details (host, port, auth user) are operational data, not
+    // user-facing configuration. Never return them to a browser client.
     select: {
       id: true,
       name: true,
-      host: true,
-      port: true,
-      secure: true,
-      username: true,
       fromEmail: true,
       isVerified: true,
       createdAt: true,

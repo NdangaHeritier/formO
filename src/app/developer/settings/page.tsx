@@ -15,10 +15,6 @@ import { useToast } from "@/components/Global/Toast";
 type SmtpConfig = {
   id: string;
   name: string;
-  host: string;
-  port: number;
-  secure: boolean;
-  username: string;
   fromEmail: string;
   isVerified: boolean;
   createdAt: string;
@@ -90,6 +86,7 @@ const pillClass =
 
 const SettingsPage = () => {
   const [smtpConfigs, setSmtpConfigs] = useState<SmtpConfig[]>([]);
+  const [canManageSenders, setCanManageSenders] = useState(true);
   const [apiKeys, setApiKeys] = useState<ApiKey[]>([]);
   const [templates, setTemplates] = useState<EmailTemplate[]>([]);
   const [loading, setLoading] = useState(true);
@@ -101,7 +98,10 @@ const SettingsPage = () => {
 
   const reload = () => {
     Promise.all([
-      fetch("/api/settings/smtp").then((res) => (res.ok ? res.json() : null)),
+      fetch("/api/settings/smtp").then((res) => {
+        setCanManageSenders(res.ok);
+        return res.ok ? res.json() : null;
+      }),
       fetch("/api/settings/api-keys").then((res) => (res.ok ? res.json() : null)),
       fetch("/api/templates").then((res) => (res.ok ? res.json() : null)),
     ]).then(([smtp, keys, tpl]) => {
@@ -141,7 +141,10 @@ const SettingsPage = () => {
 
   useEffect(() => {
     Promise.all([
-      fetch("/api/settings/smtp").then((res) => (res.ok ? res.json() : null)),
+      fetch("/api/settings/smtp").then((res) => {
+        setCanManageSenders(res.ok);
+        return res.ok ? res.json() : null;
+      }),
       fetch("/api/settings/api-keys").then((res) => (res.ok ? res.json() : null)),
       fetch("/api/templates").then((res) => (res.ok ? res.json() : null)),
     ])
@@ -166,18 +169,21 @@ const SettingsPage = () => {
             </span>
           </div>
 
-          {/* SMTP senders */}
-          <div className="flex justify-end">
-            <FormButton variant="secondary" onClick={() => setShowSenderModal(true)}>
-              <Icon name="Plus" size={14} /> Add sender
-            </FormButton>
-          </div>
+          {/* Custom sending identities (advanced, workspace-admin only). FormO
+              owns the underlying mail transport; only the from address is shown. */}
+          {canManageSenders && (
+            <div className="flex justify-end">
+              <FormButton variant="secondary" onClick={() => setShowSenderModal(true)}>
+                <Icon name="Plus" size={14} /> Add sender
+              </FormButton>
+            </div>
+          )}
           <Section
-            title="SMTP Senders"
+            title="Sending identities"
             icon="Server"
             count={smtpConfigs.length}
             loading={loading}
-            emptyText="No SMTP senders configured yet."
+            emptyText="No custom sending identities. FormO delivers email for you."
           >
             {smtpConfigs.map((config) => (
               <li key={config.id} className={rowClass}>
@@ -186,12 +192,11 @@ const SettingsPage = () => {
                   <span className="flex flex-col min-w-0">
                     <span className="font-medium text-zinc-800 dark:text-zinc-200 truncate">{config.name}</span>
                     <span className="text-xs text-zinc-500 dark:text-zinc-400 truncate">
-                      {config.host}:{config.port} · {config.fromEmail}
+                      {config.fromEmail}
                     </span>
                   </span>
                 </span>
                 <span className="flex items-center gap-2">
-                  <span className={pillClass}>{config.secure ? "SSL" : "STARTTLS"}</span>
                   <span
                     className={`text-[11px] px-2 py-0.5 rounded-full font-medium whitespace-nowrap ${
                       config.isVerified
