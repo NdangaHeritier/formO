@@ -479,13 +479,18 @@ export async function rotateProjectFormEndpoint(params: {
 export async function listWorkspaceSmtpConfigs(organizationId: string) {
   return prisma.smtpConfig.findMany({
     where: { organizationId },
-    // Transport details (host, port, auth user) are operational data, not
-    // user-facing configuration. Never return them to a browser client.
+    // This list is admin-only: workspace admins own the transport and need the
+    // full configuration. Non-admins cannot reach this service through the API.
     select: {
       id: true,
       name: true,
+      host: true,
+      port: true,
+      secure: true,
+      username: true,
       fromEmail: true,
       isVerified: true,
+      isSystemDefault: true,
       createdAt: true,
       updatedAt: true,
     },
@@ -648,6 +653,50 @@ export async function deleteWorkspaceSmtpConfig(params: {
   ]);
 
   return { id: smtpId };
+}
+
+/** Set (or clear) the workspace-level sender used when a form has no explicit
+ *  sender. System SMTP from the environment remains the final fallback. */
+export async function setWorkspaceDefaultSmtp(params: {
+  organizationId: string;
+  actorUserId: string;
+  smtpConfigId: string | null;
+}) {
+  const { organizationId, actorUserId, smtpConfigId } = params;
+
+  return prisma.$transaction(async (tx) => {
+    if (smtpConfigId) {
+      const existing = await tx.smtpConfig.findFirst({
+        where: { id: smtpConfigId, organizationId },
+        select: { id: true, name: true },
+      });
+      if (!existing) throw new HttpError(404, "SMTP configuration not found");
+    }
+
+    await tx.smtpConfig.updateMany({
+      where: { organizationId, isSystemDefault: true },
+      data: { isSystemDefault: false },
+    });
+    if (smtpConfigId) {
+      await tx.smtpConfig.update({
+        where: { id: smtpConfigId },
+        data: { isSystemDefault: true },
+      });
+    }
+
+    await tx.auditLog.create({
+      data: {
+        organizationId,
+        actorUserId,
+        action: "smtp_config.default_changed",
+        targetType: "smtp_config",
+        targetId: smtpConfigId,
+        metadata: { smtpConfigId },
+      },
+    });
+
+    return { smtpConfigId };
+  });
 }
 
 export async function listWorkspaceEmailTemplates(organizationId: string) {

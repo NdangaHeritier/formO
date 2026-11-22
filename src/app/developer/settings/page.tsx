@@ -15,8 +15,13 @@ import { useToast } from "@/components/Global/Toast";
 type SmtpConfig = {
   id: string;
   name: string;
+  host: string;
+  port: number;
+  secure: boolean;
+  username: string;
   fromEmail: string;
   isVerified: boolean;
+  isSystemDefault: boolean;
   createdAt: string;
 };
 
@@ -86,6 +91,7 @@ const pillClass =
 
 const SettingsPage = () => {
   const [smtpConfigs, setSmtpConfigs] = useState<SmtpConfig[]>([]);
+  const [defaultSenderId, setDefaultSenderId] = useState("");
   const [canManageSenders, setCanManageSenders] = useState(true);
   const [apiKeys, setApiKeys] = useState<ApiKey[]>([]);
   const [templates, setTemplates] = useState<EmailTemplate[]>([]);
@@ -105,7 +111,10 @@ const SettingsPage = () => {
       fetch("/api/settings/api-keys").then((res) => (res.ok ? res.json() : null)),
       fetch("/api/templates").then((res) => (res.ok ? res.json() : null)),
     ]).then(([smtp, keys, tpl]) => {
-      if (smtp?.smtpConfigs) setSmtpConfigs(smtp.smtpConfigs);
+      if (smtp?.smtpConfigs) {
+        setSmtpConfigs(smtp.smtpConfigs);
+        setDefaultSenderId(smtp.smtpConfigs.find((config: SmtpConfig) => config.isSystemDefault)?.id ?? "");
+      }
       if (keys?.apiKeys) setApiKeys(keys.apiKeys);
       if (tpl?.templates) setTemplates(tpl.templates);
     }).catch(() => toast.error("Could not reload settings."));
@@ -122,6 +131,21 @@ const SettingsPage = () => {
       toast.error(error instanceof Error ? error.message : "Could not revoke API key");
     } finally {
       setPendingRevoke(null);
+    }
+  };
+
+  const saveDefaultSender = async () => {
+    try {
+      const res = await fetch("/api/settings/smtp/system", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ smtpConfigId: defaultSenderId || null }),
+      });
+      if (!res.ok) throw new Error("Could not update workspace default sender");
+      toast.success("Workspace default sender updated.");
+      reload();
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Could not update workspace default sender");
     }
   };
 
@@ -149,7 +173,10 @@ const SettingsPage = () => {
       fetch("/api/templates").then((res) => (res.ok ? res.json() : null)),
     ])
       .then(([smtp, keys, tpl]) => {
-        if (smtp?.smtpConfigs) setSmtpConfigs(smtp.smtpConfigs);
+        if (smtp?.smtpConfigs) {
+          setSmtpConfigs(smtp.smtpConfigs);
+          setDefaultSenderId(smtp.smtpConfigs.find((config: SmtpConfig) => config.isSystemDefault)?.id ?? "");
+        }
         if (keys?.apiKeys) setApiKeys(keys.apiKeys);
         if (tpl?.templates) setTemplates(tpl.templates);
       })
@@ -169,8 +196,8 @@ const SettingsPage = () => {
             </span>
           </div>
 
-          {/* Custom sending identities (advanced, workspace-admin only). FormO
-              owns the underlying mail transport; only the from address is shown. */}
+          {/* Developer-only transport configuration. Non-admins never reach
+              this data: the SMTP API requires workspace admin. */}
           {canManageSenders && (
             <div className="flex justify-end">
               <FormButton variant="secondary" onClick={() => setShowSenderModal(true)}>
@@ -178,12 +205,38 @@ const SettingsPage = () => {
               </FormButton>
             </div>
           )}
+          {canManageSenders && (
+            <div className={rowClass}>
+              <span className="flex flex-col min-w-0">
+                <span className="font-medium text-zinc-800 dark:text-zinc-200">Workspace default sender</span>
+                <span className="text-xs text-zinc-500 dark:text-zinc-400">
+                  Used when a form has no sender selected. Falls back to system SMTP when unset.
+                </span>
+              </span>
+              <span className="flex items-center gap-2">
+                <select
+                  aria-label="Workspace default sender"
+                  value={defaultSenderId}
+                  onChange={(event) => setDefaultSenderId(event.target.value)}
+                  className="text-sm bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-lg px-3 py-2"
+                >
+                  <option value="">System SMTP (fallback)</option>
+                  {smtpConfigs.map((config) => (
+                    <option key={config.id} value={config.id}>
+                      {config.name} — {config.fromEmail}
+                    </option>
+                  ))}
+                </select>
+                <FormButton variant="secondary" onClick={saveDefaultSender}>Save</FormButton>
+              </span>
+            </div>
+          )}
           <Section
-            title="Sending identities"
+            title="SMTP senders"
             icon="Server"
             count={smtpConfigs.length}
             loading={loading}
-            emptyText="No custom sending identities. FormO delivers email for you."
+            emptyText="No custom senders configured. Forms fall back to the workspace default, then system SMTP."
           >
             {smtpConfigs.map((config) => (
               <li key={config.id} className={rowClass}>
@@ -192,11 +245,13 @@ const SettingsPage = () => {
                   <span className="flex flex-col min-w-0">
                     <span className="font-medium text-zinc-800 dark:text-zinc-200 truncate">{config.name}</span>
                     <span className="text-xs text-zinc-500 dark:text-zinc-400 truncate">
-                      {config.fromEmail}
+                      {config.host}:{config.port} · {config.fromEmail}
                     </span>
                   </span>
                 </span>
                 <span className="flex items-center gap-2">
+                  {config.isSystemDefault && <span className={pillClass}>Workspace default</span>}
+                  <span className={pillClass}>{config.secure ? "SSL" : "STARTTLS"}</span>
                   <span
                     className={`text-[11px] px-2 py-0.5 rounded-full font-medium whitespace-nowrap ${
                       config.isVerified

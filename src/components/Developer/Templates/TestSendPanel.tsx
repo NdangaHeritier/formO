@@ -81,7 +81,7 @@ export function TestSendPanel({ presetId, values, templateId, canSend }: Props) 
         </p>
       ) : senders.length === 0 ? (
         <p className="text-xs leading-5 text-zinc-500 dark:text-zinc-400">
-          Add a sending identity in <Link href="/developer/settings" className="underline">Settings</Link> to send a test.
+          Add an SMTP sender in <Link href="/developer/settings" className="underline">Settings</Link> to send a test.
         </p>
       ) : (
         <>

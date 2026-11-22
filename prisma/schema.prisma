@@ -230,6 +230,9 @@ model SmtpConfig {
   keyVersion        Int      @default(1) @map("key_version")
   fromEmail         String   @map("from_email")
   isVerified        Boolean  @default(false) @map("is_verified")
+  /// At most one sender per workspace can be the default fallback for forms
+  /// that have no explicit smtpConfigId. Enforced by a partial unique index.
+  isSystemDefault   Boolean  @default(false) @map("is_system_default")
   createdAt         DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt         DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
 

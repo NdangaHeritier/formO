@@ -4,6 +4,7 @@ import { decryptSecret } from "@/lib/crypto";
 import { connectionTarget, resolveSmtpEndpoint } from "@/lib/smtp-guard";
 import { getServerEnv } from "@/lib/env";
 import { prisma } from "@/lib/prisma";
+import { selectDeliverySender } from "./smtp-selection";
 import {
   isSingleValidEmail,
   renderEmail,
@@ -335,7 +336,16 @@ export async function runDeliveryBatch(): Promise<DeliveryBatchResult> {
           include: {
             form: {
               include: {
-                project: { include: { organization: { select: { name: true } } } },
+                project: {
+                  include: {
+                    organization: {
+                      select: {
+                        name: true,
+                        smtpConfigs: { where: { isSystemDefault: true }, take: 1 },
+                      },
+                    },
+                  },
+                },
                 smtpConfig: true,
                 emailTemplate: true,
               },
@@ -350,12 +360,19 @@ export async function runDeliveryBatch(): Promise<DeliveryBatchResult> {
 
         const context = buildContext(delivery);
 
+        // One pipeline, three tiers: form-specific sender → workspace default
+        // sender → system SMTP from the environment.
+        const sender = selectDeliverySender(
+          delivery.form.smtpConfig,
+          delivery.form.project.organization.smtpConfigs[0]
+        );
+
         const key = {
           id_createdAt: { id: row.id, createdAt: row.created_at },
         };
 
         try {
-          const transporter = await getCachedTransporter(transporters, delivery.form.smtpConfig);
+          const transporter = await getCachedTransporter(transporters, sender);
           const subject = renderSubject(context);
           const { html, text } = await renderEmail(context);
           const replyTo = isSingleValidEmail(
@@ -366,7 +383,7 @@ export async function runDeliveryBatch(): Promise<DeliveryBatchResult> {
           // SMTP accepted the message but before the database recorded it will
           // resend after the 10-minute stale-claim recovery. A stable Message-ID
           // lets receiving servers deduplicate those retries.
-          const from = stripCrlf(delivery.form.smtpConfig?.fromEmail ?? getServerEnv().SMTP_FROM);
+          const from = stripCrlf(sender?.fromEmail ?? getServerEnv().SMTP_FROM);
           const info = await transporter.sendMail({
             from,
             to: stripCrlf(row.recipient_email),

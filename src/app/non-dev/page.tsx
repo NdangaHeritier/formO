@@ -1,22 +1,14 @@
-import { HeroSection } from "@/components/Non-Developer/HeroSection";
-import Solutions from "@/components/Non-Developer/Solutions";
-import Features from "@/components/Global/Features";
-import WhyChooseus from "@/components/Non-Developer/WhyChooseus";
 import Header from "@/components/Header";
 import PrivateRouter from "@/components/Global/privateRouter";
-
-
+import DashboardOverview from "@/components/Non-Developer/DashboardOverview";
 
 export default function NonDev() {
   return (
     <PrivateRouter>
       <Header />
-      <div className="px-5">
-        <HeroSection  />
-        <Features />
-        <Solutions />
-        <WhyChooseus />        
-      </div>
+      <main className="mx-auto w-full max-w-6xl px-5">
+        <DashboardOverview />
+      </main>
     </PrivateRouter>
   );
 }
