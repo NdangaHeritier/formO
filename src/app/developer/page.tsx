@@ -12,6 +12,7 @@ import NewDeveloperForm from '@/components/Developer/Modals/Forms/NewDeveloper';
 import LinkButton from '@/components/Global/LinkButton';
 
 import AnalyticsGroup from '@/components/Developer/AnalyticsGroup';
+import DeveloperHomeOverview from '@/components/Developer/DeveloperHomeOverview';
 import { SkeletonGrid } from '@/components/Global/Skeleton';
   
 const Developer= () => {
@@ -50,6 +51,9 @@ const Developer= () => {
       <section className="dashboard bg-white dark:bg-black text-zinc-900 dark:text-zinc-100 p-5 md:p-8 grid grid-cols-1 gap-y-10 rounded-3xl">
         {/* Analytics section */}
         <AnalyticsGroup />
+
+        {/* Operations overview */}
+        <DeveloperHomeOverview />
 
         {/* Projects Section */}
         <div className="relative rounded-3xl">
