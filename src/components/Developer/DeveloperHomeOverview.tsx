@@ -73,7 +73,7 @@ export default function DeveloperHomeOverview() {
 
   return (
     <div className="grid grid-cols-1 gap-5">
-      <section className="rounded-3xl border border-zinc-200 bg-white p-5 dark:border-zinc-800 dark:bg-zinc-950 sm:p-6">
+      <section className="rounded-3xl border border-zinc-100 bg-white p-5 dark:border-zinc-900 dark:bg-zinc-950 sm:p-6">
         <h2 className="text-lg font-semibold text-zinc-900 dark:text-zinc-100">Needs attention</h2>
         {loading ? (
           <p className="text-sm text-zinc-500 dark:text-zinc-400">Checking your workspace…</p>
@@ -97,7 +97,7 @@ export default function DeveloperHomeOverview() {
         )}
       </section>
 
-      <section className="rounded-3xl border border-zinc-200 bg-white p-5 dark:border-zinc-800 dark:bg-zinc-950 sm:p-6">
+      <section className="rounded-3xl border border-zinc-100 bg-white p-5 dark:border-zinc-900 dark:bg-zinc-950 sm:p-6">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <h2 className="text-lg font-semibold text-zinc-900 dark:text-zinc-100">Recent submissions</h2>
           <Link href="/developer/forms" className="inline-flex items-center gap-1 text-sm font-medium text-zinc-600 underline dark:text-zinc-300">
@@ -135,7 +135,7 @@ export default function DeveloperHomeOverview() {
           <Link
             key={action.href}
             href={action.href}
-            className="grid grid-cols-1 gap-2 rounded-2xl border border-zinc-200 bg-white p-4 hover:bg-zinc-50 dark:border-zinc-800 dark:bg-zinc-950 dark:hover:bg-zinc-900"
+            className="grid grid-cols-1 gap-2 rounded-2xl border border-zinc-100 bg-white p-4 hover:bg-zinc-50 dark:border-zinc-900 dark:bg-zinc-950 dark:hover:bg-zinc-900"
           >
             <Icon name={action.icon} size={18} className="text-yellow-600 dark:text-yellow-400" />
             <span className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">{action.label}</span>

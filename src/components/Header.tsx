@@ -4,7 +4,7 @@ import { Icon } from "./Global/Icon";
 import Link from "next/link";
 import LinkButton from "./Global/LinkButton";
 import { signOut, useSession } from "@/lib/auth-client";
-import { useState, useSyncExternalStore } from "react";
+import { useEffect, useState, useSyncExternalStore } from "react";
 import { createPortal } from "react-dom";
 import { usePathname, useRouter } from "next/navigation";
 import { canManageWorkspace, useWorkspaceRole } from "@/lib/hooks/use-workspace-role";
@@ -29,8 +29,13 @@ const MENU_LINKS = [
     { label: "Overview", href: "/developer", icon: "LayoutDashboard", strokeWidth: 2 },
     { label: "Projects", href: "/developer/projects", icon: "FolderOpen", strokeWidth: 2 },
     { label: "Forms", href: "/developer/forms", icon: "SquareCode", strokeWidth: 2 },
+    { label: "Templates", href: "/developer/templates", icon: "FileText", strokeWidth: 2 },
     { label: "Analytics", href: "/developer/analytics", icon: "ChartNoAxesColumn", strokeWidth: 2 },
     { label: "Settings", href: "/developer/settings", icon: "Settings", strokeWidth: 2, adminOnly: true },
+] as const;
+
+const ACCOUNT_LINKS = [
+    { label: "Account settings", href: "/developer/account", icon: "User", strokeWidth: 2 },
 ] as const;
 
 export default function Header({ border = "border-b", py = "py-3" }: prop) {
@@ -48,6 +53,10 @@ export default function Header({ border = "border-b", py = "py-3" }: prop) {
     const router = useRouter();
     const pathname = usePathname();
     const role = useWorkspaceRole(Boolean(currentUser));
+    const canManage = canManageWorkspace(role);
+    const workspaceLinks = MENU_LINKS.filter(
+        (item) => !("adminOnly" in item && item.adminOnly) || canManage
+    );
 
     const closeNav = () => setIsNavOpen(false);
 
@@ -55,6 +64,25 @@ export default function Header({ border = "border-b", py = "py-3" }: prop) {
         router.push(pathname.startsWith("/developer") ? "/non-dev" : "/developer");
         setIsOpeningUserMenu(false);
     };
+
+    useEffect(() => {
+        if (!isOpeningUserMenu) return;
+        const onKeyDown = (event: KeyboardEvent) => {
+            if (event.key === "Escape") setIsOpeningUserMenu(false);
+        };
+        const onPointerDown = (event: PointerEvent) => {
+            const target = event.target as HTMLElement | null;
+            if (target && !target.closest(".user-menu") && !target.closest(".user-menu-trigger")) {
+                setIsOpeningUserMenu(false);
+            }
+        };
+        document.addEventListener("keydown", onKeyDown);
+        document.addEventListener("pointerdown", onPointerDown);
+        return () => {
+            document.removeEventListener("keydown", onKeyDown);
+            document.removeEventListener("pointerdown", onPointerDown);
+        };
+    }, [isOpeningUserMenu]);
 
     const handleSignOut = async () => {
         await signOut();
@@ -139,7 +167,9 @@ export default function Header({ border = "border-b", py = "py-3" }: prop) {
                         <button
                             onClick={() => setIsOpeningUserMenu(!isOpeningUserMenu)}
                             type="button"
-                            className="h-10 w-10 cursor-pointer rounded-full bg-zinc-100 p-0.5 transition-colors duration-200 hover:bg-zinc-200 dark:bg-zinc-800 dark:hover:bg-zinc-700">
+                            aria-label="Open account menu"
+                            aria-expanded={isOpeningUserMenu}
+                            className="user-menu-trigger h-10 w-10 cursor-pointer rounded-full bg-zinc-100 p-0.5 transition-colors duration-200 hover:bg-zinc-200 dark:bg-zinc-800 dark:hover:bg-zinc-700">
                             <UserAvatar
                                 src={currentUser.image}
                                 size={36}
@@ -151,50 +181,65 @@ export default function Header({ border = "border-b", py = "py-3" }: prop) {
 
                     {isOpeningUserMenu && currentUser && mounted && typeof window !== "undefined"
                         ? createPortal(
-                            <div className="user-menu fixed z-9999 top-16 right-10 flex flex-col gap-3 rounded-xl border border-zinc-200 bg-white p-3 dark:border-zinc-800 dark:bg-zinc-950 shadow-2xl">
-                                <div className="container-user-top-menu p-3 flex items-center justify-center gap-2">
+                            <div className="user-menu fixed right-4 top-16 z-9999 flex max-h-[calc(100vh-5rem)] w-[min(20rem,calc(100vw-2rem))] flex-col gap-2 overflow-y-auto rounded-2xl border border-zinc-200 bg-white p-3 shadow-2xl sm:right-10 dark:border-zinc-800 dark:bg-zinc-950">
+                                <div className="flex items-center gap-3 border-b border-zinc-200 p-2 pb-3 dark:border-zinc-800">
                                     <UserAvatar
                                         src={currentUser.image}
                                         size={40}
                                         className="h-10 w-10 bg-zinc-200 dark:bg-zinc-800"
                                     />
-                                    <div className="flex flex-col pt-3">
-                                        <h1 className="text-lg font-semibold text-zinc-800 dark:text-zinc-200">{currentUser.name || currentUser.email}</h1>
-                                        <p className="text-sm text-zinc-500 dark:text-zinc-400">{currentUser.email}</p>
+                                    <div className="grid min-w-0 grid-cols-1 gap-0.5">
+                                        <p className="truncate text-base font-semibold text-zinc-800 dark:text-zinc-100">
+                                            {currentUser.name || currentUser.email}
+                                        </p>
+                                        <p className="truncate text-xs text-zinc-500 dark:text-zinc-400">{currentUser.email}</p>
                                     </div>
                                 </div>
 
-                                {/* links */}
-                                <div className="links relative rounded-xl bg-zinc-100 p-2 dark:bg-zinc-900">
-                                    <ul className="list-none text-sm">
-                                        {MENU_LINKS.filter((item) => !("adminOnly" in item && item.adminOnly) || canManageWorkspace(role)).map((item) => (
-                                            <li key={item.label} className="list-item">
-                                                <Link
-                                                    href={item.href}
-                                                    onClick={() => setIsOpeningUserMenu(false)}
-                                                    className="flex items-center justify-start gap-2 rounded-lg p-2 text-zinc-600 hover:bg-zinc-200 dark:text-zinc-400 dark:hover:bg-zinc-800"
-                                                >
-                                                    <Icon name={item.icon} strokeWidth={item.strokeWidth} size={17} />
-                                                    {item.label}
-                                                </Link>
-                                            </li>
-                                        ))}
-                                        <li className="pt-1 grid grid-cols-2 gap-2">
-                                            <button
-                                                onClick={switchView}
-                                                className="flex cursor-pointer items-center justify-center gap-2 rounded-md bg-white p-2 font-semibold text-zinc-900 hover:bg-zinc-100 dark:bg-zinc-800 dark:text-zinc-100 dark:hover:bg-zinc-700"
-                                            >
-                                                <Icon name="ArrowRightLeft" strokeWidth={2} size={16} />
-                                                <span className="">Switch view</span>
-                                            </button>
-                                            <button
-                                                onClick={handleSignOut}
-                                                className="flex cursor-pointer items-center justify-center gap-2 rounded-md bg-red-500/10 p-2 font-semibold text-red-600 hover:bg-red-500/20 dark:text-red-400"
-                                            >
-                                                <span className="">Logout</span>
-                                            </button>
-                                        </li>
-                                    </ul>
+                                <div className="grid grid-cols-1 gap-1">
+                                    <p className="px-2 pt-1 text-[11px] font-semibold uppercase tracking-wide text-zinc-400">Workspace</p>
+                                    {workspaceLinks.map((item) => (
+                                        <Link
+                                            key={item.label}
+                                            href={item.href}
+                                            onClick={() => setIsOpeningUserMenu(false)}
+                                            className="flex items-center gap-2 rounded-lg p-2 text-sm text-zinc-600 hover:bg-zinc-100 dark:text-zinc-300 dark:hover:bg-zinc-900"
+                                        >
+                                            <Icon name={item.icon} strokeWidth={item.strokeWidth} size={17} />
+                                            {item.label}
+                                        </Link>
+                                    ))}
+                                </div>
+
+                                <div className="grid grid-cols-1 gap-1 border-t border-zinc-200 pt-2 dark:border-zinc-800">
+                                    <p className="px-2 text-[11px] font-semibold uppercase tracking-wide text-zinc-400">Account</p>
+                                    {ACCOUNT_LINKS.map((item) => (
+                                        <Link
+                                            key={item.label}
+                                            href={item.href}
+                                            onClick={() => setIsOpeningUserMenu(false)}
+                                            className="flex items-center gap-2 rounded-lg p-2 text-sm text-zinc-600 hover:bg-zinc-100 dark:text-zinc-300 dark:hover:bg-zinc-900"
+                                        >
+                                            <Icon name={item.icon} strokeWidth={item.strokeWidth} size={17} />
+                                            {item.label}
+                                        </Link>
+                                    ))}
+                                </div>
+
+                                <div className="grid grid-cols-2 gap-2 border-t border-zinc-200 pt-2 dark:border-zinc-800">
+                                    <button
+                                        onClick={switchView}
+                                        className="flex cursor-pointer items-center justify-center gap-2 rounded-lg bg-zinc-100 p-2 text-xs font-semibold text-zinc-900 hover:bg-zinc-200 dark:bg-zinc-800 dark:text-zinc-100 dark:hover:bg-zinc-700"
+                                    >
+                                        <Icon name="ArrowRightLeft" strokeWidth={2} size={15} />
+                                        Switch view
+                                    </button>
+                                    <button
+                                        onClick={handleSignOut}
+                                        className="flex cursor-pointer items-center justify-center gap-2 rounded-lg bg-red-500/10 p-2 text-xs font-semibold text-red-600 hover:bg-red-500/20 dark:text-red-400"
+                                    >
+                                        Logout
+                                    </button>
                                 </div>
                             </div>,
                             document.body
