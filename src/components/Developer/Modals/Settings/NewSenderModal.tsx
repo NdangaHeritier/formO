@@ -1,9 +1,10 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Layout from "@/components/Developer/Modals/Layout";
 import { Icon } from "@/components/Global/Icon";
 import FormButton from "@/components/Global/FormButton";
 import { InputField } from "@/components/Global/InputField";
+import { useToast } from "@/components/Global/Toast";
 
 type Props = {
   onClose: () => void;
@@ -20,21 +21,11 @@ export default function NewSenderModal({ onClose, onCreated }: Props) {
     password: "",
     fromEmail: "",
   });
-  const [error, setError] = useState("");
+  const toast = useToast();
   const [saving, setSaving] = useState(false);
-
-  useEffect(() => {
-    const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") onClose();
-    };
-    document.addEventListener("keydown", onKeyDown);
-    document.getElementById("sender-name")?.focus();
-    return () => document.removeEventListener("keydown", onKeyDown);
-  }, [onClose]);
 
   const submit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    setError("");
     setSaving(true);
     try {
       const res = await fetch("/api/settings/smtp", {
@@ -44,23 +35,19 @@ export default function NewSenderModal({ onClose, onCreated }: Props) {
       });
       const data = (await res.json().catch(() => null)) as { error?: string } | null;
       if (!res.ok) throw new Error(data?.error ?? "Could not add SMTP sender");
+      toast.success("SMTP sender added");
       onCreated();
       onClose();
     } catch (cause) {
-      setError(cause instanceof Error ? cause.message : "Could not add SMTP sender");
+      toast.error(cause instanceof Error ? cause.message : "Could not add SMTP sender");
     } finally {
       setSaving(false);
     }
   };
 
   return (
-    <Layout onClick={onClose}>
-      <section
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="new-sender-title"
-        className="w-full max-w-md rounded-card bg-white p-card shadow-2xl dark:bg-zinc-950 sm:p-6"
-      >
+    <Layout onClick={onClose} label="Add SMTP sender">
+      <section className="w-full max-w-md rounded-card bg-white p-card shadow-2xl dark:bg-zinc-950 sm:p-6">
         <div className="grid grid-cols-1 gap-1">
           <div className="flex items-center gap-2">
             <span className="flex h-8 w-8 items-center justify-center rounded-full bg-yellow-600/20 text-yellow-600">
@@ -88,9 +75,6 @@ export default function NewSenderModal({ onClose, onCreated }: Props) {
           <InputField type="text" name="username" id="sender-user" label="Username" placeholder="username" value={form.username} onChange={(e) => setForm({ ...form, username: e.target.value })} />
           <InputField type="password" name="password" id="sender-pass" label="Password" placeholder="••••••••" value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} />
 
-          {error && (
-            <p role="alert" className="text-xs text-red-600 dark:text-red-400">{error}</p>
-          )}
 
           <div className="grid grid-cols-2 gap-3 pt-1">
             <FormButton type="button" variant="secondary" onClick={onClose}>

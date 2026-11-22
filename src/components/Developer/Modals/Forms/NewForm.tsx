@@ -6,6 +6,7 @@ import { Icon } from "@/components/Global/Icon";
 import { InputField } from "@/components/Global/InputField";
 import { TextAreaField } from "@/components/Global/TextAreaField";
 import { SelectField } from "@/components/Global/SelectField";
+import { useToast } from "@/components/Global/Toast";
 
 type Props = {
   /** Project id. When set, the form is created in this project and the picker is hidden. */
@@ -27,7 +28,7 @@ export default function NewForm({ project, projectName, onClick, onSuccess }: Pr
   });
   const [projects, setProjects] = useState<Array<{ id: string; name: string }>>([]);
   const [recipients, setRecipients] = useState<Recipient[]>([]);
-  const [error, setError] = useState("");
+  const toast = useToast();
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -42,8 +43,8 @@ export default function NewForm({ project, projectName, onClick, onSuccess }: Pr
           projectId: current.projectId || list[0]?.id || "",
         }));
       })
-      .catch(() => setError("Could not load projects."));
-  }, [scopedToProject]);
+      .catch(() => toast.error("Could not load projects."));
+  }, [scopedToProject, toast]);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
@@ -59,9 +60,8 @@ export default function NewForm({ project, projectName, onClick, onSuccess }: Pr
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setError("");
     if (!formData.projectId || !formData.title.trim() || !formData.emailTo.trim()) {
-      setError("Choose a project and provide a title and recipient email.");
+      toast.error("Choose a project and provide a title and recipient email.");
       return;
     }
 
@@ -69,7 +69,7 @@ export default function NewForm({ project, projectName, onClick, onSuccess }: Pr
       .map((recipient) => ({ ...recipient, email: recipient.email.trim().toLowerCase() }))
       .filter((recipient) => recipient.email !== "");
     if (cleaned.some((recipient) => !/^[^\s@<>]+@[^\s@<>]+\.[^\s@<>]+$/.test(recipient.email))) {
-      setError("Every additional recipient needs a valid email address.");
+      toast.error("Every additional recipient needs a valid email address.");
       return;
     }
 
@@ -90,20 +90,21 @@ export default function NewForm({ project, projectName, onClick, onSuccess }: Pr
         error?: string;
       } | null;
       if (!res.ok || !data?.form) {
-        setError(data?.error ?? "Could not create the form.");
+        toast.error(data?.error ?? "Could not create the form.");
         return;
       }
+      toast.success("Form created successfully");
       onSuccess?.(data.form);
       onClick();
     } catch {
-      setError("Could not create the form.");
+      toast.error("Could not create the form.");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <Layout onClick={onClick}>
+    <Layout onClick={onClick} label="Create form">
       <div className="bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-900 p-6 rounded-3xl shadow-lg max-w-md w-full">
         <h2 className="text-lg font-semibold mb-4 text-black dark:text-white">Create New Form</h2>
         <p className="text-sm text-zinc-600 dark:text-zinc-400 mb-6">
@@ -210,7 +211,6 @@ export default function NewForm({ project, projectName, onClick, onSuccess }: Pr
             </button>
           </fieldset>
 
-          {error && <div className="text-red-500 text-xs">{error}</div>}
           <div className="actions grid grid-cols-2 gap-3">
             <FormButton onClick={onClick} variant="danger" type="button">
               Close

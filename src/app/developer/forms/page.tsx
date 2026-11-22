@@ -190,7 +190,7 @@ const FormsPage = () => {
                             type="button"
                             title="Send a test submission"
                             aria-label={`Send a test submission to ${form.title}`}
-                            onClick={() => sendTestSubmission(form)}
+                            onClick={() => { void sendTestSubmission(form).catch(() => {}); }}
                             className="p-1.5 rounded-lg bg-zinc-100/70 dark:bg-zinc-900/70 hover:bg-zinc-200/70 dark:hover:bg-zinc-900 cursor-pointer"
                           >
                             <Icon name="Send" size={13} className="text-zinc-500" />

@@ -1,9 +1,10 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Layout from "@/components/Developer/Modals/Layout";
 import { Icon } from "@/components/Global/Icon";
 import FormButton from "@/components/Global/FormButton";
 import { InputField } from "@/components/Global/InputField";
+import { useToast } from "@/components/Global/Toast";
 
 type Props = {
   onClose: () => void;
@@ -14,25 +15,12 @@ type Props = {
 export default function NewApiKeyModal({ onClose, onCreated }: Props) {
   const [name, setName] = useState("");
   const [rawKey, setRawKey] = useState("");
-  const [error, setError] = useState("");
+  const toast = useToast();
   const [saving, setSaving] = useState(false);
   const [copied, setCopied] = useState(false);
 
-  useEffect(() => {
-    const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") {
-        onCreated();
-        onClose();
-      }
-    };
-    document.addEventListener("keydown", onKeyDown);
-    document.getElementById("api-key-name")?.focus();
-    return () => document.removeEventListener("keydown", onKeyDown);
-  }, [onClose, onCreated]);
-
   const submit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    setError("");
     setSaving(true);
     try {
       const res = await fetch("/api/settings/api-keys", {
@@ -46,9 +34,10 @@ export default function NewApiKeyModal({ onClose, onCreated }: Props) {
       } | null;
       if (!res.ok || !data?.apiKey) throw new Error(data?.error ?? "Could not create API key");
       setRawKey(data.apiKey.rawKey ?? "");
+      toast.success("API key created");
       onCreated();
     } catch (cause) {
-      setError(cause instanceof Error ? cause.message : "Could not create API key");
+      toast.error(cause instanceof Error ? cause.message : "Could not create API key");
     } finally {
       setSaving(false);
     }
@@ -69,10 +58,8 @@ export default function NewApiKeyModal({ onClose, onCreated }: Props) {
   };
 
   return (
-    <Layout onClick={done}>
+    <Layout onClick={done} label="Create API key">
       <section
-        role="dialog"
-        aria-modal="true"
         aria-labelledby="new-key-title"
         className="w-full max-w-md rounded-card bg-white p-card shadow-2xl dark:bg-zinc-950 sm:p-6"
       >
@@ -120,7 +107,6 @@ export default function NewApiKeyModal({ onClose, onCreated }: Props) {
             </div>
             <form onSubmit={submit} className="mt-5 grid grid-cols-1 gap-4">
               <InputField type="text" name="name" id="api-key-name" label="Label" placeholder="Production integration" value={name} onChange={(e) => setName(e.target.value)} />
-              {error && <p role="alert" className="text-xs text-red-600 dark:text-red-400">{error}</p>}
               <div className="grid grid-cols-2 gap-3">
                 <FormButton type="button" variant="secondary" onClick={done}>Cancel</FormButton>
                 <FormButton type="submit" disabled={!name.trim() || saving}>

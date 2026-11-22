@@ -89,10 +89,8 @@ export default function ConfirmDialog({
       : "h-12 w-12 shrink-0 rounded-full bg-yellow-600/20 text-yellow-600 flex items-center justify-center";
 
   return (
-    <Layout onClick={cancel}>
+    <Layout onClick={cancel} label="Confirm action">
       <section
-        role="dialog"
-        aria-modal="true"
         aria-labelledby="formo-confirm-title"
         aria-describedby="formo-confirm-description"
         className="w-full max-w-md rounded-3xl bg-white p-5 shadow-2xl dark:bg-zinc-950 sm:p-6"

@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import type { Editor } from "@tiptap/react";
 import FormButton from "@/components/Global/FormButton";
 import { InputField } from "@/components/Global/InputField";
+import { useToast } from "@/components/Global/Toast";
 import Layout from "@/components/Developer/Modals/Layout";
 
 export type InsertDialogMode = "link" | "image" | null;
@@ -17,27 +18,22 @@ type Props = {
 export function InsertDialog({ editor, mode, onClose }: Props) {
   const [url, setUrl] = useState(mode === "link" ? editor.getAttributes("link").href ?? "" : "");
   const [alt, setAlt] = useState("");
-  const [error, setError] = useState("");
+  const toast = useToast();
 
   useEffect(() => {
     // Put the cursor in the URL field without obscuring the editor with extra panels.
     const field = document.getElementById(mode === "link" ? "inline-link-url" : "inline-image-url");
     if (field instanceof HTMLInputElement) field.focus();
-    const closeOnEscape = (event: KeyboardEvent) => {
-      if (event.key === "Escape") onClose();
-    };
-    document.addEventListener("keydown", closeOnEscape);
-    return () => document.removeEventListener("keydown", closeOnEscape);
-  }, [mode, onClose]);
+  }, [mode]);
 
   const applyLink = (isCta: boolean) => {
     const href = url.trim();
     if (!/^(https?:\/\/|\/)/i.test(href)) {
-      setError("Enter a valid URL beginning with https://, http://, or /.");
+      toast.error("Enter a valid URL beginning with https://, http://, or /.");
       return;
     }
     if (!editor.isActive("link") && editor.state.selection.empty) {
-      setError("Select the text you want to link, then apply the URL.");
+      toast.error("Select the text you want to link, then apply the URL.");
       return;
     }
 
@@ -48,7 +44,7 @@ export function InsertDialog({ editor, mode, onClose }: Props) {
   const insertImage = () => {
     const src = url.trim();
     if (!/^(https?:\/\/|\/)/i.test(src)) {
-      setError("Enter a valid image URL beginning with https://, http://, or /.");
+      toast.error("Enter a valid image URL beginning with https://, http://, or /.");
       return;
     }
     editor.chain().focus().setImage({ src, alt: alt.trim() }).run();
@@ -56,12 +52,8 @@ export function InsertDialog({ editor, mode, onClose }: Props) {
   };
 
   return (
-    <Layout onClick={onClose}>
-      <section
-        role="dialog"
-        aria-modal="true"
-        aria-label={mode === "link" ? "Add link" : "Insert image"}
-        className="w-full max-w-md rounded-card bg-white p-card shadow-2xl sm:p-6 dark:bg-zinc-950"
+    <Layout onClick={onClose} label={mode === "link" ? "Add link" : "Insert image"}>
+      <section className="w-full max-w-md rounded-card bg-white p-card shadow-2xl sm:p-6 dark:bg-zinc-950"
         onKeyDown={(event) => {
           if (event.key === "Enter") {
             event.preventDefault();
@@ -85,10 +77,7 @@ export function InsertDialog({ editor, mode, onClose }: Props) {
           label={mode === "link" ? "Website URL" : "Image URL"}
           placeholder={mode === "link" ? "https://your-website.com/â€¦" : "https://â€¦/image.png"}
           value={url}
-          onChange={(event) => {
-            setUrl(event.target.value);
-            if (error) setError("");
-          }}
+          onChange={(event) => setUrl(event.target.value)}
         />
         {mode === "image" && (
           <div className="mt-3">
@@ -103,7 +92,6 @@ export function InsertDialog({ editor, mode, onClose }: Props) {
             />
           </div>
         )}
-        {error && <p role="alert" className="mt-3 text-xs text-red-500">{error}</p>}
         <div className="mt-5 flex flex-wrap gap-2">
           {mode === "link" ? (
             <>

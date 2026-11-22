@@ -22,7 +22,8 @@ export type PromiseMessages<T> = {
 };
 
 function heroOptions(type: ToastType, options: ToastOptions): HeroOptions {
-  const variant = type === "error" ? "danger" : type === "loading" ? "default" : type;
+  const variant =
+    type === "error" ? "danger" : type === "info" ? "accent" : type === "loading" ? "default" : type;
   return {
     description: options.description,
     className: options.className,

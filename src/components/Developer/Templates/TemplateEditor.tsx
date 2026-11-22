@@ -189,11 +189,8 @@ export function TemplateEditor(props: Props) {
         )}
 
         {detailsOpen && (
-          <Layout onClick={() => setDetailsOpen(false)}>
+          <Layout onClick={() => setDetailsOpen(false)} label="Template details and test delivery">
             <section
-              role="dialog"
-              aria-modal="true"
-              aria-label="Template details and test delivery"
               className="grid max-h-[calc(100vh-6rem)] w-full max-w-3xl grid-cols-1 gap-6 overflow-y-auto rounded-card bg-white p-card shadow-2xl sm:p-6 dark:bg-zinc-950 lg:grid-cols-2"
             >
               <TemplateDetails

@@ -71,11 +71,8 @@ export function CompiledTemplatePreview({
   }, [onClose]);
 
   return (
-    <Layout onClick={onClose}>
+    <Layout onClick={onClose} label="Compiled email preview">
       <section
-        role="dialog"
-        aria-modal="true"
-        aria-label="Compiled email preview"
         className="grid max-h-[calc(100vh-3rem)] w-full max-w-5xl grid-cols-1 gap-card overflow-y-auto rounded-card bg-zinc-50 p-card shadow-2xl sm:p-6 dark:bg-zinc-950"
       >
         <header className="flex flex-wrap items-center justify-between gap-3">
