@@ -6,7 +6,8 @@ import LinkButton from "./Global/LinkButton";
 import { signOut, useSession } from "@/lib/auth-client";
 import { useState, useSyncExternalStore } from "react";
 import { createPortal } from "react-dom";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
+import { canManageWorkspace, useWorkspaceRole } from "@/lib/hooks/use-workspace-role";
 import SkeletonBox from "./skeleton";
 import UserAvatar from "./Global/UserAvatar";
 
@@ -25,11 +26,11 @@ const NAV_LINKS = [
 ];
 
 const MENU_LINKS = [
-    { label: "Profile", icon: "User", strokeWidth: undefined },
-    { label: "Settings", icon: "Settings", strokeWidth: 2 },
-    { label: "Projects", icon: "FolderOpen", strokeWidth: 2 },
-    { label: "Submissions", icon: "GitCompare", strokeWidth: 2 },
-    { label: "Integrations", icon: "GitCommit", strokeWidth: 2 },
+    { label: "Overview", href: "/developer", icon: "LayoutDashboard", strokeWidth: 2 },
+    { label: "Projects", href: "/developer/projects", icon: "FolderOpen", strokeWidth: 2 },
+    { label: "Forms", href: "/developer/forms", icon: "SquareCode", strokeWidth: 2 },
+    { label: "Analytics", href: "/developer/analytics", icon: "ChartNoAxesColumn", strokeWidth: 2 },
+    { label: "Settings", href: "/developer/settings", icon: "Settings", strokeWidth: 2, adminOnly: true },
 ] as const;
 
 export default function Header({ border = "border-b", py = "py-3" }: prop) {
@@ -45,8 +46,15 @@ export default function Header({ border = "border-b", py = "py-3" }: prop) {
         () => false,
     );
     const router = useRouter();
+    const pathname = usePathname();
+    const role = useWorkspaceRole(Boolean(currentUser));
 
     const closeNav = () => setIsNavOpen(false);
+
+    const switchView = () => {
+        router.push(pathname.startsWith("/developer") ? "/non-dev" : "/developer");
+        setIsOpeningUserMenu(false);
+    };
 
     const handleSignOut = async () => {
         await signOut();
@@ -159,21 +167,25 @@ export default function Header({ border = "border-b", py = "py-3" }: prop) {
                                 {/* links */}
                                 <div className="links relative rounded-xl bg-zinc-100 p-2 dark:bg-zinc-900">
                                     <ul className="list-none text-sm">
-                                        {MENU_LINKS.map((item) => (
+                                        {MENU_LINKS.filter((item) => !("adminOnly" in item && item.adminOnly) || canManageWorkspace(role)).map((item) => (
                                             <li key={item.label} className="list-item">
-                                                <a href="#" className="flex items-center justify-start gap-2 rounded-lg p-2 text-zinc-600 hover:bg-zinc-200 dark:text-zinc-400 dark:hover:bg-zinc-800">
+                                                <Link
+                                                    href={item.href}
+                                                    onClick={() => setIsOpeningUserMenu(false)}
+                                                    className="flex items-center justify-start gap-2 rounded-lg p-2 text-zinc-600 hover:bg-zinc-200 dark:text-zinc-400 dark:hover:bg-zinc-800"
+                                                >
                                                     <Icon name={item.icon} strokeWidth={item.strokeWidth} size={17} />
                                                     {item.label}
-                                                </a>
+                                                </Link>
                                             </li>
                                         ))}
                                         <li className="pt-1 grid grid-cols-2 gap-2">
                                             <button
-                                                onClick={handleSignOut}
+                                                onClick={switchView}
                                                 className="flex cursor-pointer items-center justify-center gap-2 rounded-md bg-white p-2 font-semibold text-zinc-900 hover:bg-zinc-100 dark:bg-zinc-800 dark:text-zinc-100 dark:hover:bg-zinc-700"
                                             >
                                                 <Icon name="ArrowRightLeft" strokeWidth={2} size={16} />
-                                                <span className="">Switch</span>
+                                                <span className="">Switch view</span>
                                             </button>
                                             <button
                                                 onClick={handleSignOut}

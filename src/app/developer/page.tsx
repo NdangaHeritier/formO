@@ -2,16 +2,11 @@
 import DeveloperShell from "@/components/Developer/DeveloperShell";
 import { useCallback, useEffect, useState } from 'react';
 
-// import { IconType } from '@/types/Icon';
-// import { AnalyticCard } from '@/components/Developer/AnalyticCard';
 import FormButton from '@/components/Global/FormButton';
 import { Icon } from '@/components/Global/Icon';
-// import { getProjects } from '@/data/projects';
 import ProjectCard from '@/components/Developer/ProjectCard';
 import { ProjectType } from '@/types/Project';
-// import { getFormsByProjectId } from '@/data/forms';
 import { Squares } from '@/components/Global/Squares';
-// import FeatureCard from '@/components/Global/FeatureCard';
 import GuideCard from '@/components/Global/GuideCard';
 import NewDeveloperForm from '@/components/Developer/Modals/Forms/NewDeveloper';
 import LinkButton from '@/components/Global/LinkButton';
@@ -46,19 +41,13 @@ const Developer= () => {
 
   return (
     <DeveloperShell>
-      {/* <DeveloperBreadcrumb
-        navs={[
-          { label: "Home", href: "/" },
-          { label: "Developer", href: "/developer" },
-        ]}
-      /> */}
       {/* display createProjectModel */}
       {isCreateProjectModelOpen && (
         <NewDeveloperForm onClick={() => setIsCreateProjectModelOpen(false)} />
       )}
 
       {/* Dashboard */}
-      <section className="dashboard bg-white dark:bg-black text-zinc-900 dark:text-zinc-100 p-5 grid grid-cols-1 gap-y-10">
+      <section className="dashboard bg-white dark:bg-black text-zinc-900 dark:text-zinc-100 p-5 md:p-8 grid grid-cols-1 gap-y-10 rounded-3xl">
         {/* Analytics section */}
         <AnalyticsGroup />
 
