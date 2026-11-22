@@ -87,6 +87,78 @@ export async function listFormSubmissions(params: {
   };
 }
 
+/** Workspace-wide submission list for the developer inbox. */
+export async function listWorkspaceSubmissions(params: {
+  organizationId: string;
+  formId?: string;
+  status?: SubmissionStatus;
+  limit: number;
+  cursor?: string;
+}) {
+  const cursor = decodeCursor(params.cursor);
+  if (params.cursor && !cursor) {
+    throw new HttpError(400, "Invalid cursor", { code: "BAD_REQUEST" });
+  }
+  const cursorDate = cursor ? new Date(cursor.createdAt) : null;
+
+  const rows = await prisma.formSubmission.findMany({
+    where: {
+      form: {
+        deletedAt: null,
+        project: { organizationId: params.organizationId, deletedAt: null },
+        ...(params.formId ? { id: params.formId } : {}),
+      },
+      ...(params.status ? { status: params.status } : {}),
+      ...(cursor && cursorDate
+        ? {
+            OR: [
+              { createdAt: { lt: cursorDate } },
+              { createdAt: cursorDate, id: { lt: cursor.id } },
+            ],
+          }
+        : {}),
+    },
+    orderBy: [{ createdAt: "desc" }, { id: "desc" }],
+    take: params.limit + 1,
+    select: {
+      id: true,
+      status: true,
+      createdAt: true,
+      sentAt: true,
+      form: {
+        select: {
+          id: true,
+          title: true,
+          project: { select: { name: true, slug: true } },
+        },
+      },
+      _count: { select: { deliveries: true } },
+    },
+  });
+
+  const hasMore = rows.length > params.limit;
+  const page = rows.slice(0, params.limit);
+  const last = page.at(-1);
+  return {
+    items: page.map((row) => ({
+      id: row.id,
+      status: row.status,
+      createdAt: iso(row.createdAt),
+      sentAt: iso(row.sentAt),
+      formId: row.form.id,
+      formTitle: row.form.title,
+      projectName: row.form.project.name,
+      projectSlug: row.form.project.slug,
+      deliveryCount: row._count.deliveries,
+    })),
+    nextCursor:
+      hasMore && last
+        ? encodeCursor({ createdAt: last.createdAt.toISOString(), id: last.id })
+        : null,
+    hasMore,
+  };
+}
+
 export async function getSubmissionDetail(id: string, organizationId: string) {
   const submission = await prisma.formSubmission.findFirst({
     where: {

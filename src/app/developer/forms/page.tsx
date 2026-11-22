@@ -9,6 +9,8 @@ import { Icon } from "@/components/Global/Icon";
 import { relativeTime } from "@/lib/format";
 import { SkeletonTableRows } from "@/components/Global/Skeleton";
 import { useToast } from "@/components/Global/Toast";
+import ConfirmDialog from "@/components/Global/ConfirmDialog";
+import { canManageWorkspace, useWorkspaceRole } from "@/lib/hooks/use-workspace-role";
 
 type WorkspaceForm = {
   id: string;
@@ -30,6 +32,10 @@ const FormsPage = () => {
   const [query, setQuery] = useState("");
   const toast = useToast();
   const router = useRouter();
+  const role = useWorkspaceRole();
+  const canManage = canManageWorkspace(role);
+  const [pendingRotate, setPendingRotate] = useState<WorkspaceForm | null>(null);
+  const [rotating, setRotating] = useState(false);
   const searchParams = useSearchParams();
   const [resolvedProject, setResolvedProject] = useState<{
     slug: string;
@@ -125,6 +131,27 @@ const FormsPage = () => {
         error: (error) => error instanceof Error ? error.message : "Could not reach the submission endpoint",
       }
     );
+
+  const rotateEndpoint = async () => {
+    if (!pendingRotate) return;
+    setRotating(true);
+    try {
+      const res = await fetch(`/api/forms/${pendingRotate.id}/rotate-endpoint`, { method: "POST" });
+      const data = (await res.json().catch(() => null)) as { form?: { endpoint: string } } | null;
+      if (!res.ok || !data?.form) throw new Error("Could not rotate endpoint");
+      setForms((current) =>
+        current.map((form) =>
+          form.id === pendingRotate.id ? { ...form, endpoint: data.form!.endpoint } : form
+        )
+      );
+      toast.success("Endpoint rotated. The old URL no longer accepts submissions.");
+      setPendingRotate(null);
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Could not rotate endpoint");
+    } finally {
+      setRotating(false);
+    }
+  };
 
   return (
     <DeveloperShell>
@@ -230,6 +257,16 @@ const FormsPage = () => {
                           >
                             <Icon name="Send" size={13} className="text-zinc-500" />
                           </button>
+                          {canManage && (
+                            <button
+                              type="button"
+                              aria-label={`Rotate endpoint for ${form.title}`}
+                              onClick={() => setPendingRotate(form)}
+                              className="p-1.5 rounded-lg bg-zinc-100/70 dark:bg-zinc-900/70 hover:bg-zinc-200/70 dark:hover:bg-zinc-900 cursor-pointer"
+                            >
+                              <Icon name="RefreshCcw" size={13} className="text-zinc-500" />
+                            </button>
+                          )}
                         </div>
                       </td>
                       <td className="px-5 py-4 text-zinc-700 dark:text-zinc-400 whitespace-nowrap">
@@ -259,6 +296,15 @@ const FormsPage = () => {
           onClick={closeNewForm}
         />
       )}
+      <ConfirmDialog
+        open={pendingRotate !== null}
+        title={`Rotate "${pendingRotate?.title ?? ""}" endpoint?`}
+        description="The current URL will stop accepting submissions immediately. Update every frontend that uses it."
+        confirmLabel={rotating ? "Rotating…" : "Rotate endpoint"}
+        tone="danger"
+        onCancel={() => setPendingRotate(null)}
+        onConfirm={rotateEndpoint}
+      />
     </DeveloperShell>
   );
 };

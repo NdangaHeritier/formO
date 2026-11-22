@@ -29,6 +29,7 @@ const MENU_LINKS = [
     { label: "Overview", href: "/developer", icon: "LayoutDashboard", strokeWidth: 2 },
     { label: "Projects", href: "/developer/projects", icon: "FolderOpen", strokeWidth: 2 },
     { label: "Forms", href: "/developer/forms", icon: "SquareCode", strokeWidth: 2 },
+    { label: "Submissions", href: "/developer/submissions", icon: "Activity", strokeWidth: 2 },
     { label: "Templates", href: "/developer/templates", icon: "FileText", strokeWidth: 2 },
     { label: "Analytics", href: "/developer/analytics", icon: "ChartNoAxesColumn", strokeWidth: 2 },
     { label: "Settings", href: "/developer/settings", icon: "Settings", strokeWidth: 2, adminOnly: true },

@@ -13,6 +13,7 @@ const MOBILE_NAV = [
   { href: "/developer", label: "Overview", icon: "LayoutDashboard" },
   { href: "/developer/projects", label: "Projects", icon: "FolderOpen" },
   { href: "/developer/forms", label: "Forms", icon: "SquareCode" },
+  { href: "/developer/submissions", label: "Inbox", icon: "Activity" },
   { href: "/developer/analytics", label: "Analytics", icon: "ChartNoAxesColumn" },
   { href: "/developer/settings", label: "Settings", icon: "Settings" },
 ] as const;
@@ -46,6 +47,9 @@ export default function DeveloperShell({ children }: { children: React.ReactNode
               <div className="flex flex-col items-center justify-start gap-3 p-3">
                 <Link href="/developer/projects" className="flex cursor-pointer items-center justify-center gap-2 rounded-xl p-2 text-zinc-500 hover:bg-zinc-100 hover:text-zinc-900 dark:hover:bg-zinc-900 dark:hover:text-zinc-200">
                   <Icon name="LayoutDashboard" size={20} strokeWidth={2} />
+                </Link>
+                <Link href="/developer/submissions" aria-label="Submissions" className="text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-200">
+                  <Icon name="Activity" size={20} strokeWidth={2} />
                 </Link>
                 <Link href="/developer/analytics" className="text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-200">
                   <Icon name="ChartNoAxesColumn" size={20} strokeWidth={2} />
@@ -113,6 +117,7 @@ export default function DeveloperShell({ children }: { children: React.ReactNode
                 <Link
                   key={item.href}
                   href={item.href}
+                  aria-label={item.label === "Inbox" ? "Submissions" : item.label}
                   aria-current={active ? "page" : undefined}
                   className={`group flex min-w-0 flex-1 flex-col items-center gap-1 rounded-2xl px-1 py-2.5 text-[11px] font-semibold transition-all duration-300 ease-out active:scale-95 ${
                     active
