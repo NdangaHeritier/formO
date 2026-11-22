@@ -3,9 +3,11 @@ import Link from "next/link";
 import Header from "@/components/Header";
 import PrivateRouter from "@/components/Global/privateRouter";
 import { Icon } from "@/components/Global/Icon";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useSession } from "@/lib/auth-client";
 import UserAvatar from "@/components/Global/UserAvatar";
+import { useState } from "react";
+import NewDeveloperForm from "@/components/Developer/Modals/Forms/NewDeveloper";
 
 const MOBILE_NAV = [
   { href: "/developer/projects", label: "Projects", icon: "FolderOpen" },
@@ -20,13 +22,24 @@ const MOBILE_NAV = [
  */
 export default function DeveloperShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
+  const router = useRouter();
   const { data: session } = useSession();
+  const [createProjectOpen, setCreateProjectOpen] = useState(false);
+
+  // When the user is inside a project, the new-form modal is scoped to it.
+  const projectSlug = pathname.match(/^\/developer\/projects\/([^/]+)/)?.[1];
+  const newFormHref = `/developer/forms?new=project${
+    projectSlug ? `&project_name=${encodeURIComponent(projectSlug)}` : ""
+  }`;
 
   return (
     <div className="app-viewport h-dvh overflow-hidden bg-background">
       <PrivateRouter>
         <section className="flex h-full w-full flex-col text-zinc-700 dark:text-zinc-400">
           <Header />
+          {createProjectOpen && (
+            <NewDeveloperForm onClick={() => setCreateProjectOpen(false)} />
+          )}
           <div className="flex min-h-0 flex-1">
             <div className="grid grid-cols-1 h-full w-20 shrink-0 overflow-y-auto border-r border-zinc-200 bg-white p-2 dark:border-zinc-800 dark:bg-zinc-950 max-md:hidden">
               <div className="flex flex-col items-center justify-start gap-3 p-3">
@@ -38,16 +51,36 @@ export default function DeveloperShell({ children }: { children: React.ReactNode
                 </Link>
               </div>
               <div className="flex h-full flex-col items-center justify-end gap-2 self-end p-2">
-                <button className="flex h-11 w-11 cursor-pointer items-center justify-center rounded-full bg-zinc-100 text-zinc-500 hover:bg-zinc-200 hover:text-zinc-900 dark:bg-zinc-900 dark:text-zinc-400 dark:hover:bg-zinc-800 dark:hover:text-zinc-100">
+                <button
+                  type="button"
+                  aria-label="Create form"
+                  onClick={() => router.push(newFormHref)}
+                  className="flex h-11 w-11 cursor-pointer items-center justify-center rounded-full bg-zinc-100 text-zinc-500 hover:bg-zinc-200 hover:text-zinc-900 dark:bg-zinc-900 dark:text-zinc-400 dark:hover:bg-zinc-800 dark:hover:text-zinc-100"
+                >
                   <Icon name="Plus" strokeWidth={2} size={22} />
                 </button>
-                <button className="flex h-11 w-11 cursor-pointer items-center justify-center rounded-full bg-zinc-100 text-zinc-500 hover:bg-zinc-200 hover:text-zinc-900 dark:bg-zinc-900 dark:text-zinc-400 dark:hover:bg-zinc-800 dark:hover:text-zinc-100">
+                <button
+                  type="button"
+                  aria-label="Create project"
+                  onClick={() => setCreateProjectOpen(true)}
+                  className="flex h-11 w-11 cursor-pointer items-center justify-center rounded-full bg-zinc-100 text-zinc-500 hover:bg-zinc-200 hover:text-zinc-900 dark:bg-zinc-900 dark:text-zinc-400 dark:hover:bg-zinc-800 dark:hover:text-zinc-100"
+                >
                   <Icon name="FolderOpen" strokeWidth={2} size={22} />
                 </button>
-                <button className="flex h-11 w-11 cursor-pointer items-center justify-center rounded-full bg-zinc-100 text-zinc-500 hover:bg-zinc-200 hover:text-zinc-900 dark:bg-zinc-900 dark:text-zinc-400 dark:hover:bg-zinc-800 dark:hover:text-zinc-100">
+                <button
+                  type="button"
+                  aria-label="Settings"
+                  onClick={() => router.push("/developer/settings")}
+                  className="flex h-11 w-11 cursor-pointer items-center justify-center rounded-full bg-zinc-100 text-zinc-500 hover:bg-zinc-200 hover:text-zinc-900 dark:bg-zinc-900 dark:text-zinc-400 dark:hover:bg-zinc-800 dark:hover:text-zinc-100"
+                >
                   <Icon name="Bolt" strokeWidth={2} size={22} />
                 </button>
-                <button className="flex h-11 w-11 cursor-pointer items-center justify-center rounded-full bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-900 dark:hover:bg-zinc-800">
+                <button
+                  type="button"
+                  aria-label="Account settings"
+                  onClick={() => router.push("/developer/account")}
+                  className="flex h-11 w-11 cursor-pointer items-center justify-center rounded-full bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-900 dark:hover:bg-zinc-800"
+                >
                   <UserAvatar
                     src={session?.user?.image}
                     size={44}

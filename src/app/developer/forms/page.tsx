@@ -1,7 +1,9 @@
 "use client";
-import { useEffect, useMemo, useState } from "react";
+import { Suspense, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
+import { useRouter, useSearchParams } from "next/navigation";
 import DeveloperShell from "@/components/Developer/DeveloperShell";
+import NewForm from "@/components/Developer/Modals/Forms/NewForm";
 import { Squares } from "@/components/Global/Squares";
 import { Icon } from "@/components/Global/Icon";
 import { relativeTime } from "@/lib/format";
@@ -27,6 +29,39 @@ const FormsPage = () => {
   const [loadError, setLoadError] = useState(false);
   const [query, setQuery] = useState("");
   const toast = useToast();
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const [resolvedProject, setResolvedProject] = useState<{
+    slug: string;
+    id: string;
+    name: string;
+  } | null>(null);
+
+  // Deep link from the shell's "+" button: /developer/forms?new=project&project_name=<slug>
+  const newFormOpen = searchParams.get("new") === "project";
+  const projectSlug = searchParams.get("project_name");
+  const newFormProject =
+    resolvedProject && resolvedProject.slug === projectSlug
+      ? { id: resolvedProject.id, name: resolvedProject.name }
+      : null;
+
+  useEffect(() => {
+    if (!newFormOpen || !projectSlug) return;
+    let active = true;
+    fetch(`/api/projects/slug/${encodeURIComponent(projectSlug)}`)
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data: { project?: { id: string; name: string } } | null) => {
+        if (active && data?.project) {
+          setResolvedProject({ slug: projectSlug, id: data.project.id, name: data.project.name });
+        }
+      })
+      .catch(() => {});
+    return () => {
+      active = false;
+    };
+  }, [newFormOpen, projectSlug]);
+
+  const closeNewForm = () => router.replace("/developer/forms");
 
   useEffect(() => {
     fetch("/api/forms")
@@ -217,8 +252,21 @@ const FormsPage = () => {
           )}
         </div>
       </div>
+      {newFormOpen && (
+        <NewForm
+          project={newFormProject?.id}
+          projectName={newFormProject?.name ?? undefined}
+          onClick={closeNewForm}
+        />
+      )}
     </DeveloperShell>
   );
 };
 
-export default FormsPage;
+export default function FormsPageWithSuspense() {
+  return (
+    <Suspense fallback={null}>
+      <FormsPage />
+    </Suspense>
+  );
+}

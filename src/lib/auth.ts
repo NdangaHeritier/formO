@@ -133,6 +133,8 @@ export const auth = betterAuth({
     },
   },
   user: {
+    // Account settings exposes self-service deletion behind a confirmation.
+    deleteUser: { enabled: true },
     additionalFields: {
       interest: {
         type: "string",
