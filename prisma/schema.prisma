@@ -148,6 +148,9 @@ model Organization {
   slug      String   @unique
   logo      String?
   metadata  String?
+  /// Submission retention in days. NULL keeps data forever (or uses the
+  /// env-level default). Managed by workspace admins.
+  retentionDays Int?   @map("retention_days")
   createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
 

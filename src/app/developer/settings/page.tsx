@@ -8,6 +8,8 @@ import { Skeleton, SkeletonListRows } from "@/components/Global/Skeleton";
 import FormButton from "@/components/Global/FormButton";
 import ConfirmDialog from "@/components/Global/ConfirmDialog";
 import NewSenderModal from "@/components/Developer/Modals/Settings/NewSenderModal";
+import DeliveryLogs from "@/components/Developer/Settings/DeliveryLogs";
+import RetentionSetting from "@/components/Developer/Settings/RetentionSetting";
 import NewApiKeyModal from "@/components/Developer/Modals/Settings/NewApiKeyModal";
 import LinkButton from "@/components/Global/LinkButton";
 import { useToast } from "@/components/Global/Toast";
@@ -268,6 +270,18 @@ const SettingsPage = () => {
               </li>
             ))}
           </Section>
+
+          {/* Delivery logs */}
+          <div className="grid grid-cols-1 gap-3 rounded-3xl border border-zinc-200 bg-zinc-50/60 p-5 dark:border-zinc-800 dark:bg-zinc-900/30">
+            <h2 className="text-lg font-semibold text-zinc-900 dark:text-zinc-100">Delivery logs</h2>
+            <DeliveryLogs />
+          </div>
+
+          {/* Retention */}
+          <div className="grid grid-cols-1 gap-3 rounded-3xl border border-zinc-200 bg-zinc-50/60 p-5 dark:border-zinc-800 dark:bg-zinc-900/30">
+            <h2 className="text-lg font-semibold text-zinc-900 dark:text-zinc-100">Retention</h2>
+            <RetentionSetting />
+          </div>
 
           {/* API keys */}
           <div className="flex justify-end">

@@ -1,5 +1,6 @@
 import { getServerEnv } from "@/lib/env";
 import { prisma } from "@/lib/prisma";
+import { resolveRetentionDays } from "@/lib/retention";
 
 export const PARTITIONED_TABLES = [
   "form_submissions",
@@ -13,7 +14,7 @@ const MAX_BATCHES = 20;
 
 export type MaintenanceResult = {
   partitions: { ensuredMonthsAhead: number; failed: boolean };
-  deleted: { rateLimitBuckets: number; idempotencyKeys: number };
+  deleted: { rateLimitBuckets: number; idempotencyKeys: number; submissions: number };
   defaultPartitionRows: Record<string, number>;
   errors: string[];
 };
@@ -33,12 +34,32 @@ async function deleteExpired(table: "rate_limit_buckets" | "submission_idempoten
   return total;
 }
 
+/** Bounded, workspace-scoped pruning. Only called when a policy is configured. */
+async function pruneWorkspaceSubmissions(organizationId: string, days: number) {
+  let total = 0;
+  for (let batch = 0; batch < MAX_BATCHES; batch += 1) {
+    const deleted = await prisma.$executeRaw`
+      DELETE FROM form_submissions
+      WHERE ctid IN (
+        SELECT s.ctid FROM form_submissions s
+        JOIN project_forms pf ON pf.id = s.form_id
+        JOIN projects p ON p.id = pf.project_id
+        WHERE p.organization_id = ${organizationId}::uuid
+          AND s.created_at < now() - (${days}::int * interval '1 day')
+        LIMIT ${BATCH_SIZE}
+      )`;
+    total += deleted;
+    if (deleted < BATCH_SIZE) break;
+  }
+  return total;
+}
+
 /** All steps run even when one fails; the caller decides the status code. */
 export async function runMaintenance(): Promise<MaintenanceResult> {
   const monthsAhead = getServerEnv().PARTITION_MONTHS_AHEAD;
   const result: MaintenanceResult = {
     partitions: { ensuredMonthsAhead: monthsAhead, failed: false },
-    deleted: { rateLimitBuckets: 0, idempotencyKeys: 0 },
+    deleted: { rateLimitBuckets: 0, idempotencyKeys: 0, submissions: 0 },
     defaultPartitionRows: {},
     errors: [],
   };
@@ -71,6 +92,23 @@ export async function runMaintenance(): Promise<MaintenanceResult> {
   } catch (error) {
     result.errors.push("idempotency_cleanup");
     console.error("[maintenance] idempotency cleanup failed", {
+      reason: error instanceof Error ? error.message : "unknown",
+    });
+  }
+
+  try {
+    const envDays = getServerEnv().FORMO_SUBMISSION_RETENTION_DAYS ?? null;
+    const organizations = await prisma.organization.findMany({
+      select: { id: true, retentionDays: true },
+    });
+    for (const organization of organizations) {
+      const days = resolveRetentionDays(organization.retentionDays, envDays);
+      if (days === null) continue;
+      result.deleted.submissions += await pruneWorkspaceSubmissions(organization.id, days);
+    }
+  } catch (error) {
+    result.errors.push("retention_cleanup");
+    console.error("[maintenance] retention cleanup failed", {
       reason: error instanceof Error ? error.message : "unknown",
     });
   }

@@ -224,3 +224,19 @@ Depth is soft and layered, never flat-hard. Cards use `shadow-lg`, hover raises 
 - **Don't** use hard-offset shadows or gradient text.
 - **Don't** put more than one primary button in a dialog.
 - **Don't** change hue between light and dark; swap value only.
+
+## Developer operations surface
+
+The developer home, submissions inbox and settings share one read model and one
+visual grammar: a short attention band, a list of real records, and explicit
+loading, empty and error text. No card links to a route that does not exist.
+
+- **Statuses** use one pill vocabulary across the inbox, detail view and logs:
+  green `sent`, yellow `pending`/`retrying`, red `failed`/`dead_letter`, zinc `spam`.
+- **Navigation** is the same information on desktop rail, header menu and mobile
+  tab bar. The mobile bar is a single full-width floating group with enlarged
+  tap targets; the active tab scales and transitions, and route changes use a
+  short `page-enter` fade that is disabled under `prefers-reduced-motion`.
+- **Retention** is a workspace setting, not a hidden job: leaving it unset keeps
+  data forever, and only an explicit value (or `FORMO_SUBMISSION_RETENTION_DAYS`)
+  causes the maintenance worker to prune old submissions.

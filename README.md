@@ -25,20 +25,23 @@ FormO is a self-hosted, developer-grade form backend. Projects contain forms; fo
 
 | Route | Purpose |
 | --- | --- |
-| `/developer` | Workspace overview and quick start |
+| `/developer` | Operations overview: attention band, recent submissions, quick actions, quick start |
 | `/developer/projects` | Projects list, create/edit/archive/delete |
 | `/developer/projects/[slug]` | Project detail: stats, forms, recent submissions |
-| `/developer/forms` | Workspace-wide form list and endpoint utilities |
+| `/developer/forms` | Workspace-wide form list, endpoint utilities and endpoint rotation |
+| `/developer/submissions` | Submission inbox, detail and delivery attempts |
 | `/developer/analytics` | Submission and delivery analytics |
-| `/developer/settings` | SMTP senders, API keys, email templates |
+| `/developer/settings` | SMTP senders, delivery logs, retention, API keys, email templates |
 | `/developer/templates` | Template library and presets |
+| `/developer/account` | Profile, credentials, sessions and account deletion |
 | `/api/f/{endpoint}` | **Public** form submission endpoint |
 | `/api/forms`, `/api/forms/{id}` | List, read, update, delete forms |
 | `/api/forms/{id}/submissions`, `/api/forms/{id}/rotate-endpoint` | Form submissions, endpoint rotation |
 | `/api/projects`, `/api/projects/{id}`, `/api/projects/slug/{slug}` | Project management |
 | `/api/projects/{id}/forms` | Create and list a project's forms |
-| `/api/submissions/{id}`, `/api/submissions/{id}/retry` | Submission detail and delivery retry |
-| `/api/settings/*`, `/api/templates/*`, `/api/analytics` | Workspace settings, templates, analytics |
+| `/api/submissions`, `/api/submissions/{id}`, `/api/submissions/{id}/retry` | Workspace inbox, submission detail and delivery retry |
+| `/api/developer/overview` | Workspace overview: attention counts and recent submissions |
+| `/api/settings/*`, `/api/templates/*`, `/api/analytics` | Workspace settings (SMTP, delivery logs, retention, API keys), templates, analytics |
 | `/api/auth/*` | Better Auth handlers |
 | `/api/cron/deliver`, `/api/cron/maintenance` | Authenticated scheduled workers |
 | `/api/health` | Liveness; add `?ready=1` for readiness |
@@ -70,6 +73,7 @@ Create a Neon project and set these Vercel environment variables (Production and
 | `GOOGLE_CLIENT_ID/SECRET`, `GITHUB_CLIENT_ID/SECRET` | OAuth app credentials |
 | `SMTP_*` | SMTP transport and credentials for verification and delivery email |
 | `TURNSTILE_SECRET_KEY` | Optional bot protection |
+| `FORMO_SUBMISSION_RETENTION_DAYS` | Optional workspace-wide default; a workspace setting in `/developer/settings` overrides it. Unset keeps all submissions. |
 
 Register the exact OAuth callbacks `{BETTER_AUTH_URL}/api/auth/callback/google` and `/api/auth/callback/github` with the providers.
 
