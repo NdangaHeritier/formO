@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useRef } from "react";
+import { createPortal } from "react-dom";
 import { Icon } from "@/components/Global/Icon";
 
 type LayoutProps = {
@@ -56,7 +57,7 @@ const Layout = ({ children, onClick, label = "FormO dialog" }: LayoutProps) => {
     }
   };
 
-  return (
+  const dialog = (
     <section
       ref={dialogRef}
       role="dialog"
@@ -64,7 +65,7 @@ const Layout = ({ children, onClick, label = "FormO dialog" }: LayoutProps) => {
       aria-label={label}
       tabIndex={-1}
       onKeyDown={onKeyDown}
-      className="fixed top-0 bottom-0 left-0 right-0 p-3 z-50 overflow-auto sm:p-5 bg-white/90 dark:bg-black/90 flex flex-col items-center justify-center"
+      className="fixed inset-0 z-50 overflow-auto bg-black/50 p-3 sm:p-5 flex flex-col items-center justify-center"
     >
       <div className="closeLink inline-flex absolute top-4 right-4 p-2 sm:top-10 sm:right-10 sm:p-5">
         <button
@@ -79,6 +80,10 @@ const Layout = ({ children, onClick, label = "FormO dialog" }: LayoutProps) => {
       {children}
     </section>
   );
+
+  // Render into document.body so a transformed page wrapper cannot become the
+  // containing block for this fixed, full-viewport overlay.
+  return typeof document === "undefined" ? null : createPortal(dialog, document.body);
 };
 
 export default Layout;
