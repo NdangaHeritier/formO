@@ -13,6 +13,7 @@ import Link from "next/link";
 import { BackGraphicsLayout } from "./BackGraphicsLayout";
 import { useRouter } from "next/navigation";
 
+
 async function resolveWorkspaceRoute(): Promise<string> {
     try {
         const res = await fetch("/api/auth/workspace");
@@ -132,9 +133,19 @@ export default function LoginForm({ authError }: { authError?: string }) {
                 </div>
                 {isSignedIn ? (
                     <div className="border-none overflow-hidden  bg-white flex flex-col dark:bg-zinc-950 gap-10 p-5 sm:p-8 pt-10 sm:pt-16 items-center align-middle justify-center rounded-3xl">
-                        <Icon name="Check" className="text-white mx-auto w-20 h-20 rounded-full p-3 bg-green-600 ring-4 ring-green-800/30 border-2 border-white dark:border-zinc-950 dark:text-green-200 flex items-center justify-center" strokeWidth={2.5} />
+                        <Image
+                            src="/Assets/forms/checked.svg"
+                            alt="Thanks"
+                            width={100}
+                            height={100}
+                            className="mb-1"
+                        />
                         <h1 className="text-2xl font-semibold text-zinc-900 dark:text-zinc-200 text-center">Successfully Signed In!</h1>
-                        <p className="text-zinc-500 dark:text-zinc-400 text-center font-bold animate-pulse">Redirecting to your dashboard...</p>
+                        <div className="flex items-center justify-center gap-2 flex-col-reverse sm:flex-row">
+                            <BrandLoader />
+                            <p className="text-zinc-600 dark:text-zinc-200 text-center font-normal ">Redirecting to your dashboard...</p>
+                        </div>
+
                     </div>
                 ) : (
                     <div className="border-none overflow-hidden bg-white flex-col dark:bg-zinc-950 gap-5 p-5 sm:p-8 rounded-3xl">
@@ -249,8 +260,8 @@ export default function LoginForm({ authError }: { authError?: string }) {
                             >
                                 {signinLoading ? (
                                     <>
-                                    <Icon name="Loader" size={20} className="animate-spin" />
-                                    <p>Sign In</p>
+                                        <Icon name="Loader" size={20} className="animate-spin" />
+                                        <p>Sign In</p>
                                     </>
                                 ) : (
                                     "Sign In"
