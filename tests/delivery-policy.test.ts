@@ -1,5 +1,10 @@
 import { describe, expect, it } from "vitest";
-import { BACKOFF_MINUTES, decideSubmissionStatus, retryDelayMinutes } from "@/server/services/delivery.service";
+import {
+  BACKOFF_MINUTES,
+  decideSubmissionStatus,
+  messageMailContent,
+  retryDelayMinutes,
+} from "@/server/services/delivery.service";
 
 describe("retry backoff", () => {
   it("uses 1, 5, 30, 120, 360 minutes by attempt", () => {
@@ -14,6 +19,24 @@ describe("retry backoff", () => {
   it("clamps out-of-range attempts", () => {
     expect(retryDelayMinutes(0)).toBe(1);
     expect(retryDelayMinutes(99)).toBe(360);
+  });
+});
+
+describe("broadcast mail content", () => {
+  it("strips header line breaks from the subject but keeps the HTML body", () => {
+    expect(
+      messageMailContent({
+        subject: "Hello\r\nBcc: attacker@example.com",
+        htmlBody: "<p>Hello</p>",
+        textBody: null,
+      })
+    ).toEqual({ subject: "Hello Bcc: attacker@example.com", html: "<p>Hello</p>", text: "" });
+  });
+
+  it("preserves an explicit plain-text alternative", () => {
+    expect(
+      messageMailContent({ subject: "Hi", htmlBody: "<p>Hi</p>", textBody: "Hi" }).text
+    ).toBe("Hi");
   });
 });
 

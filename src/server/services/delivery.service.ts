@@ -31,8 +31,10 @@ export type DeliveryBatchResult = {
 type ClaimRow = {
   id: string;
   created_at: Date;
-  submission_id: string;
-  submission_created_at: Date;
+  submission_id: string | null;
+  submission_created_at: Date | null;
+  message_id: string | null;
+  contact_id: string | null;
   recipient_email: string;
   attempt_count: number;
 };
@@ -41,13 +43,46 @@ type DeliveryContext = Prisma.FormSubmissionGetPayload<{
   include: {
     form: {
       include: {
-        project: { include: { organization: { select: { name: true } } } };
+        project: {
+          include: {
+            organization: {
+              select: {
+                name: true;
+                smtpConfigs: { where: { isSystemDefault: true }; take: 1 };
+              };
+            };
+          };
+        };
         smtpConfig: true;
         emailTemplate: true;
       };
     };
   };
 }>;
+
+type MessageContext = Prisma.OutboundMessageGetPayload<{
+  include: {
+    organization: {
+      select: {
+        name: true;
+        smtpConfigs: { where: { isSystemDefault: true }; take: 1 };
+      };
+    };
+  };
+}>;
+
+/** Broadcast content is snapshotted at enqueue; only the header is re-scrubbed. */
+export function messageMailContent(message: {
+  subject: string;
+  htmlBody: string;
+  textBody: string | null;
+}) {
+  return {
+    subject: stripCrlf(message.subject).trim(),
+    html: message.htmlBody,
+    text: message.textBody ?? "",
+  };
+}
 
 function todayUtc(): Date {
   const now = new Date();
@@ -83,6 +118,8 @@ async function claimBatch(limit: number): Promise<ClaimRow[]> {
               d.created_at,
               d.submission_id,
               d.submission_created_at,
+              d.message_id,
+              d.contact_id,
               d.recipient_email,
               d.attempt_count::int AS attempt_count;
   `;
@@ -288,6 +325,25 @@ async function rollUpSubmission(submissionId: string, submissionCreatedAt: Date)
   });
 }
 
+/** Roll up a broadcast once every recipient reached a terminal state. */
+async function rollUpMessage(messageId: string): Promise<void> {
+  const siblings = await prisma.emailDeliveryLog.findMany({
+    where: { messageId },
+    select: { status: true },
+  });
+  const decision = decideSubmissionStatus(siblings.map((row) => row.status));
+  if (!decision.status) return;
+
+  // A canceled broadcast keeps its status; the worker must not overwrite it.
+  await prisma.outboundMessage.updateMany({
+    where: { id: messageId, status: { in: ["queued", "sending"] } },
+    data: {
+      status: decision.status,
+      ...(decision.setSentAt ? { sentAt: new Date() } : {}),
+    },
+  });
+}
+
 export function retryDelayMinutes(attempt: number): number {
   const index = Math.max(0, Math.min(attempt, BACKOFF_MINUTES.length) - 1);
   return BACKOFF_MINUTES[index] ?? BACKOFF_MINUTES[BACKOFF_MINUTES.length - 1];
@@ -331,41 +387,72 @@ export async function runDeliveryBatch(): Promise<DeliveryBatchResult> {
           continue;
         }
 
-        const delivery = await prisma.formSubmission.findUnique({
-          where: { id_createdAt: { id: row.submission_id, createdAt: row.submission_created_at } },
-          include: {
-            form: {
-              include: {
-                project: {
-                  include: {
-                    organization: {
-                      select: {
-                        name: true,
-                        smtpConfigs: { where: { isSystemDefault: true }, take: 1 },
+        let context: RenderContext | null = null;
+        let delivery: DeliveryContext | null = null;
+        let message: MessageContext | null = null;
+        let sender: (SmtpSender & { fromEmail: string }) | null = null;
+
+        if (row.submission_id && row.submission_created_at) {
+          delivery = await prisma.formSubmission.findUnique({
+            where: {
+              id_createdAt: { id: row.submission_id, createdAt: row.submission_created_at },
+            },
+            include: {
+              form: {
+                include: {
+                  project: {
+                    include: {
+                      organization: {
+                        select: {
+                          name: true,
+                          smtpConfigs: { where: { isSystemDefault: true }, take: 1 },
+                        },
                       },
                     },
                   },
+                  smtpConfig: true,
+                  emailTemplate: true,
                 },
-                smtpConfig: true,
-                emailTemplate: true,
               },
             },
-          },
-        });
-
-        if (!delivery) {
+          });
+          if (!delivery) {
+            result.failed += 1;
+            continue;
+          }
+          context = buildContext(delivery);
+          // One pipeline, three tiers: form sender → workspace default → env.
+          sender = selectDeliverySender(
+            delivery.form.smtpConfig,
+            delivery.form.project.organization.smtpConfigs[0]
+          );
+        } else if (row.message_id) {
+          message = await prisma.outboundMessage.findUnique({
+            where: { id: row.message_id },
+            include: {
+              organization: {
+                select: {
+                  name: true,
+                  smtpConfigs: { where: { isSystemDefault: true }, take: 1 },
+                },
+              },
+            },
+          });
+          if (!message) {
+            result.failed += 1;
+            continue;
+          }
+          // Broadcasts have no form-level sender: workspace default → env.
+          sender = selectDeliverySender(null, message.organization.smtpConfigs[0]);
+          await prisma.outboundMessage.updateMany({
+            where: { id: row.message_id, status: "queued" },
+            data: { status: "sending" },
+          });
+        } else {
+          // A delivery with no parent violates the XOR constraint; skip it.
           result.failed += 1;
           continue;
         }
-
-        const context = buildContext(delivery);
-
-        // One pipeline, three tiers: form-specific sender → workspace default
-        // sender → system SMTP from the environment.
-        const sender = selectDeliverySender(
-          delivery.form.smtpConfig,
-          delivery.form.project.organization.smtpConfigs[0]
-        );
 
         const key = {
           id_createdAt: { id: row.id, createdAt: row.created_at },
@@ -373,11 +460,15 @@ export async function runDeliveryBatch(): Promise<DeliveryBatchResult> {
 
         try {
           const transporter = await getCachedTransporter(transporters, sender);
-          const subject = renderSubject(context);
-          const { html, text } = await renderEmail(context);
-          const replyTo = isSingleValidEmail(
-            delivery.form.replyToField ? context.data[delivery.form.replyToField] : undefined
-          );
+          const mail = message
+            ? { ...messageMailContent(message), replyTo: undefined }
+            : {
+                ...(await renderEmail(context!)),
+                subject: renderSubject(context!),
+                replyTo: delivery?.form.replyToField
+                  ? isSingleValidEmail(context!.data[delivery.form.replyToField])
+                  : undefined,
+              };
 
           // Delivery is at-least-once, not exactly-once: a worker killed after
           // SMTP accepted the message but before the database recorded it will
@@ -387,11 +478,11 @@ export async function runDeliveryBatch(): Promise<DeliveryBatchResult> {
           const info = await transporter.sendMail({
             from,
             to: stripCrlf(row.recipient_email),
-            subject: stripCrlf(subject),
-            html,
-            text,
+            subject: stripCrlf(mail.subject),
+            html: mail.html,
+            text: mail.text,
             messageId: `<${row.id}@${messageIdDomain(from)}>`,
-            ...(replyTo ? { replyTo: stripCrlf(replyTo) } : {}),
+            ...(mail.replyTo ? { replyTo: stripCrlf(mail.replyTo) } : {}),
           });
 
           const smtpResponse = stripCrlf(info.response ?? "").slice(0, 500) || null;
@@ -414,7 +505,7 @@ export async function runDeliveryBatch(): Promise<DeliveryBatchResult> {
               },
             });
           });
-          await incrementStat(delivery.form.id, "sentCount");
+          if (delivery) await incrementStat(delivery.form.id, "sentCount");
           result.sent += 1;
         } catch (error) {
           const permanent = classify(error);
@@ -433,14 +524,14 @@ export async function runDeliveryBatch(): Promise<DeliveryBatchResult> {
           }
           const dead = permanent || row.attempt_count >= MAX_ATTEMPTS;
           const status = dead ? (permanent ? "failed" : "dead_letter") : "retrying";
-          const message = safeErrorText(error);
+          const errorMessage = safeErrorText(error);
 
           await prisma.$transaction(async (tx) => {
             await tx.emailDeliveryLog.update({
               where: key,
               data: {
                 status,
-                errorMessage: message,
+                errorMessage,
                 smtpResponse: responseText(error),
                 nextRetryAt: dead
                   ? new Date()
@@ -457,13 +548,17 @@ export async function runDeliveryBatch(): Promise<DeliveryBatchResult> {
             });
           });
           if (dead) {
-            await incrementStat(delivery.form.id, "failedCount");
+            if (delivery) await incrementStat(delivery.form.id, "failedCount");
             result.failed += 1;
           } else {
             result.retried += 1;
           }
         } finally {
-          await rollUpSubmission(row.submission_id, row.submission_created_at);
+          if (row.submission_id && row.submission_created_at) {
+            await rollUpSubmission(row.submission_id, row.submission_created_at);
+          } else if (row.message_id) {
+            await rollUpMessage(row.message_id);
+          }
         }
       }
     }
