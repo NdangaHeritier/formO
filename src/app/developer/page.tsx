@@ -144,7 +144,7 @@ const Developer= () => {
               />
             </div>
           <div className='items-start justify-start flex'>
-            <LinkButton href='/login' variant='secondary'>
+            <LinkButton href='/developer/forms' variant='secondary'>
               <Icon name="Rocket" size={15} className="text-zinc-400 dark:text-zinc-700" />
               Quick Start
             </LinkButton>

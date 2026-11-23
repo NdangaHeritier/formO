@@ -28,7 +28,7 @@ FormO is a self-hosted, developer-grade form backend. Projects contain forms; fo
 | --- | --- |
 | `/developer` | Operations overview: attention band, recent submissions, quick actions, quick start |
 | `/developer/projects` | Projects list, create/edit/archive/delete |
-| `/developer/projects/[slug]` | Project detail: stats, forms, recent submissions |
+| `/developer/projects/[name]` | Project detail: stats, forms, recent submissions |
 | `/developer/forms` | Workspace-wide form list, endpoint utilities and endpoint rotation |
 | `/developer/submissions` | Submission inbox, detail, delivery attempts and admin-only deletion |
 | `/developer/analytics` | Submission and delivery analytics |

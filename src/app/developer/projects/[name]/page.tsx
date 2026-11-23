@@ -1,7 +1,6 @@
 ﻿"use client";
 import DeveloperShell from "@/components/Developer/DeveloperShell";
 import { Icon } from "@/components/Global/Icon";
-import SmallBtn from "@/components/Global/smallBtn";
 import FormButton from "@/components/Global/FormButton";
 import NewForm from "@/components/Developer/Modals/Forms/NewForm";
 import Link from "next/link";
@@ -128,21 +127,6 @@ export default function ProjectPage (){
                                     Freqently interacted Forms.
                                 </div>
                                 <div className="rounded-card bg-white dark:bg-zinc-950">
-                                    <div className="sort-and-filters flex flex-wrap items-center justify-end gap-2 p-5">
-                                        <span className="text-xs p-0.5 px-1 rounded-md border border-dashed border-zinc-300 text-green-600 dark:border-zinc-700">Filter by</span>
-                                        <SmallBtn variant="secondary">
-                                            <Icon name="CirclePlus" size={15} className="text-sm"/>
-                                            project
-                                        </SmallBtn>
-                                        <SmallBtn variant="secondary">
-                                            <Icon name="CirclePlus" size={15} className="text-sm"/>
-                                            status
-                                        </SmallBtn>
-                                        <SmallBtn variant="secondary">
-                                            <Icon name="CirclePlus" size={15} className="text-sm"/>
-                                            submissions
-                                        </SmallBtn >
-                                    </div>
                                     <div className="p-2 h-40 w-full flex items-center justify-center">
                                         {topForms.length === 0 ? (
                                             "No data Found"

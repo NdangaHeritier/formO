@@ -35,7 +35,7 @@ Behavior:
 - Accepts JSON, URL-encoded forms, and multipart fields (file uploads return `415`).
 - Payload size is bounded by the form's `maxPayloadBytes`.
 - Honeypot hits are recorded as spam without storing their submitted payload.
-- Requests are rate limited per form and client IP (10/minute per form and IP plus 120/minute per IP).
+- Requests are rate limited per client (10/minute by default) and per form (600/minute by default). Both limits are configurable with `FORMO_RATE_LIMIT_PER_CLIENT` and `FORMO_RATE_LIMIT_PER_FORM`.
 - `allowedOrigins` controls browser CORS. An empty list allows any source; `*` explicitly allows wildcard origins. Server-to-server requests have no `Origin` header.
 - Valid submissions are persisted **before** email delivery is attempted. SMTP failures never discard a submission.
 - Recipients receive independent messages; CC/BCC addresses are not expanded into a shared To header.

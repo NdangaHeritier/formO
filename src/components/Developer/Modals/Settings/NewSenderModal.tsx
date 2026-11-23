@@ -6,20 +6,39 @@ import FormButton from "@/components/Global/FormButton";
 import { InputField } from "@/components/Global/InputField";
 import { useToast } from "@/components/Global/Toast";
 
+export type SenderSummary = {
+  id: string;
+  name: string;
+  host: string;
+  port: number;
+  secure: boolean;
+  username: string;
+  fromEmail: string;
+  isVerified: boolean;
+};
+
 type Props = {
   onClose: () => void;
   onCreated: () => void;
+  /** When present the dialog edits this sender instead of creating a new one. */
+  sender?: SenderSummary;
 };
 
-/** Focused SMTP sender creation — follows DESIGN.md's dialog pattern. */
-export default function NewSenderModal({ onClose, onCreated }: Props) {
+type CreatedConfig = {
+  verified?: boolean;
+  verificationError?: string | null;
+};
+
+/** Focused SMTP sender creation/edit — follows DESIGN.md's dialog pattern. */
+export default function NewSenderModal({ onClose, onCreated, sender }: Props) {
+  const isEdit = Boolean(sender);
   const [form, setForm] = useState({
-    name: "",
-    host: "",
-    port: "587",
-    username: "",
+    name: sender?.name ?? "",
+    host: sender?.host ?? "",
+    port: String(sender?.port ?? 587),
+    username: sender?.username ?? "",
     password: "",
-    fromEmail: "",
+    fromEmail: sender?.fromEmail ?? "",
   });
   const toast = useToast();
   const [saving, setSaving] = useState(false);
@@ -28,25 +47,57 @@ export default function NewSenderModal({ onClose, onCreated }: Props) {
     event.preventDefault();
     setSaving(true);
     try {
-      const res = await fetch("/api/settings/smtp", {
-        method: "POST",
+      const res = await fetch(isEdit ? `/api/settings/smtp/${sender!.id}` : "/api/settings/smtp", {
+        method: isEdit ? "PATCH" : "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...form, port: Number(form.port), secure: false }),
+        body: JSON.stringify({
+          ...form,
+          port: Number(form.port),
+          secure: sender?.secure ?? false,
+          // Blank password in edit mode means "keep the stored credential".
+          ...(!isEdit || form.password ? { password: form.password } : {}),
+        }),
       });
-      const data = (await res.json().catch(() => null)) as { error?: string } | null;
-      if (!res.ok) throw new Error(data?.error ?? "Could not add SMTP sender");
-      toast.success("SMTP sender added");
+      const data = (await res.json().catch(() => null)) as
+        | { error?: string; smtpConfig?: CreatedConfig }
+        | null;
+      if (!res.ok) {
+        throw new Error(data?.error ?? (isEdit ? "Could not update SMTP sender" : "Could not add SMTP sender"));
+      }
+
+      if (isEdit) {
+        toast.success("SMTP sender updated", {
+          description: "Verification was reset. Verify this sender before assigning it.",
+        });
+        onCreated();
+        onClose();
+        return;
+      }
+
+      const created = data?.smtpConfig;
+      if (created?.verified) {
+        toast.success("SMTP sender added and verified", {
+          description: "The SMTP handshake succeeded. This sender is ready to assign.",
+        });
+      } else {
+        toast.warning("SMTP sender added, but verification failed", {
+          description:
+            created?.verificationError ??
+            "The SMTP server could not be reached. Verify this sender from settings before assigning it.",
+          duration: 8000,
+        });
+      }
       onCreated();
       onClose();
     } catch (cause) {
-      toast.error(cause instanceof Error ? cause.message : "Could not add SMTP sender");
+      toast.error(cause instanceof Error ? cause.message : "Could not save SMTP sender");
     } finally {
       setSaving(false);
     }
   };
 
   return (
-    <Layout onClick={onClose} label="Add SMTP sender">
+    <Layout onClick={onClose} label={isEdit ? "Edit SMTP sender" : "Add SMTP sender"}>
       <section className="w-full max-w-md rounded-card bg-white p-card shadow-2xl dark:bg-zinc-950 sm:p-6">
         <div className="grid grid-cols-1 gap-1">
           <div className="flex items-center gap-2">
@@ -57,11 +108,13 @@ export default function NewSenderModal({ onClose, onCreated }: Props) {
               id="new-sender-title"
               className="text-lg font-semibold text-zinc-900 dark:text-zinc-100"
             >
-              Add SMTP sender
+              {isEdit ? "Edit SMTP sender" : "Add SMTP sender"}
             </h2>
           </div>
           <p className="text-xs leading-5 text-zinc-500 dark:text-zinc-400">
-            Credentials are encrypted before they are stored.
+            {isEdit
+              ? "Credentials are encrypted before they are stored. Leave the password blank to keep the current one."
+              : "Credentials are encrypted before they are stored."}
           </p>
         </div>
 
@@ -73,7 +126,7 @@ export default function NewSenderModal({ onClose, onCreated }: Props) {
           </div>
           <InputField type="email" name="fromEmail" id="sender-from" label="From address" placeholder="noreply@example.com" value={form.fromEmail} onChange={(e) => setForm({ ...form, fromEmail: e.target.value })} />
           <InputField type="text" name="username" id="sender-user" label="Username" placeholder="username" value={form.username} onChange={(e) => setForm({ ...form, username: e.target.value })} />
-          <InputField type="password" name="password" id="sender-pass" label="Password" placeholder="••••••••" value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} />
+          <InputField type="password" name="password" id="sender-pass" label={isEdit ? "New password (optional)" : "Password"} placeholder="••••••••" value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} />
 
 
           <div className="grid grid-cols-2 gap-3 pt-1">
@@ -81,7 +134,7 @@ export default function NewSenderModal({ onClose, onCreated }: Props) {
               Cancel
             </FormButton>
             <FormButton type="submit" disabled={saving}>
-              {saving ? <Icon name="Loader" size={16} className="animate-spin" aria-hidden="true" /> : "Save sender"}
+              {saving ? <Icon name="Loader" size={16} className="animate-spin" aria-hidden="true" /> : isEdit ? "Save changes" : "Save sender"}
             </FormButton>
           </div>
         </form>

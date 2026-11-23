@@ -102,6 +102,8 @@ const SettingsPage = () => {
   const [pendingRevoke, setPendingRevoke] = useState<ApiKey | null>(null);
   const [pendingSmtpDelete, setPendingSmtpDelete] = useState<SmtpConfig | null>(null);
   const [showSenderModal, setShowSenderModal] = useState(false);
+  const [editingSender, setEditingSender] = useState<SmtpConfig | null>(null);
+  const [verifyingId, setVerifyingId] = useState<string | null>(null);
   const [showKeyModal, setShowKeyModal] = useState(false);
 
   const reload = () => {
@@ -165,6 +167,28 @@ const SettingsPage = () => {
     }
   };
 
+  const verifySmtp = async (config: SmtpConfig) => {
+    setVerifyingId(config.id);
+    try {
+      const res = await fetch(`/api/settings/smtp/${config.id}/test`, { method: "POST" });
+      const data = (await res.json().catch(() => null)) as { error?: string } | null;
+      if (!res.ok) throw new Error(data?.error ?? "SMTP verification failed");
+      // Update the row immediately, then re-sync with the server.
+      setSmtpConfigs((current) =>
+        current.map((item) => (item.id === config.id ? { ...item, isVerified: true } : item))
+      );
+      toast.success(`"${config.name}" verified`);
+      reload();
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "SMTP verification failed", {
+        description: "Check the host, port, credentials and TLS setting, then try again.",
+        duration: 8000,
+      });
+    } finally {
+      setVerifyingId(null);
+    }
+  };
+
   useEffect(() => {
     Promise.all([
       fetch("/api/settings/smtp").then((res) => {
@@ -224,14 +248,19 @@ const SettingsPage = () => {
                 >
                   <option value="">System SMTP (fallback)</option>
                   {smtpConfigs.map((config) => (
-                    <option key={config.id} value={config.id}>
-                      {config.name} — {config.fromEmail}
+                    <option key={config.id} value={config.id} disabled={!config.isVerified}>
+                      {config.name} — {config.fromEmail}{config.isVerified ? "" : " (unverified)"}
                     </option>
                   ))}
                 </select>
                 <FormButton variant="secondary" onClick={saveDefaultSender}>Save</FormButton>
               </span>
             </div>
+          )}
+          {canManageSenders && smtpConfigs.some((config) => !config.isVerified) && (
+            <p className="text-xs text-zinc-500 dark:text-zinc-400 -mt-2">
+              Verify a sender before assigning it as the workspace default or a form sender.
+            </p>
           )}
           <Section
             title="SMTP senders"
@@ -263,6 +292,29 @@ const SettingsPage = () => {
                   >
                     {config.isVerified ? "Verified" : "Unverified"}
                   </span>
+                  {!config.isVerified && (
+                    <FormButton
+                      variant="secondary"
+                      disabled={verifyingId === config.id}
+                      onClick={() => verifySmtp(config)}
+                    >
+                      {verifyingId === config.id ? (
+                        <>
+                          <Icon name="Loader" size={14} className="animate-spin" aria-hidden="true" />
+                          Verifying…
+                        </>
+                      ) : (
+                        <>
+                          <Icon name="ShieldCheck" size={14} aria-hidden="true" />
+                          Verify
+                        </>
+                      )}
+                    </FormButton>
+                  )}
+                  <FormButton variant="secondary" onClick={() => setEditingSender(config)}>
+                    <Icon name="Settings" size={14} aria-hidden="true" />
+                    Edit
+                  </FormButton>
                   <FormButton variant="danger" onClick={() => setPendingSmtpDelete(config)}>
                     Delete
                   </FormButton>
@@ -396,10 +448,14 @@ const SettingsPage = () => {
       {showSenderModal && (
         <NewSenderModal
           onClose={() => setShowSenderModal(false)}
-          onCreated={() => {
-            toast.success("SMTP sender added.");
-            reload();
-          }}
+          onCreated={reload}
+        />
+      )}
+      {editingSender && (
+        <NewSenderModal
+          sender={editingSender}
+          onClose={() => setEditingSender(null)}
+          onCreated={reload}
         />
       )}
       {showKeyModal && (

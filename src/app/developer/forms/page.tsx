@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import DeveloperShell from "@/components/Developer/DeveloperShell";
 import NewForm from "@/components/Developer/Modals/Forms/NewForm";
+import EmbedCodeModal from "@/components/Developer/Modals/Forms/EmbedCodeModal";
 import { Squares } from "@/components/Global/Squares";
 import { Icon } from "@/components/Global/Icon";
 import { relativeTime } from "@/lib/format";
@@ -36,6 +37,7 @@ const FormsPage = () => {
   const role = useWorkspaceRole();
   const canManage = canManageWorkspace(role);
   const [pendingRotate, setPendingRotate] = useState<WorkspaceForm | null>(null);
+  const [embedForm, setEmbedForm] = useState<WorkspaceForm | null>(null);
   const [rotating, setRotating] = useState(false);
   const searchParams = useSearchParams();
   const [resolvedProject, setResolvedProject] = useState<{
@@ -251,6 +253,16 @@ const FormsPage = () => {
                               <Icon name="Code" size={13} className="text-zinc-500" />
                             </button>
                           </Tooltip>
+                          <Tooltip label="Get embed code">
+                            <button
+                              type="button"
+                              aria-label={`Get embed code for ${form.title}`}
+                              onClick={() => setEmbedForm(form)}
+                              className="p-2.5 rounded-lg bg-zinc-100/70 dark:bg-zinc-900/70 hover:bg-zinc-200/70 dark:hover:bg-zinc-900 cursor-pointer"
+                            >
+                              <Icon name="SquareCode" size={13} className="text-zinc-500" />
+                            </button>
+                          </Tooltip>
                           <Tooltip label="Send a test submission">
                             <button
                               type="button"
@@ -300,6 +312,13 @@ const FormsPage = () => {
           project={newFormProject?.id}
           projectName={newFormProject?.name ?? undefined}
           onClick={closeNewForm}
+        />
+      )}
+      {embedForm && (
+        <EmbedCodeModal
+          endpoint={embedForm.endpoint}
+          title={embedForm.title}
+          onClick={() => setEmbedForm(null)}
         />
       )}
       <ConfirmDialog

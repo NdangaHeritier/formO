@@ -18,7 +18,7 @@ function readApiKey(request: Request): string | null {
  * Authenticates a workspace API key. The digest comparison is constant-time;
  * the prefix is only an index hint, never a trust signal.
  */
-export async function authenticateApiKey(request: Request, requiredScope = "emails:send") {
+export async function authenticateApiKey(request: Request, requiredScope = "forms:read") {
   const rawKey = readApiKey(request);
   if (!rawKey) throw new HttpError(401, "API key required");
 

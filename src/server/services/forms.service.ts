@@ -19,7 +19,12 @@ import { isUniqueConstraintError } from "@/lib/prisma";
 import { getPreset, renderPresetHtml } from "@/server/services/template-presets";
 import { getCachedTransporter } from "@/server/services/delivery.service";
 import { stripCrlf } from "@/server/submissions/render-email";
-import { assertSmtpEndpoint, SmtpEndpointError } from "@/lib/smtp-guard";
+import {
+  assertSmtpEndpoint,
+  connectionTarget,
+  resolveSmtpEndpoint,
+  SmtpEndpointError,
+} from "@/lib/smtp-guard";
 import { getServerEnv } from "@/lib/env";
 import { sanitizeTemplateHtml, sanitizeTemplateSubject } from "@/lib/template-sanitize";
 
@@ -32,6 +37,126 @@ async function assertSmtpAllowed(host: string, port: number): Promise<void> {
     if (error instanceof SmtpEndpointError) throw new HttpError(400, error.message);
     throw error;
   }
+}
+
+const SMTP_ERROR_MAX_LENGTH = 300;
+
+/**
+ * SMTP servers often echo parts of the conversation — sometimes credentials —
+ * in their error text. Never hand a raw transport error to the UI: flatten line
+ * breaks, cap the length and redact password-like values first.
+ */
+export function sanitizeSmtpError(raw: unknown): string {
+  const original =
+    raw instanceof Error
+      ? raw.message
+      : typeof raw === "string"
+        ? raw
+        : raw === null || raw === undefined
+          ? ""
+          : String(raw);
+
+  const flattened = stripCrlf(original).replace(/\s+/g, " ").trim();
+  if (!flattened) return "Unable to connect to the SMTP server";
+
+  return flattened
+    .replace(/\b(pass(?:word)?|pwd|secret|token)\b\s*[:=]\s*["']?[^\s"',;]+/gi, "$1=[redacted]")
+    .replace(/\b(AUTH\s+(?:PLAIN|LOGIN|XOAUTH2?))\s+[A-Za-z0-9+/=]+/gi, "$1 [redacted]")
+    .replace(/\b[A-Za-z0-9+/=_-]{24,}\b/g, "[redacted]")
+    .slice(0, SMTP_ERROR_MAX_LENGTH);
+}
+
+/** Pure verification gate shared by default-sender and form-sender assignment. */
+export function canAssignSmtpSender(sender: { isVerified: boolean } | null): boolean {
+  return sender !== null && sender.isVerified === true;
+}
+
+export function unverifiedSenderMessage(
+  sender: { name: string; isVerified: boolean },
+  usage: "workspace default sender" | "form sender"
+): string {
+  return `Sender "${sender.name}" is not verified. Verify it before assigning it as the ${usage}.`;
+}
+
+type SmtpVerificationTarget = {
+  host: string;
+  port: number;
+  secure: boolean;
+  username: string;
+  encryptedPassword: Uint8Array;
+  iv: Uint8Array;
+  authTag: Uint8Array;
+  keyVersion: number;
+};
+
+type SmtpVerificationOutcome = { ok: true } | { ok: false; message: string };
+
+/**
+ * Attempts a handshake without ever throwing a transport failure back into a
+ * caller. The socket is pinned to the address the SSRF guard validated, so the
+ * hostname cannot be re-resolved to a private address between check and connect.
+ */
+async function attemptSmtpVerification(
+  target: SmtpVerificationTarget
+): Promise<SmtpVerificationOutcome> {
+  try {
+    const endpoint = await resolveSmtpEndpoint(target.host, target.port, {
+      allowLocal: getServerEnv().FORMO_ALLOW_LOCAL_SMTP,
+    });
+    const { host: pinnedHost, servername } = connectionTarget(endpoint);
+    const transporter = nodemailer.createTransport({
+      host: stripCrlf(pinnedHost),
+      port: target.port,
+      secure: target.secure,
+      auth: {
+        user: stripCrlf(target.username),
+        pass: decryptSecret({
+          ciphertext: target.encryptedPassword,
+          iv: target.iv,
+          authTag: target.authTag,
+          keyVersion: target.keyVersion,
+        }),
+      },
+      ...(servername ? { tls: { servername } } : {}),
+      connectionTimeout: 8_000,
+      greetingTimeout: 8_000,
+      socketTimeout: 12_000,
+    });
+
+    try {
+      await transporter.verify();
+      return { ok: true };
+    } finally {
+      transporter.close();
+    }
+  } catch (error) {
+    if (error instanceof SmtpEndpointError) {
+      return { ok: false, message: error.message };
+    }
+    return { ok: false, message: `SMTP handshake failed: ${sanitizeSmtpError(error)}` };
+  }
+}
+
+async function markSmtpVerified(
+  smtpId: string,
+  organizationId: string,
+  actorUserId: string
+): Promise<void> {
+  await prisma.$transaction([
+    prisma.smtpConfig.update({
+      where: { id: smtpId },
+      data: { isVerified: true },
+    }),
+    prisma.auditLog.create({
+      data: {
+        organizationId,
+        actorUserId,
+        action: "smtp_config.verified",
+        targetType: "smtp_config",
+        targetId: smtpId,
+      },
+    }),
+  ]);
 }
 
 async function allocateUniqueEndpoint(
@@ -86,10 +211,13 @@ async function verifyOrgResources(
   if (smtpConfigId) {
     const smtp = await tx.smtpConfig.findFirst({
       where: { id: smtpConfigId, organizationId },
-      select: { id: true },
+      select: { id: true, name: true, isVerified: true },
     });
     if (!smtp) {
       throw new HttpError(400, "Selected SMTP configuration does not belong to this workspace");
+    }
+    if (!canAssignSmtpSender(smtp)) {
+      throw new HttpError(400, unverifiedSenderMessage(smtp, "form sender"));
     }
   }
 
@@ -507,8 +635,10 @@ export async function createWorkspaceSmtpConfig(params: {
   await assertSmtpAllowed(input.host, input.port);
   const sealed = encryptSecret(input.password);
 
-  return prisma.$transaction(async (tx) => {
-    const smtpConfig = await tx.smtpConfig.create({
+  // Creation (and its audit log) stays in one transaction. Verification runs
+  // afterwards so an unreachable SMTP server can never roll back the sender.
+  const smtpConfig = await prisma.$transaction(async (tx) => {
+    const created = await tx.smtpConfig.create({
       data: {
         organizationId,
         name: input.name.trim(),
@@ -542,17 +672,62 @@ export async function createWorkspaceSmtpConfig(params: {
         actorUserId,
         action: "smtp_config.created",
         targetType: "smtp_config",
-        targetId: smtpConfig.id,
+        targetId: created.id,
         metadata: {
-          name: smtpConfig.name,
-          host: smtpConfig.host,
-          port: smtpConfig.port,
+          name: created.name,
+          host: created.host,
+          port: created.port,
         },
       },
     });
 
-    return smtpConfig;
+    return created;
   });
+
+  const outcome = await attemptSmtpVerification({
+    host: input.host.trim(),
+    port: input.port,
+    secure: input.secure,
+    username: input.username.trim(),
+    encryptedPassword: sealed.ciphertext,
+    iv: sealed.iv,
+    authTag: sealed.authTag,
+    keyVersion: sealed.keyVersion,
+  });
+
+  if (outcome.ok) {
+    try {
+      await markSmtpVerified(smtpConfig.id, organizationId, actorUserId);
+      return {
+        ...smtpConfig,
+        isVerified: true as const,
+        verified: true as const,
+        verificationError: null,
+      };
+    } catch (error) {
+      // The sender is saved and the handshake worked: keep it, but never claim
+      // a verification we could not record.
+      console.error("[smtp] verification could not be recorded", {
+        smtpId: smtpConfig.id,
+        reason: error instanceof Error ? error.message : "unknown",
+      });
+      return {
+        ...smtpConfig,
+        verified: false as const,
+        verificationError:
+          "SMTP connection succeeded, but verification could not be recorded. Verify this sender again.",
+      };
+    }
+  }
+
+  // The sender is intentionally kept even when verification fails; the route
+  // returns 201 with the message so the UI can tell the user what happened.
+  return {
+    ...smtpConfig,
+    isVerified: false as const,
+    verified: false as const,
+    verificationError: outcome.message,
+  };
 }
 
 export async function verifyWorkspaceSmtpConfig(params: {
@@ -570,51 +745,10 @@ export async function verifyWorkspaceSmtpConfig(params: {
     throw new HttpError(404, "SMTP configuration not found");
   }
 
-  await assertSmtpAllowed(record.host, record.port);
-  const password = decryptSecret({
-    ciphertext: record.encryptedPassword,
-    iv: record.iv,
-    authTag: record.authTag,
-    keyVersion: record.keyVersion,
-  });
+  const outcome = await attemptSmtpVerification(record);
+  if (!outcome.ok) throw new HttpError(400, outcome.message);
 
-  const transporter = nodemailer.createTransport({
-    host: record.host,
-    port: record.port,
-    secure: record.secure,
-    auth: {
-      user: record.username,
-      pass: password,
-    },
-    connectionTimeout: 8_000,
-    greetingTimeout: 8_000,
-    socketTimeout: 10_000,
-  });
-
-  try {
-    await transporter.verify();
-  } catch (error) {
-    throw new HttpError(
-      400,
-      `SMTP handshake failed: ${error instanceof Error ? error.message : "Unable to connect"}`
-    );
-  }
-
-  await prisma.$transaction([
-    prisma.smtpConfig.update({
-      where: { id: smtpId },
-      data: { isVerified: true },
-    }),
-    prisma.auditLog.create({
-      data: {
-        organizationId,
-        actorUserId,
-        action: "smtp_config.verified",
-        targetType: "smtp_config",
-        targetId: smtpId,
-      },
-    }),
-  ]);
+  await markSmtpVerified(smtpId, organizationId, actorUserId);
 
   return { id: smtpId, verified: true };
 }
@@ -655,6 +789,74 @@ export async function deleteWorkspaceSmtpConfig(params: {
   return { id: smtpId };
 }
 
+/** Edits a saved sender. Any change invalidates its previous verification. */
+export async function updateWorkspaceSmtpConfig(params: {
+  smtpId: string;
+  organizationId: string;
+  actorUserId: string;
+  input: Partial<CreateSmtpConfigInput>;
+}) {
+  const { smtpId, organizationId, actorUserId, input } = params;
+
+  const existing = await prisma.smtpConfig.findFirst({
+    where: { id: smtpId, organizationId },
+    select: { id: true, name: true, host: true, port: true },
+  });
+  if (!existing) throw new HttpError(404, "SMTP configuration not found");
+
+  if (input.host !== undefined || input.port !== undefined) {
+    await assertSmtpAllowed(input.host?.trim() ?? existing.host, input.port ?? existing.port);
+  }
+
+  const sealed = input.password !== undefined ? encryptSecret(input.password) : null;
+  const data: Prisma.SmtpConfigUpdateInput = {
+    ...(input.name !== undefined ? { name: input.name.trim() } : {}),
+    ...(input.host !== undefined ? { host: input.host.trim() } : {}),
+    ...(input.port !== undefined ? { port: input.port } : {}),
+    ...(input.secure !== undefined ? { secure: input.secure } : {}),
+    ...(input.username !== undefined ? { username: input.username.trim() } : {}),
+    ...(input.fromEmail !== undefined ? { fromEmail: input.fromEmail.trim().toLowerCase() } : {}),
+    ...(sealed
+      ? {
+          encryptedPassword: sealed.ciphertext,
+          iv: sealed.iv,
+          authTag: sealed.authTag,
+          keyVersion: sealed.keyVersion,
+        }
+      : {}),
+    isVerified: false,
+  };
+
+  await prisma.$transaction([
+    prisma.smtpConfig.update({ where: { id: smtpId }, data }),
+    prisma.auditLog.create({
+      data: {
+        organizationId,
+        actorUserId,
+        action: "smtp_config.updated",
+        targetType: "smtp_config",
+        targetId: smtpId,
+        // Field names only — never the password value itself.
+        metadata: { name: existing.name, updatedFields: Object.keys(input) },
+      },
+    }),
+  ]);
+
+  return prisma.smtpConfig.findUnique({
+    where: { id: smtpId },
+    select: {
+      id: true,
+      name: true,
+      host: true,
+      port: true,
+      secure: true,
+      username: true,
+      fromEmail: true,
+      isVerified: true,
+    },
+  });
+}
+
 /** Set (or clear) the workspace-level sender used when a form has no explicit
  *  sender. System SMTP from the environment remains the final fallback. */
 export async function setWorkspaceDefaultSmtp(params: {
@@ -668,9 +870,12 @@ export async function setWorkspaceDefaultSmtp(params: {
     if (smtpConfigId) {
       const existing = await tx.smtpConfig.findFirst({
         where: { id: smtpConfigId, organizationId },
-        select: { id: true, name: true },
+        select: { id: true, name: true, isVerified: true },
       });
       if (!existing) throw new HttpError(404, "SMTP configuration not found");
+      if (!canAssignSmtpSender(existing)) {
+        throw new HttpError(400, unverifiedSenderMessage(existing, "workspace default sender"));
+      }
     }
 
     await tx.smtpConfig.updateMany({
@@ -844,7 +1049,7 @@ export async function createWorkspaceApiKey(params: {
         name: input.name.trim(),
         keyPrefix: generated.keyPrefix,
         keyHash: generated.keyHash,
-        scopes: input.scopes ?? ["forms:write", "emails:send"],
+        scopes: input.scopes ?? ["forms:read"],
         expiresAt: input.expiresAt ? new Date(input.expiresAt) : null,
       },
       select: {

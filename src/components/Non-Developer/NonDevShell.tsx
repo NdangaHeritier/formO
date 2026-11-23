@@ -98,11 +98,9 @@ export default function NonDevShell({ children }: { children: React.ReactNode })
               </div>
             </div>
             <div className="re-size relative h-full w-6 shrink-0 max-lg:hidden">
-              <Tooltip label="Resize panel" placement="right">
-                <button type="button" aria-label="Resize panel" className="absolute -left-3 top-20">
-                  <Icon name="FlipHorizontal" className="flex h-6 w-6 cursor-col-resize items-center justify-center rounded-full bg-transparent text-zinc-400 hover:text-zinc-700 dark:bg-zinc-900 dark:hover:text-zinc-200" />
-                </button>
-              </Tooltip>
+              <span aria-hidden="true" className="absolute -left-3 top-20 flex h-6 w-6 cursor-col-resize items-center justify-center rounded-full bg-transparent text-zinc-400 dark:bg-zinc-900">
+                <Icon name="FlipHorizontal" className="h-6 w-6" />
+              </span>
             </div>
             <div className="min-h-0 flex-1 overflow-y-auto">
               <div key={pathname} className="page-enter grid grid-cols-1 p-4 pb-32 sm:p-6 sm:pb-32 lg:p-10 lg:pb-10">{children}</div>

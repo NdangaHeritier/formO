@@ -46,7 +46,7 @@ export const Hero : React.FC = () => {
                                 </div>
                                 <code className="text-zinc-600 dark:text-zinc-500 flex items-start gap-1 break-all text-sm p-2">
                                     <Icon name="Terminal" className="text-zinc-700 dark:text-zinc-400 text-sm" size={15} />
-                                    https://formo.io/api/send/form:[formId]
+                                    https://your-formo-host/api/f/&#123;endpoint&#125;
                                 </code>
                             </div>
                             , and let FormO handle the rest.

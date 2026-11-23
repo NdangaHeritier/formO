@@ -101,8 +101,8 @@ export default function NewApiKeyModal({ onClose, onCreated }: Props) {
                 </h2>
               </div>
               <p className="text-xs leading-5 text-zinc-500 dark:text-zinc-400">
-                The key inherits the <code className="font-mono">forms:read</code> and{" "}
-                <code className="font-mono">emails:send</code> scopes by default.
+                The key inherits the <code className="font-mono">forms:read</code> scope by
+                default, which grants read access to <code className="font-mono">GET /api/v1/forms</code>.
               </p>
             </div>
             <form onSubmit={submit} className="mt-5 grid grid-cols-1 gap-4">

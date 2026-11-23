@@ -19,6 +19,37 @@ type Props = {
 
 type Recipient = { email: string; type: "cc" | "bcc" };
 
+type AdvancedSettings = {
+  allowedOrigins: string[];
+  honeypotField: string;
+  requireTurnstile: boolean;
+};
+
+/** Returns normalized http(s) origins, or null when any entry is invalid. */
+function normalizeOrigins(input: string): string[] | null {
+  const parts = input
+    .split(",")
+    .map((part) => part.trim())
+    .filter(Boolean);
+  if (parts.length === 0) return null;
+
+  const origins: string[] = [];
+  for (const part of parts) {
+    if (part === "*") {
+      origins.push("*");
+      continue;
+    }
+    try {
+      const parsed = new URL(part);
+      if (parsed.protocol !== "http:" && parsed.protocol !== "https:") return null;
+      origins.push(parsed.origin);
+    } catch {
+      return null;
+    }
+  }
+  return origins;
+}
+
 export default function NewForm({ project, projectName, onClick, onSuccess }: Props) {
   const scopedToProject = Boolean(project);
   const [formData, setFormData] = useState({
@@ -29,8 +60,17 @@ export default function NewForm({ project, projectName, onClick, onSuccess }: Pr
   });
   const [projects, setProjects] = useState<Array<{ id: string; name: string }>>([]);
   const [recipients, setRecipients] = useState<Recipient[]>([]);
+  const [advanced, setAdvanced] = useState<AdvancedSettings>({
+    allowedOrigins: [],
+    honeypotField: "_gotcha",
+    requireTurnstile: false,
+  });
+  const [originInput, setOriginInput] = useState("");
+  const [previousOrigins, setPreviousOrigins] = useState<string[]>([]);
   const toast = useToast();
   const [loading, setLoading] = useState(false);
+
+  const allowAnyOrigin = advanced.allowedOrigins.includes("*");
 
   useEffect(() => {
     if (scopedToProject) return;
@@ -51,6 +91,53 @@ export default function NewForm({ project, projectName, onClick, onSuccess }: Pr
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
   ) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  function updateAdvanced<K extends keyof AdvancedSettings>(key: K, value: AdvancedSettings[K]) {
+    setAdvanced((current) => ({ ...current, [key]: value }));
+  }
+
+  const addOrigins = () => {
+    if (allowAnyOrigin) return;
+    const parsed = normalizeOrigins(originInput);
+    if (!parsed) {
+      toast.error("Enter comma-separated http(s) origins or *.");
+      return;
+    }
+    const combined = [...advanced.allowedOrigins, ...parsed];
+    if (combined.includes("*")) {
+      setPreviousOrigins(advanced.allowedOrigins.filter((origin) => origin !== "*"));
+      updateAdvanced("allowedOrigins", ["*"]);
+    } else {
+      const unique = Array.from(new Set(combined));
+      if (unique.length > 25) {
+        toast.error("You can add up to 25 allowed origins.");
+        return;
+      }
+      updateAdvanced("allowedOrigins", unique);
+    }
+    setOriginInput("");
+  };
+
+  const toggleAllowAnyOrigin = (checked: boolean) => {
+    if (checked) {
+      setPreviousOrigins(advanced.allowedOrigins.filter((origin) => origin !== "*"));
+      updateAdvanced("allowedOrigins", ["*"]);
+    } else {
+      updateAdvanced("allowedOrigins", previousOrigins);
+    }
+    setOriginInput("");
+  };
+
+  const removeOrigin = (origin: string) => {
+    if (origin === "*") {
+      updateAdvanced("allowedOrigins", previousOrigins);
+      return;
+    }
+    updateAdvanced(
+      "allowedOrigins",
+      advanced.allowedOrigins.filter((item) => item !== origin)
+    );
   };
 
   const updateRecipient = (index: number, patch: Partial<Recipient>) => {
@@ -84,6 +171,9 @@ export default function NewForm({ project, projectName, onClick, onSuccess }: Pr
           description: formData.description.trim() || null,
           emailTo: formData.emailTo.trim().toLowerCase(),
           recipients: cleaned,
+          allowedOrigins: advanced.allowedOrigins,
+          honeypotField: advanced.honeypotField.trim() || null,
+          requireTurnstile: advanced.requireTurnstile,
         }),
       });
       const data = (await res.json().catch(() => null)) as {
@@ -213,6 +303,113 @@ export default function NewForm({ project, projectName, onClick, onSuccess }: Pr
               + Add CC / BCC recipient
             </button>
           </fieldset>
+
+          <details className="group grid grid-cols-1 gap-4 rounded-2xl border border-zinc-200 bg-zinc-50/60 p-4 dark:border-zinc-800 dark:bg-zinc-900/30">
+            <summary className="flex cursor-pointer list-none items-center gap-2 text-sm font-semibold text-zinc-900 dark:text-zinc-100 [&::-webkit-details-marker]:hidden">
+              <Icon name="SlidersHorizontal" size={16} />
+              <span className="min-w-0 flex-1">Advanced settings</span>
+              <Icon
+                name="ChevronDown"
+                size={16}
+                className="shrink-0 transition-transform group-open:rotate-180"
+              />
+            </summary>
+
+            <div className="grid grid-cols-1 gap-2">
+              <InputField
+                type="text"
+                name="originInput"
+                id="new-origin-input"
+                value={originInput}
+                placeholder="https://example.com, https://app.example.com"
+                onChange={(event) => setOriginInput(event.target.value)}
+                label="Allowed origins"
+              />
+              <div className="flex flex-wrap items-center gap-2">
+                <FormButton
+                  type="button"
+                  variant="secondary"
+                  onClick={addOrigins}
+                  disabled={allowAnyOrigin}
+                >
+                  <Icon name="Plus" size={14} /> Add origin
+                </FormButton>
+                <span className="min-w-0 break-words text-xs text-zinc-500 dark:text-zinc-400">
+                  Comma-separated http(s) origins
+                </span>
+              </div>
+              {advanced.allowedOrigins.length > 0 && (
+                <div className="flex flex-wrap gap-2">
+                  {advanced.allowedOrigins.map((origin, index) => (
+                    <span
+                      key={`${origin}-${index}`}
+                      className="inline-flex min-w-0 max-w-full items-center gap-1 rounded-full border border-zinc-300 bg-zinc-100 px-2 py-1 text-xs text-zinc-700 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-200"
+                    >
+                      <span className="min-w-0 truncate">{origin}</span>
+                      <button
+                        type="button"
+                        aria-label={`Remove origin ${origin}`}
+                        onClick={() => removeOrigin(origin)}
+                        className="shrink-0 cursor-pointer text-zinc-500 hover:text-red-600 dark:hover:text-red-400"
+                      >
+                        <Icon name="X" size={12} />
+                      </button>
+                    </span>
+                  ))}
+                </div>
+              )}
+              <div className="flex items-start gap-2">
+                <input
+                  id="new-allow-any-origin"
+                  type="checkbox"
+                  checked={allowAnyOrigin}
+                  onChange={(event) => toggleAllowAnyOrigin(event.target.checked)}
+                  className="mt-0.5 h-4 w-4 shrink-0 cursor-pointer accent-zinc-900 dark:accent-zinc-100"
+                />
+                <label
+                  htmlFor="new-allow-any-origin"
+                  className="min-w-0 break-words text-sm text-zinc-800 dark:text-zinc-200"
+                >
+                  Allow any origin (*)
+                </label>
+              </div>
+              <p className="text-xs text-zinc-500 dark:text-zinc-400">
+                Empty list currently allows any origin.
+              </p>
+            </div>
+
+            <InputField
+              type="text"
+              name="honeypotField"
+              id="new-honeypot"
+              value={advanced.honeypotField}
+              placeholder="_gotcha"
+              onChange={(event) => updateAdvanced("honeypotField", event.target.value)}
+              label="Honeypot field name"
+            />
+
+            <div className="grid grid-cols-1 gap-2">
+              <div className="flex items-start gap-2">
+                <input
+                  id="new-require-turnstile"
+                  type="checkbox"
+                  checked={advanced.requireTurnstile}
+                  onChange={(event) => updateAdvanced("requireTurnstile", event.target.checked)}
+                  className="mt-0.5 h-4 w-4 shrink-0 cursor-pointer accent-zinc-900 dark:accent-zinc-100"
+                />
+                <label
+                  htmlFor="new-require-turnstile"
+                  className="min-w-0 break-words text-sm text-zinc-800 dark:text-zinc-200"
+                >
+                  Turnstile required
+                </label>
+              </div>
+              <p className="text-xs text-zinc-500 dark:text-zinc-400">
+                Requires TURNSTILE_SECRET_KEY on the server and the Cloudflare widget rendered on
+                your site.
+              </p>
+            </div>
+          </details>
 
           <div className="actions grid grid-cols-2 gap-3">
             <FormButton onClick={onClick} variant="danger" type="button">
