@@ -139,7 +139,7 @@ export function SkeletonProjectCard() {
 
 export function SkeletonGrid({ count = 3 }: { count?: number }) {
   return (
-    <div aria-hidden="true" className="grid grid-cols-3 gap-5">
+    <div aria-hidden="true" className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
       {Array.from({ length: count }, (_, index) => (
         <SkeletonProjectCard key={index} />
       ))}

@@ -303,7 +303,7 @@ export default function SubmissionsPage() {
                             type="button"
                             aria-label={`Delete submission from ${item.formTitle}`}
                             onClick={() => setPendingDelete(item)}
-                            className="ml-3 cursor-pointer rounded-lg p-1.5 text-zinc-400 hover:bg-red-500/10 hover:text-red-600 dark:hover:text-red-400"
+                            className="ml-3 cursor-pointer rounded-lg p-2.5 text-zinc-400 hover:bg-red-500/10 hover:text-red-600 dark:hover:text-red-400"
                           >
                             <Icon name="Trash" size={14} />
                           </button>
@@ -375,7 +375,7 @@ export default function SubmissionsPage() {
                     detail.deliveries.map((delivery) => (
                       <div key={delivery.id} className="rounded-xl border border-zinc-200 p-3 text-sm dark:border-zinc-800">
                         <div className="flex flex-wrap items-center justify-between gap-2">
-                          <span className="text-zinc-800 dark:text-zinc-200">{delivery.recipientEmail}</span>
+                          <span className="min-w-0 break-all text-zinc-800 dark:text-zinc-200">{delivery.recipientEmail}</span>
                           <span className={`rounded-full px-2 py-0.5 text-[11px] font-medium ${statusClasses[delivery.status] ?? statusClasses.pending}`}>
                             {delivery.status}
                           </span>

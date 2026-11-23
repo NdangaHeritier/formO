@@ -211,7 +211,7 @@ export default function ProjectCard ({name, description, forms, formsCount, subm
                     Created <span className="text-zinc-200">{new Date().toLocaleDateString()}</span> {/* Replace with actual date */}
                 </p>
             </div>
-            <div className="form-details grid grid-cols-2 gap-">
+            <div className="form-details grid grid-cols-1 gap-2 sm:grid-cols-2">
                 <p className="text-sm text-zinc-700 dark:text-zinc-400">
                     Forms: {formsCount ?? forms?.length ?? 0}
                 </p>
@@ -233,9 +233,8 @@ export default function ProjectCard ({name, description, forms, formsCount, subm
                         </Tooltip>
                     )}
                 </div>
-                <div className="flex items-center gap-2 bg-zinc-100/50 dark:bg-zinc-900/70 p-3 rounded-lg">
-                    {/* <Icon name="Terminal" size={16} className="text-zinc-500" strokeWidth={2} /> */}
-                    <span className="text-xs font-mono text-zinc-600 dark:text-zinc-400">{endpoint ?? 'No endpoint yet — add a form to this project'}</span>
+                <div className="flex min-w-0 items-center gap-2 bg-zinc-100/50 dark:bg-zinc-900/70 p-3 rounded-lg">
+                    <span className="min-w-0 break-all text-xs font-mono text-zinc-600 dark:text-zinc-400">{endpoint ?? 'No endpoint yet — add a form to this project'}</span>
                 </div>
             </div>
 

@@ -116,7 +116,7 @@ const AnalyticsPage = () => {
                         href={`/developer/projects/${encodeURIComponent(project.slug || project.name)}`}
                         className="flex items-center justify-between text-sm bg-zinc-50 dark:bg-zinc-900/40 hover:bg-zinc-100 dark:hover:bg-zinc-900/70 border border-transparent hover:border-zinc-200 dark:hover:border-zinc-800 rounded-lg px-4 py-3 transition"
                       >
-                        <span className="flex items-center gap-2 text-zinc-800 dark:text-zinc-200 truncate">
+                        <span className="flex min-w-0 items-center gap-2 text-zinc-800 dark:text-zinc-200 truncate">
                           <Icon name="Folder" size={15} className="text-zinc-400 shrink-0" />
                           <span className="truncate">{project.name}</span>
                         </span>

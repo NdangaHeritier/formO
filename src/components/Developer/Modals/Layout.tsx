@@ -68,7 +68,7 @@ const Layout = ({ children, onClick, label = "FormO dialog" }: LayoutProps) => {
       onKeyDown={onKeyDown}
       className="fixed inset-0 z-50 overflow-auto bg-black/50 p-3 sm:p-5 flex flex-col items-center justify-center"
     >
-      <div className="closeLink inline-flex absolute top-4 right-4 p-2 sm:top-10 sm:right-10 sm:p-5">
+      <div className="closeLink sticky top-3 z-10 inline-flex self-end p-2 sm:top-5">
         <Tooltip label="Close dialog" placement="left">
           <button
             type="button"

@@ -215,12 +215,12 @@ const SettingsPage = () => {
                   Used when a form has no sender selected. Falls back to system SMTP when unset.
                 </span>
               </span>
-              <span className="flex items-center gap-2">
+              <span className="flex min-w-0 flex-wrap items-center gap-2">
                 <select
                   aria-label="Workspace default sender"
                   value={defaultSenderId}
                   onChange={(event) => setDefaultSenderId(event.target.value)}
-                  className="text-sm bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-lg px-3 py-2"
+                  className="min-w-0 max-w-full text-sm bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-lg px-3 py-2"
                 >
                   <option value="">System SMTP (fallback)</option>
                   {smtpConfigs.map((config) => (
@@ -251,7 +251,7 @@ const SettingsPage = () => {
                     </span>
                   </span>
                 </span>
-                <span className="flex items-center gap-2">
+                <span className="flex min-w-0 flex-wrap items-center justify-end gap-2">
                   {config.isSystemDefault && <span className={pillClass}>Workspace default</span>}
                   <span className={pillClass}>{config.secure ? "SSL" : "STARTTLS"}</span>
                   <span
@@ -307,7 +307,7 @@ const SettingsPage = () => {
                     </span>
                   </span>
                 </span>
-                <span className="flex items-center gap-2">
+                <span className="flex min-w-0 flex-wrap items-center justify-end gap-2">
                   {key.revokedAt ? (
                     <span className="text-[11px] px-2 py-0.5 rounded-full font-medium bg-red-500/10 text-red-600 dark:text-red-400">
                       Revoked

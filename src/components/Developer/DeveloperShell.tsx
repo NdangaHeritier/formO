@@ -149,7 +149,7 @@ export default function DeveloperShell({ children }: { children: React.ReactNode
                   >
                     <Icon name={item.icon} size={20} strokeWidth={active ? 2.4 : 2} />
                   </span>
-                  {item.label}
+                  <span className="w-full truncate text-center">{item.label}</span>
                 </Link>
               );
             })}

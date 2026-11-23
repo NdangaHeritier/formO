@@ -30,9 +30,9 @@
   --foreground: #ffffff;
 }
 
-/* Keep the assistant button clear of the developer tab bar on phones. */
+/* Keep the assistant button clear of the developer tab bar and page footers. */
 @media (max-width: 767px) {
-  html:has(.app-viewport) [aria-label="FormO assistant"] {
+  .assistant-dock {
     bottom: 5.5rem;
   }
 }

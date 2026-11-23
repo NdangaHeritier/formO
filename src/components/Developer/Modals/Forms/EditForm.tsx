@@ -130,14 +130,14 @@ export default function EditForm({ form, onClick, onSuccess }: Props) {
               Additional recipients
             </legend>
             {recipients.map((recipient, index) => (
-              <div key={index} className="flex items-center gap-2">
+              <div key={index} className="flex flex-wrap items-center gap-2">
                 <input
                   type="email"
                   aria-label={`Recipient ${index + 1} email`}
                   value={recipient.email}
                   onChange={(e) => updateRecipient(index, { email: e.target.value })}
                   placeholder="colleague@company.com"
-                  className="border border-zinc-300 dark:border-zinc-700 bg-zinc-100 dark:bg-zinc-900/50 text-zinc-800 dark:text-zinc-200 py-2 px-3 rounded-md text-sm w-full"
+                  className="min-w-0 flex-1 border border-zinc-300 dark:border-zinc-700 bg-zinc-100 dark:bg-zinc-900/50 text-zinc-800 dark:text-zinc-200 py-2 px-3 rounded-md text-sm w-full"
                 />
                 <select
                   aria-label={`Recipient ${index + 1} type`}

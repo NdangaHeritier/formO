@@ -105,7 +105,7 @@ export default function DashboardOverview() {
             className="rounded-card border border-zinc-200 bg-white p-card dark:border-zinc-800 dark:bg-zinc-950"
           >
             <div className="text-xs text-zinc-500 dark:text-zinc-400">{metric.label}</div>
-            <div className="mt-1 text-xl font-semibold text-zinc-900 dark:text-zinc-100">{metric.value}</div>
+            <div className="mt-1 break-words text-base font-semibold text-zinc-900 dark:text-zinc-100 sm:text-xl">{metric.value}</div>
           </div>
         ))}
       </div>

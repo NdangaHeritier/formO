@@ -236,7 +236,7 @@ const FormsPage = () => {
                               type="button"
                               aria-label={`Copy public submission URL for ${form.title}`}
                               onClick={() => copyText(`${window.location.origin}${publicUrl(form.endpoint)}`, "Public URL")}
-                              className="p-1.5 rounded-lg bg-zinc-100/70 dark:bg-zinc-900/70 hover:bg-zinc-200/70 dark:hover:bg-zinc-900 cursor-pointer"
+                              className="p-2.5 rounded-lg bg-zinc-100/70 dark:bg-zinc-900/70 hover:bg-zinc-200/70 dark:hover:bg-zinc-900 cursor-pointer"
                             >
                               <Icon name="Copy" size={13} className="text-zinc-500" />
                             </button>
@@ -246,7 +246,7 @@ const FormsPage = () => {
                               type="button"
                               aria-label={`Copy embed HTML for ${form.title}`}
                               onClick={() => copyText(embedSnippet(form.endpoint), "Embed HTML")}
-                              className="p-1.5 rounded-lg bg-zinc-100/70 dark:bg-zinc-900/70 hover:bg-zinc-200/70 dark:hover:bg-zinc-900 cursor-pointer"
+                              className="p-2.5 rounded-lg bg-zinc-100/70 dark:bg-zinc-900/70 hover:bg-zinc-200/70 dark:hover:bg-zinc-900 cursor-pointer"
                             >
                               <Icon name="Code" size={13} className="text-zinc-500" />
                             </button>
@@ -256,7 +256,7 @@ const FormsPage = () => {
                               type="button"
                               aria-label={`Send a test submission to ${form.title}`}
                               onClick={() => { void sendTestSubmission(form).catch(() => {}); }}
-                              className="p-1.5 rounded-lg bg-zinc-100/70 dark:bg-zinc-900/70 hover:bg-zinc-200/70 dark:hover:bg-zinc-900 cursor-pointer"
+                              className="p-2.5 rounded-lg bg-zinc-100/70 dark:bg-zinc-900/70 hover:bg-zinc-200/70 dark:hover:bg-zinc-900 cursor-pointer"
                             >
                               <Icon name="Send" size={13} className="text-zinc-500" />
                             </button>
@@ -267,7 +267,7 @@ const FormsPage = () => {
                                 type="button"
                                 aria-label={`Rotate endpoint for ${form.title}`}
                                 onClick={() => setPendingRotate(form)}
-                                className="p-1.5 rounded-lg bg-zinc-100/70 dark:bg-zinc-900/70 hover:bg-zinc-200/70 dark:hover:bg-zinc-900 cursor-pointer"
+                                className="p-2.5 rounded-lg bg-zinc-100/70 dark:bg-zinc-900/70 hover:bg-zinc-200/70 dark:hover:bg-zinc-900 cursor-pointer"
                               >
                                 <Icon name="RefreshCcw" size={13} className="text-zinc-500" />
                               </button>

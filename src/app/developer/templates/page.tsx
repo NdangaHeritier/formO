@@ -113,7 +113,7 @@ export default function TemplatesPage() {
                         {template.subjectTemplate}
                       </span>
                     </div>
-                    <div className="flex items-center gap-2">
+                    <div className="flex flex-wrap items-center justify-end gap-2">
                       <span className="hidden text-xs text-zinc-500 sm:block dark:text-zinc-400">
                         {relativeTime(template.updatedAt)}
                       </span>

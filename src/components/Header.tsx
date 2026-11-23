@@ -114,7 +114,7 @@ export default function Header({ border = "border-b", py = "py-3" }: prop) {
                         <SkeletonBox customStyle="w-20 h-6 rounded-md" shown={authLoading} />
                     </div>
                 ) : !currentUser ? (
-                    <ul className={`flex items-center justify-center max-sm:flex-col max-sm:justify-start gap-5 max-sm:gap-0 max-sm:fixed max-sm:top-16 max-sm:left-0 max-sm:right-0 max-sm:bottom-0 max-sm:bg-white dark:max-sm:bg-zinc-950 max-sm:p-3 max-sm:min-h-screen max-sm:pb-20  ${isNavOpen ? `max-sm:visible` : `max-sm:invisible max-sm:h-0`}`}>
+                    <ul className={`flex items-center justify-center max-sm:flex-col max-sm:justify-start gap-5 max-sm:gap-0 max-sm:fixed max-sm:top-16 max-sm:left-0 max-sm:right-0 max-sm:bottom-0 max-sm:bg-white dark:max-sm:bg-zinc-950 max-sm:p-3 max-sm:h-[calc(100dvh-4rem)] max-sm:pb-20  ${isNavOpen ? `max-sm:visible` : `max-sm:invisible max-sm:h-0`}`}>
                         {NAV_LINKS.map((item) => (
                             <li key={item.label} className="list-item max-sm:w-full sm:px-1 max-sm:border-b max-sm:border-zinc-200 dark:max-sm:border-zinc-800 max-sm:grid max-sm:grid-cols-1">
                                 {/* FIX: close the mobile menu after tapping a link */}
@@ -157,14 +157,16 @@ export default function Header({ border = "border-b", py = "py-3" }: prop) {
                     {currentUser ? (
                         <>
 
-                         <LinkButton href="/developer" variant="primary">
-                        <Icon name="Webhook" size={15} className="text-zinc-500 max-sm:hidden dark:text-zinc-400" />
-                        Get API
-                    </LinkButton>
-                    <LinkButton href="/non-dev" variant="secondary">
-                        <Icon name="Text" size={15} className="text-zinc-500 max-sm:hidden dark:text-zinc-400" />
-                        Send Emails
-                    </LinkButton>
+                        <div className="hidden items-center gap-3 sm:flex">
+                            <LinkButton href="/developer" variant="primary">
+                                <Icon name="Webhook" size={15} className="text-zinc-500 dark:text-zinc-400" />
+                                Get API
+                            </LinkButton>
+                            <LinkButton href="/non-dev" variant="secondary">
+                                <Icon name="Text" size={15} className="text-zinc-500 dark:text-zinc-400" />
+                                Send Emails
+                            </LinkButton>
+                        </div>
 
                         <Tooltip label="Account menu">
                             <button

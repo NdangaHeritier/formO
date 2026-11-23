@@ -58,20 +58,20 @@ export default function Footer() {
                 <h3 className="text-lg font-semibold text-zinc-700 dark:text-zinc-400">Follow Us</h3>
                 <ul className="list-none grid grid-cols-2 gap-3 text-zinc-600 dark:text-zinc-500">
                     <li className="flex items-center justify-start"><Link href="https://facebook.com" target="_blank" className="hover:underline text-sm flex items-center justify-center gap-2">
-                        <Icon name="Facebook" size={15} strokeWidth={2} className="text-zinc-700 dark:text-zinc-400 bg-zinc-200/40 dark:bg-zinc-900/50 border-2 border-white dark:border-black ring-2 ring-zinc-100 dark:ring-zinc-900 rounded-md h-8 w-8 p-1 flex items-center justify-center"/>
+                        <Icon name="Facebook" size={15} strokeWidth={2} className="text-zinc-700 dark:text-zinc-400 bg-zinc-200/40 dark:bg-zinc-900/50 border-2 border-white dark:border-black ring-2 ring-zinc-100 dark:ring-zinc-900 rounded-md h-10 w-10 p-1 flex items-center justify-center"/>
                         Facebook
                     </Link></li>
                     <li className="flex items-center justify-start"><Link href="https://twitter.com" target="_blank" className="hover:underline text-sm flex items-center justify-center gap-2">
-                        <Icon name="Twitter" size={15} strokeWidth={2} className="text-zinc-700 dark:text-zinc-400 bg-zinc-200/40 dark:bg-zinc-900/50 border-2 border-white dark:border-black ring-2 ring-zinc-100 dark:ring-zinc-900 rounded-md h-8 w-8 p-1 flex items-center justify-center"/>
+                        <Icon name="Twitter" size={15} strokeWidth={2} className="text-zinc-700 dark:text-zinc-400 bg-zinc-200/40 dark:bg-zinc-900/50 border-2 border-white dark:border-black ring-2 ring-zinc-100 dark:ring-zinc-900 rounded-md h-10 w-10 p-1 flex items-center justify-center"/>
                         Twitter
                     </Link></li>
                     <li className="flex items-center justify-start"><Link href="https://linkedin.com" target="_blank" className="hover:underline text-sm flex items-center justify-center gap-2">
-                        <Icon name="Linkedin" size={15} strokeWidth={2} className="text-zinc-700 dark:text-zinc-400 bg-zinc-200/40 dark:bg-zinc-900/50 border-2 border-white dark:border-black ring-2 ring-zinc-100 dark:ring-zinc-900 rounded-md h-8 w-8 p-1 flex items-center justify-center"/>
+                        <Icon name="Linkedin" size={15} strokeWidth={2} className="text-zinc-700 dark:text-zinc-400 bg-zinc-200/40 dark:bg-zinc-900/50 border-2 border-white dark:border-black ring-2 ring-zinc-100 dark:ring-zinc-900 rounded-md h-10 w-10 p-1 flex items-center justify-center"/>
                         LinkedIn
                     </Link></li>
                     <li className="flex items-center justify-start">
                         <Link href="https://instagram.com" target="_blank" className="hover:underline text-sm flex items-center justify-center gap-2">
-                        <Icon name="Instagram" size={15} strokeWidth={2} className="text-zinc-700 dark:text-zinc-400 bg-zinc-200/40 dark:bg-zinc-900/50 border-2 border-white dark:border-black ring-2 ring-zinc-100 dark:ring-zinc-900 rounded-md h-8 w-8 p-1 flex items-center justify-center"/>
+                        <Icon name="Instagram" size={15} strokeWidth={2} className="text-zinc-700 dark:text-zinc-400 bg-zinc-200/40 dark:bg-zinc-900/50 border-2 border-white dark:border-black ring-2 ring-zinc-100 dark:ring-zinc-900 rounded-md h-10 w-10 p-1 flex items-center justify-center"/>
                         Instagram
                         </Link>
                     </li>

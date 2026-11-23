@@ -44,7 +44,7 @@ export const Hero : React.FC = () => {
                                 <div className="head border-b border-b-zinc-200 dark:border-b-zinc-900 dark:bg-zinc-900/50 bg-zinc-200 p-2">
                                     <Icon name="Link" className="text-zinc-700 dark:text-zinc-400 text-sm" size={14} />
                                 </div>
-                                <code className="text-zinc-600 dark:text-zinc-500 flex items-center gap-1 text-sm p-2">
+                                <code className="text-zinc-600 dark:text-zinc-500 flex items-start gap-1 break-all text-sm p-2">
                                     <Icon name="Terminal" className="text-zinc-700 dark:text-zinc-400 text-sm" size={15} />
                                     https://formo.io/api/send/form:[formId]
                                 </code>

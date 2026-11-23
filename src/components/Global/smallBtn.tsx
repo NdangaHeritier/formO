@@ -17,7 +17,7 @@ const SmallBtn = ({variant="primary",type="button",onClick, children, disabled =
             type={type}
             onClick={onClick}
             disabled={disabled}
-            className={`${variation[variant]} ${disabled ? `opacity-40 cursor-not-allowed`: `cursor-pointer`} font-semibold duration-300 px-1.5 py-1 rounded-lg text-sm flex items-center justify-center gap-1`}
+            className={`${variation[variant]} ${disabled ? `opacity-40 cursor-not-allowed`: `cursor-pointer`} font-semibold duration-300 px-1.5 py-1 rounded-lg text-sm flex items-center justify-center gap-1 max-sm:min-h-10 max-sm:px-3`}
         >
             {children}                    
         </button>

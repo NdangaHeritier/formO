@@ -113,7 +113,7 @@ export default function RootLayout({
         <main>
           <section className="min-h-screen p-0">
             {children}
-            <div className="fixed right-0 bottom-0 z-[9999] inline-block p-3">
+            <div className="assistant-dock fixed right-0 bottom-0 z-[9999] inline-block p-3">
               <Tooltip label="FormO assistant" placement="left">
                 <button
                   type="button"

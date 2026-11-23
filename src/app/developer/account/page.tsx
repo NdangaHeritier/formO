@@ -223,9 +223,9 @@ export default function AccountPage() {
       <div className="mx-auto grid w-full max-w-2xl grid-cols-1 gap-card">
         <div className="flex items-center gap-3">
           <UserAvatar src={avatarSrc} size={48} className="h-12 w-12" />
-          <div className="grid grid-cols-1 gap-0.5">
+          <div className="grid min-w-0 grid-cols-1 gap-0.5">
             <h1 className="text-xl font-bold text-zinc-900 dark:text-zinc-100">Account settings</h1>
-            <p className="text-sm text-zinc-500 dark:text-zinc-400">{session?.user?.email}</p>
+            <p className="truncate text-sm text-zinc-500 dark:text-zinc-400">{session?.user?.email}</p>
           </div>
         </div>
 

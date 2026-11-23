@@ -67,7 +67,7 @@ export default function NewSenderModal({ onClose, onCreated }: Props) {
 
         <form onSubmit={submit} className="mt-5 grid grid-cols-1 gap-4">
           <InputField type="text" name="name" id="sender-name" label="Label" placeholder="Primary sender" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} />
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
             <InputField type="text" name="host" id="sender-host" label="Host" placeholder="smtp.example.com" value={form.host} onChange={(e) => setForm({ ...form, host: e.target.value })} />
             <InputField type="number" name="port" id="sender-port" label="Port" placeholder="587" value={form.port} onChange={(e) => setForm({ ...form, port: e.target.value })} />
           </div>

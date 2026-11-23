@@ -58,8 +58,8 @@ const SelectInterest = () => {
                             width={50}
                         />
                     </div>
-                    <h1 className="text-3xl font-bold text-transparent bg-clip-text from-yellow-500 to-yellow-700 dark:from-yellow-600 dark:to-yellow-800 bg-gradient-to-br mb-4">Welcome, {currentUser?.name || currentUser?.email}</h1>
-                    <h1 className="text-3xl font-bold text-zinc-900 mb-4 dark:text-white">Select Your Interests</h1>
+                    <h1 className="text-2xl font-bold text-transparent bg-clip-text from-yellow-500 to-yellow-700 dark:from-yellow-600 dark:to-yellow-800 bg-gradient-to-br mb-4 break-all sm:text-3xl">Welcome, {currentUser?.name || currentUser?.email}</h1>
+                    <h1 className="text-2xl font-bold text-zinc-900 mb-4 dark:text-white sm:text-3xl">Select Your Interests</h1>
                     <p className="text-zinc-600 mb-8 dark:text-gray-400">Choose the topics you are interested in to personalize your experience.</p>
                     {/* Add your interest selection UI here... */}
                     <div className="mx-auto grid grid-cols-1 gap-4 max-w-md">
