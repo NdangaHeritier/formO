@@ -238,7 +238,7 @@ const SignupForm = ({ authError }: { authError?: string }) => {
 
                         {/* forgot password */}
                         <div className="flex items-center text-xs justify-center gap-1 text-zinc-500 dark:text-zinc-400 border-l pl-3 border-l-zinc-200 dark:border-l-zinc-700">
-                            <Link href="/#" className="text-zinc-700 dark:text-gray-300 hover:underline">Why choose formo?</Link>
+                            <Link href="/#about" className="text-zinc-700 dark:text-gray-300 hover:underline">Why choose formo?</Link>
                         </div>
                     </div>
 

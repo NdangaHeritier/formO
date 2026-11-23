@@ -22,7 +22,7 @@ export const HeroSection : React.FC = () => {
                 <p className="text-lg text-zinc-400 py-6 text-center">
                     Formo gives you a beautiful dashboard to write, design, and send emails to your audience without ever touching code
                 </p>
-                  <Link href="/NonDev" className="font-light bg-black hover:bg-zinc-200/5 text-zinc-200 border border-zinc-700 px-4 py-2 rounded-xl text-sm backdrop-blur-md flex items-center justify-center gap-2">
+                  <Link href="/non-dev" className="font-light bg-black hover:bg-zinc-200/5 text-zinc-200 border border-zinc-700 px-4 py-2 rounded-xl text-sm backdrop-blur-md flex items-center justify-center gap-2">
                                         Try for Free
                                         <Icon name={`ChevronRight`} className="text-zinc-200" />
                                     </Link>

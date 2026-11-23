@@ -7,7 +7,7 @@ import LinkButton from "../Global/LinkButton";
 
 export const Hero : React.FC = () => {
     return(
-        <section className="hero-section relative p-3 max-sm:p-1 bg-linear-to-l from-yellow-600/30 dark:from-yellow-950/50 from-50% to-50% to-zinc-50 dark:to-zinc-950">
+        <section id="start" className="hero-section relative p-3 max-sm:p-1 bg-linear-to-l from-yellow-600/30 dark:from-yellow-950/50 from-50% to-50% to-zinc-50 dark:to-zinc-950">
             <Squares parLength={240} />
             <div className="contain border shadow-2xl border-zinc-300 dark:border-zinc-900 relative dark:bg-black/90 bg-white/90 rounded-3xl p-20 max-sm:px-4 max-sm:py-8 flex flex-col items-center justify-center gap-7 w-full bg-right-bottom bg-no-repeat" style={{backgroundImage: "url('./Assets/mail.png')"}}>
                 <YellowBorderedSpan title="Get Started, It's free forever!" />
@@ -52,7 +52,7 @@ export const Hero : React.FC = () => {
                             , and let FormO handle the rest.
                         </div>
                         <p className="text-base text-zinc-700 dark:text-zinc-400">With FormO, you can focus on building your application while we take care of the email integration, making your development process faster and more efficient.</p>
-                        <LinkButton href="/test" variant="primary">
+                        <LinkButton href="/signup" variant="primary">
                             <Icon name={`CodeXml`} className="text-zinc-300 dark:text-zinc-700" size={16} />
                             Generate Endpoint                    
                         </LinkButton>
@@ -91,7 +91,7 @@ export const Hero : React.FC = () => {
                         <p className="py-4 text-zinc-800 dark:text-zinc-200">
                             No further setup to bore you. Just your name and where to send. Start customizing and sending with FormO now!
                         </p>
-                        <LinkButton href="/NonDev" variant="secondary">
+                        <LinkButton href="/non-dev" variant="secondary">
                             Get Started
                             <Icon name={`ChevronRight`} className="text-zinc-700 dark:text-zinc-300" />
                         </LinkButton>

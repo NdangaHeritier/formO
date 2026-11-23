@@ -10,7 +10,7 @@ export const dynamic = "force-dynamic";
 
 export async function GET() {
   try {
-    const workspace = await requireActiveWorkspace("member");
+    const workspace = await requireActiveWorkspace("admin");
     const apiKeys = await listWorkspaceApiKeys(workspace.organization.id);
     return NextResponse.json({ apiKeys });
   } catch (error) {

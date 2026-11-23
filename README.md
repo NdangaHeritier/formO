@@ -20,6 +20,7 @@ FormO is a self-hosted, developer-grade form backend. Projects contain forms; fo
 3. The submission is written to a partitioned `form_submissions` table before any email work starts.
 4. Each active recipient gets an `email_deliveries` row; the delivery worker sends and retries them.
 5. Honeypot, Turnstile, allowed origins, payload caps, custom subjects, reply-to fields, CC/BCC recipients and SMTP/template bindings are form settings.
+6. Signup records `interest` (`developer` or `non_developer`) for routing and skippable onboarding answers (`role`, `goals`, `teamSize`) in the `User.onboarding` JSON column. Broadcasts from the non-developer surface write `OutboundMessage` rows and join the same `email_deliveries` worker as form submissions.
 
 ## Route map
 
@@ -34,6 +35,12 @@ FormO is a self-hosted, developer-grade form backend. Projects contain forms; fo
 | `/developer/settings` | SMTP senders, delivery logs, retention, API keys, email templates |
 | `/developer/templates` | Template library and presets |
 | `/developer/account` | Profile, credentials, sessions and account deletion |
+| `/signup/select-interest` | Four skippable onboarding steps (view, role, goals, team size) |
+| `/non-dev` | Non-developer overview: forms, recipients, templates, read-only delivery status |
+| `/non-dev/contacts`, `/non-dev/lists` | Audience: contacts and named lists |
+| `/non-dev/compose` | Compose and queue a broadcast from a template and an audience |
+| `/non-dev/messages`, `/non-dev/messages/{id}` | Broadcasts, recipient delivery status, cancel and retry |
+| `/non-dev/analytics` | Delivery outcomes only (no open/click tracking yet) |
 | `/api/f/{endpoint}` | **Public** form submission endpoint |
 | `/api/forms`, `/api/forms/{id}` | List, read, update, delete forms |
 | `/api/forms/{id}/submissions`, `/api/forms/{id}/rotate-endpoint` | List form submissions, **DELETE all submissions for a form**, rotate endpoint |
@@ -41,6 +48,12 @@ FormO is a self-hosted, developer-grade form backend. Projects contain forms; fo
 | `/api/projects/{id}/forms` | Create and list a project's forms |
 | `/api/submissions`, `/api/submissions/{id}`, `/api/submissions/{id}/retry` | Workspace inbox, submission detail, **DELETE one submission**, delivery retry |
 | `/api/developer/overview` | Workspace overview: attention counts and recent submissions |
+| `/api/non-dev/overview`, `/api/non-dev/contacts`, `/api/non-dev/lists`, `/api/non-dev/templates`, `/api/non-dev/templates/{id}` | Non-developer read endpoints (audience-gated) |
+| `/api/non-dev/contacts/{id}`, `/api/non-dev/lists/{id}`, `/api/non-dev/lists/{id}/members` | Manage contacts, lists and membership |
+| `/api/non-dev/messages`, `/api/non-dev/messages/{id}` | Queue and inspect broadcasts |
+| `/api/non-dev/messages/{id}/cancel`, `/api/non-dev/messages/{id}/retry` | Cancel a queued message, retry failed deliveries |
+| `/api/non-dev/deliveries`, `/api/non-dev/analytics` | Delivery log and delivery-outcome counts |
+| `/api/v1/forms` | API-key read access to workspace forms (`forms:read` scope) |
 | `/api/settings/*`, `/api/templates/*`, `/api/analytics` | Workspace settings (SMTP, delivery logs, retention, API keys), templates, analytics |
 | `/api/auth/*` | Better Auth handlers |
 | `/api/cron/deliver`, `/api/cron/maintenance` | Authenticated scheduled workers |
@@ -79,7 +92,9 @@ Register the exact OAuth callbacks `{BETTER_AUTH_URL}/api/auth/callback/google` 
 
 `vercel.json` schedules `/api/cron/maintenance` at 03:00 UTC and `/api/cron/deliver` at 04:00 UTC. Vercel Hobby allows at most daily schedules; use an external scheduler for a shorter delivery cadence. Both routes require `Authorization: Bearer $CRON_SECRET`.
 
-See [docs/deployment.md](docs/deployment.md), [docs/email-pipeline.md](docs/email-pipeline.md) and [docs/scheduling.md](docs/scheduling.md) for details.
+Run `npx prisma migrate deploy` (with `DATABASE_URL_UNPOOLED`) before deploying the non-dev code. Migrations `0007_non_dev_audience` (contacts, lists, outbound messages) and `0008_user_onboarding` (`User.onboarding` JSON) exist locally but are **not applied to production yet** — apply both before the non-dev routes and APIs go live.
+
+See [docs/deployment.md](docs/deployment.md), [docs/email-pipeline.md](docs/email-pipeline.md), [docs/email-delivery-ownership.md](docs/email-delivery-ownership.md) and [docs/scheduling.md](docs/scheduling.md) for details.
 
 ## Checks
 

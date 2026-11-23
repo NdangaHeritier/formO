@@ -5,7 +5,7 @@ import Image from "next/image";
 
 const IntegrateFormoToday: React.FC = () => {
     return (
-        <section className="relative bg-zinc-50 dark:bg-zinc-950 p-10 max-sm:px-4 flex items-center justify-center overflow-hidden">
+        <section id="integrations" className="relative bg-zinc-50 dark:bg-zinc-950 p-10 max-sm:px-4 flex items-center justify-center overflow-hidden">
             {/* Subtle background graphics */}
             <div className="absolute inset-0 grid grid-cols-2 gap-2 pointer-events-none opacity-40 z-0">
                 <BackGraphicsLayout />

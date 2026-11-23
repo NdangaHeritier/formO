@@ -283,20 +283,22 @@ const SettingsPage = () => {
             <RetentionSetting />
           </div>
 
-          {/* API keys */}
-          <div className="flex justify-end">
-            <FormButton onClick={() => setShowKeyModal(true)}>
-              <Icon name="Plus" size={14} /> Create key
-            </FormButton>
-          </div>
-          <Section
-            title="API Keys"
-            icon="Key"
-            count={apiKeys.length}
-            loading={loading}
-            emptyText="No API keys created yet."
-          >
-            {apiKeys.map((key) => (
+          {/* API keys — listing and management are admin-only. */}
+          {canManageSenders ? (
+            <>
+              <div className="flex justify-end">
+                <FormButton onClick={() => setShowKeyModal(true)}>
+                  <Icon name="Plus" size={14} /> Create key
+                </FormButton>
+              </div>
+              <Section
+                title="API Keys"
+                icon="Key"
+                count={apiKeys.length}
+                loading={loading}
+                emptyText="No API keys created yet."
+              >
+                {apiKeys.map((key) => (
               <li key={key.id} className={rowClass}>
                 <span className="flex items-center gap-2 min-w-0">
                   <Icon name="Key" size={15} className="text-zinc-400 shrink-0" />
@@ -325,7 +327,16 @@ const SettingsPage = () => {
                 </span>
               </li>
             ))}
-          </Section>
+              </Section>
+            </>
+          ) : (
+            <div className="grid grid-cols-1 gap-3 rounded-3xl border border-zinc-200 bg-zinc-50/60 p-5 dark:border-zinc-800 dark:bg-zinc-900/30">
+              <h2 className="text-lg font-semibold text-zinc-900 dark:text-zinc-100">API Keys</h2>
+              <p className="text-sm text-zinc-500 dark:text-zinc-400">
+                API keys are managed by workspace admins.
+              </p>
+            </div>
+          )}
 
           {/* Email templates */}
           <div className="flex justify-end">

@@ -286,7 +286,7 @@ export default function LoginForm({ authError }: { authError?: string }) {
 
                             {/* forgot password */}
                             <div className="flex items-center text-xs justify-center gap-1 text-zinc-500 dark:text-zinc-400 border-l pl-3 border-l-zinc-200 dark:border-l-zinc-700">
-                                <Link href="/#" className="text-zinc-700 dark:text-gray-300 hover:underline">Forgot your password?</Link>
+                                <Link href="/signup" className="text-zinc-700 dark:text-gray-300 hover:underline">Need an account? Sign up</Link>
                             </div>
                         </div>
 

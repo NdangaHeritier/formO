@@ -32,14 +32,14 @@ const nonDevFeatures:feature[] = [
     },
     {
       icon: "BarChart",
-      title: "Insights & Reports",
-      desc: "Track performance with simple analytics."
+      title: "Delivery Insights",
+      desc: "See delivery outcomes and failures in one place."
     },
 ];
 
 const NonDevSolutions: React.FC = () => {
     return (
-        <section className="relative max-sm:flex max-sm:flex-col-reverse overflow-hidden border border-t-0 border-zinc-300 dark:border-zinc-900 ">
+        <section id="community" className="relative max-sm:flex max-sm:flex-col-reverse overflow-hidden border border-t-0 border-zinc-300 dark:border-zinc-900 ">
             <Squares parLength={120} />
         {/* Background Mockups */}
         <div className="sm:absolute sm:right-10 sm:top-10 flex flex-col gap-8 sm:w-[35%] max-sm:p-5 pointer-events-none z-0">
@@ -92,11 +92,11 @@ const NonDevSolutions: React.FC = () => {
             </div>
             <div className="h-40 bg-white dark:bg-zinc-950/80 rounded-2xl p-4 flex flex-col justify-between">
                 <div>
-                <p className="text-sm text-zinc-700 dark:text-zinc-300 font-bold">Campaign Stats</p>
-                <p className="text-xs text-zinc-600 dark:text-zinc-400">Open rate: <span className="text-green-600">65%</span> • Clicks: <span className="text-red-500">24%</span></p>
+                <p className="text-sm text-zinc-700 dark:text-zinc-300 font-bold">Delivery Status</p>
+                <p className="text-xs text-zinc-600 dark:text-zinc-400">Sent • Pending • Failed</p>
                 </div>
-                <LinkButton variant="primary" href="#">
-                    View Full Insights
+                <LinkButton variant="primary" href="/non-dev/analytics">
+                    View Delivery Status
                 </LinkButton>
             </div>
             </div>

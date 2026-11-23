@@ -17,12 +17,12 @@ export default function Footer() {
             <div className="quick-links flex flex-col justify-start items-start gap-3">
             <h3 className="text-lg font-semibold text-zinc-700 dark:text-zinc-400">Quick Links</h3>
             <ul className="list-none flex flex-col gap-2 text-sm text-zinc-600 dark:text-zinc-500">
-                <li><Link href="/#start" className="hover:underline">Documentation</Link></li>
-                <li><Link href="/#start" className="hover:underline">API Reference</Link></li>
+                <li><Link href="/#docs" className="hover:underline">Documentation</Link></li>
+                <li><Link href="/#docs" className="hover:underline">API Reference</Link></li>
                 <li><Link href="/#start" className="hover:underline">Support</Link></li>
                 <li><Link href="/#start" className="hover:underline">Contact Us</Link></li>
-                <li><Link href="/#start" className="hover:underline">Privacy Policy</Link></li>
-                <li><Link href="/#start" className="hover:underline">Terms of Service</Link></li>
+                <li><Link href="/privacy" className="hover:underline">Privacy Policy</Link></li>
+                <li><Link href="/terms" className="hover:underline">Terms of Service</Link></li>
                 <li><Link href="/#start" className="hover:underline">Blog</Link></li>
                 
                 <li><Link href="/#start" className="hover:underline">Pricing</Link></li>
@@ -34,13 +34,13 @@ export default function Footer() {
                     {
                         [
                             {href: "/#community", title: "Community"},
-                            {href: "/#ApiStatus", title: "API Status"},
-                            {href: "/#Changelog", title: "Changelog"},
-                            {href: "/#FAQ", title: "FAQ"},
-                            {href: "/#Feedback", title: "Feedback"},
-                            {href: "/#Careers", title: "Careers"},
-                            {href: "/#press", title: "Press"},
-                            {href: "/#Partners", title: "Partners"},
+                            {href: "/#community", title: "API Status"},
+                            {href: "/#community", title: "Changelog"},
+                            {href: "/#community", title: "FAQ"},
+                            {href: "/#community", title: "Feedback"},
+                            {href: "/#team", title: "Careers"},
+                            {href: "/#community", title: "Press"},
+                            {href: "/#community", title: "Partners"},
                             {href: "/#team", title: "Our Team"},
                         ].map(({href, title}, index)=> (
                             <li key={index}>
@@ -77,9 +77,9 @@ export default function Footer() {
                     </li>
                 </ul>
                 <h3 className="text-lg font-semibold text-zinc-700 dark:text-zinc-400">Get Started</h3>
-                <p className="text-sm text-zinc-600 dark:text-zinc-500">Ready to start sending emails with FormO? <Link href="#" className="text-zinc-900 dark:text-zinc-200 hover:underline font-medium">Sign up</Link> now and get started!</p>
+                <p className="text-sm text-zinc-600 dark:text-zinc-500">Ready to start sending emails with FormO? <Link href="/signup" className="text-zinc-900 dark:text-zinc-200 hover:underline font-medium">Sign up</Link> now and get started!</p>
                 <p className="text-sm text-zinc-600 dark:text-zinc-500">Kickstart your journey with FormO today!</p>
-                <LinkButton variant="secondary" href="/sign-up">Sign Up</LinkButton>
+                <LinkButton variant="secondary" href="/signup">Sign Up</LinkButton>
             </div>
         </div>
         {/* Copyright */}

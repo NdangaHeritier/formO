@@ -41,19 +41,45 @@ If a non-developer is also a workspace admin/owner, `/non-dev` shows an explicit
 **"Switch to developer view"** link to `/developer` rather than silently
 granting config access on the marketing surface.
 
+### Non-developer surfaces
+
+All of these views use the same shell geometry as the developer surface and are
+backed by `/api/non-dev/*`:
+
+| Route | Purpose |
+| --- | --- |
+| `/non-dev` | Overview: forms, recipients, templates and read-only delivery status |
+| `/non-dev/contacts`, `/non-dev/lists` | Build an audience from contacts and named lists |
+| `/non-dev/compose` | Pick a template and audience, then queue a broadcast |
+| `/non-dev/messages`, `/non-dev/messages/[id]` | Manage messages, inspect recipients, cancel or retry |
+| `/non-dev/analytics` | Delivery outcomes only — no open or click tracking yet |
+
+The matching APIs are `/api/non-dev/overview`, `/api/non-dev/contacts`,
+`/api/non-dev/lists`, `/api/non-dev/lists/{id}/members`,
+`/api/non-dev/templates`, `/api/non-dev/templates/{id}`,
+`/api/non-dev/messages`,
+`/api/non-dev/messages/{id}/cancel`, `/api/non-dev/messages/{id}/retry`,
+`/api/non-dev/deliveries` and `/api/non-dev/analytics`.
+
 ## Privileges
 
 | Action | member | workspace admin | workspace owner |
 | --- | --- | --- | --- |
 | Read forms, recipients, delivery status | yes | yes | yes |
 | Create/edit forms and projects | yes | yes | yes |
-| Manage SMTP, API keys, templates, workspace default sender | no | yes | yes |
+| Manage SMTP, templates, workspace default sender | no | yes | yes |
+| List, create and revoke API keys | no | yes | yes |
 | Rotate endpoints, delete forms/projects | no | yes | yes |
 | Billing, roles, workspace deletion | no | no | yes |
 
-The SMTP read API now requires `admin`, matching every other SMTP route. The
-non-developer overview is member-readable but its response is an audience-scoped
-read model with no transport fields at all.
+The SMTP read API now requires `admin`, matching every other SMTP route.
+Listing, creating and revoking API keys is also admin-only; keys authenticate
+read access to `GET /api/v1/forms` with the `forms:read` scope and never send
+mail. Non-developer routes and `/api/non-dev/*` are gated by
+`requireNonDeveloperWorkspace` (the account's `interest` must be
+`non_developer`) plus the normal workspace role: members can read the audience
+and delivery state, while mutations follow the roles above. Responses are
+audience-scoped read models with no transport fields at all.
 
 ## Implementation
 
@@ -64,21 +90,38 @@ read model with no transport fields at all.
   default sender per workspace.
 - `src/app/api/settings/smtp/system/route.ts` + `setWorkspaceDefaultSmtp` —
   set or clear the workspace default (admin-only, audited).
-- `src/server/services/delivery.service.ts` — selection is now
-  form sender → workspace default → system SMTP from env, in the same worker.
-- `src/server/services/non-developer.service.ts` + `/api/non-dev/overview` —
-  read-only projection of forms, recipients, templates and delivery status.
-- `src/components/Non-Developer/DashboardOverview.tsx` — calm non-dev dashboard
-  with "Managed by your workspace — read-only" and a developer-view switch for
-  admins/owners.
+- `src/server/services/delivery.service.ts` — form submission sender selection
+  is form sender → workspace default → system SMTP from env, in the same worker.
+  `OutboundMessage` broadcasts start at the workspace default and fall back to
+  env SMTP; both are sent by `runDeliveryBatch()`.
+- `src/server/auth/authorization.ts` — `requireNonDeveloperWorkspace` enforces
+  the audience boundary on every `/api/non-dev/*` route before normal workspace
+  role checks.
+- `src/server/services/non-developer.service.ts` + `/api/non-dev/*` — read model
+  for contacts, lists, templates, messages, deliveries and analytics, plus the
+  `POST /api/non-dev/messages` broadcast path; no transport fields are returned.
+- `src/app/api/settings/api-keys/route.ts` and
+  `src/app/api/settings/api-keys/[keyId]/route.ts` — list, create and revoke all
+  require workspace `admin`.
+- `src/components/Non-Developer/NonDevShell.tsx` and
+  `src/components/Non-Developer/DashboardOverview.tsx` — calm non-dev shell that
+  mirrors `DeveloperShell`, a read-only dashboard with "Managed by your
+  workspace — read-only", and a developer-view switch for admins/owners.
 - `/developer/settings` — full SMTP senders for admins plus a workspace default
   sender selector; transport controls hidden from non-admins.
 
 ## Operational notes
 
-- The new migration must be applied to each deployed database
-  (`npm run db:migrate:deploy`) before the new code reads `is_system_default`.
+- Migrations `0005_workspace_default_smtp`, `0007_non_dev_audience` and
+  `0008_user_onboarding` must be applied to each deployed database
+  (`npm run db:migrate:deploy`) before the code reads those columns and tables.
+  Apply 0007 and 0008 before deploying the non-dev code; they are not applied to
+  production yet.
 - Secrets remain AES-256-GCM encrypted (`src/lib/crypto.ts`); no API response
   includes `encryptedPassword`, `iv`, `authTag`, or the plaintext password.
-- Existing docs describing a `POST /api/send-emails` "newest verified config"
-  fallback (`docs/email-pipeline.md:81-94`) are stale — no such route exists.
+- Form submissions and `OutboundMessage` broadcasts both enqueue into
+  `email_deliveries` and are sent by the single `runDeliveryBatch()` worker.
+  Submissions use form sender → workspace default → system SMTP from the
+  environment; broadcasts use workspace default → environment SMTP. There is no
+  `POST /api/send-emails` route, no "newest verified config" fallback and no
+  second delivery pipeline.

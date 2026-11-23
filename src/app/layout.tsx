@@ -4,10 +4,9 @@ import localFont from 'next/font/local';
 import "./globals.css";
 import Footer from "@/components/Footer";
 import { Analytics } from "@vercel/analytics/next";
-import { Icon } from "@/components/Global/Icon";
 import ThemeSync from "@/components/Global/ThemeSync";
 import { ToastProvider } from "@/components/Global/Toast";
-import Tooltip from "@/components/Global/Tooltip";
+import AssistantButton from "@/components/Global/AssistantButton";
 import Script from "next/script";
 
 export const metadata: Metadata = {
@@ -113,15 +112,7 @@ export default function RootLayout({
           <section className="min-h-screen p-0">
             {children}
             <div className="assistant-dock fixed right-0 bottom-0 z-[9999] inline-block p-3">
-              <Tooltip label="FormO assistant" placement="left">
-                <button
-                  type="button"
-                  aria-label="FormO assistant"
-                  className="flex cursor-pointer items-center justify-center rounded-full bg-yellow-100 p-3 text-yellow-800 transition-colors duration-200 hover:bg-yellow-50 shadow-lg dark:bg-yellow-600/20 dark:text-yellow-500 dark:hover:bg-yellow-600/30"
-                >
-                  <Icon name="Bot" size={25} strokeWidth={2} />
-                </button>
-              </Tooltip>
+              <AssistantButton />
             </div>
           </section>
           <Footer />

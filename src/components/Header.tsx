@@ -23,7 +23,7 @@ const NAV_LINKS = [
     { label: "Docs", href: "/#docs" },
     { label: "Team", href: "/#team" },
     { label: "Integrations", href: "/#integrations" },
-    { label: "Career", href: "/#Career" },
+    { label: "Career", href: "/#team" },
 ];
 
 const MENU_LINKS = [

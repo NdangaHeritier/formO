@@ -45,6 +45,7 @@ Behavior:
 Assign an SMTP configuration to the form through the existing form API. Submissions made before SMTP assignment remain queued and become deliverable after assignment.
 
 - Each active recipient produces a durable `email_deliveries` row and queued event.
+- Form submissions and user-initiated broadcasts enqueue into the same `email_deliveries` table and are sent by the single `runDeliveryBatch()` worker. Form submissions select a sender in this order: the form's SMTP config, the workspace default sender, then system SMTP from the environment. Broadcasts start at the workspace default sender and fall back to environment SMTP; they never use a form-specific sender.
 - Successful sends update the recipient row, its event, the parent submission, and daily stats.
 - Retries use bounded exponential backoff, up to five attempts per recipient.
 - `subjectTemplate`, `customSubject`, and `htmlTemplate` support `{{...}}` variables including `{{form.title}}`, `{{site.name}}`, and submission fields. Submitted values are HTML-escaped when interpolated into a custom HTML template.
@@ -78,24 +79,15 @@ curl -X POST http://localhost:3000/api/cron/deliver -H "Authorization: Bearer $C
 curl -X POST http://localhost:3000/api/cron/maintenance -H "Authorization: Bearer $CRON_SECRET"
 ```
 
-## API-key sends
+## API keys and broadcasts
 
-`POST /api/send-emails` requires `X-API-Key` or `Authorization: Bearer <fmo_live_...>` with the `emails:send` scope. Revoked/expired keys cannot send.
+There is no `POST /api/send-emails` route and no "newest verified config" fallback. API keys currently authenticate read access to `GET /api/v1/forms` with the `forms:read` scope; revoked or expired keys are rejected. Listing, creating and revoking keys is admin-only under `/api/settings/api-keys`.
 
-```json
-{
-  "to": "recipient@example.com",
-  "subject": "Hello from FormO",
-  "text": "This is a real transactional email.",
-  "smtpConfigId": "optional-workspace-smtp-uuid"
-}
-```
-
-Without `smtpConfigId`, the newest verified workspace SMTP configuration is preferred, then the newest available one. HTML and text are optional individually, but at least one must be provided.
+User-initiated broadcasts go through `POST /api/non-dev/messages`. The route resolves the audience, writes an `OutboundMessage` with one `email_deliveries` row per recipient, and returns immediately. The same `runDeliveryBatch()` worker that sends form submissions sends those rows, using the workspace default sender and then system SMTP from the environment. There is no second delivery pipeline.
 
 ## Deployment and verification
 
-1. Run `npm run db:migrate:deploy` to apply the API-key prefix migration and any pending migrations.
+1. Run `npm run db:migrate:deploy` to apply all pending migrations. `0007_non_dev_audience` and `0008_user_onboarding` must be applied before deploying the non-dev code.
 2. Set the production `DATABASE_URL`, `FORMO_ENCRYPTION_KEY`, `FORMO_HMAC_PEPPER`, auth secrets, and `CRON_SECRET` environment variables.
 3. Verify SMTP through the existing settings test endpoint before expecting form notifications.
 4. Verify `npm run test:unit`, `npm run lint`, and `npm run build` before deploying.

@@ -150,7 +150,7 @@ A neutral-first system: zinc carries almost everything, amber marks identity, re
 
 ## Layout
 
-Single-column stacks (`grid grid-cols-1`) inside a `DeveloperShell` with a fixed icon rail. Related controls cluster at `gap-2`/`gap-3`; section groups separate at `gap-5`; panel padding is `p-5` or `p-6`. Tables are full-width with `px-5 py-4` cells and a `border-b` per row. Modals are `w-full max-w-md`, centered, with `sm:p-6`. Responsive behavior is conservative: `max-sm:px-3` on buttons, `max-sm:px-5` on chrome, `max-sm:grid-cols-1` where a multi-column layout would otherwise overflow.
+Single-column stacks (`grid grid-cols-1`) inside a `DeveloperShell` with a fixed icon rail, or its mirrored `NonDevShell` on the audience-facing routes. Related controls cluster at `gap-2`/`gap-3`; section groups separate at `gap-5`; panel padding is `p-5` or `p-6`. Tables are full-width with `px-5 py-4` cells and a `border-b` per row. Modals are `w-full max-w-md`, centered, with `sm:p-6`. Responsive behavior is conservative: `max-sm:px-3` on buttons, `max-sm:px-5` on chrome, `max-sm:grid-cols-1` where a multi-column layout would otherwise overflow.
 
 ## Elevation & Depth
 
@@ -251,3 +251,33 @@ loading, empty and error text. No card links to a route that does not exist.
   `aria-label` remains the accessible name. Never use a tooltip for form errors,
   feedback or information required to complete a task — use a toast or visible
   text. No second tooltip library is installed.
+
+## Non-developer operations surface
+
+The audience-facing views reuse the developer grammar instead of inventing a
+second visual language. `NonDevShell` mirrors `DeveloperShell`'s fixed icon rail,
+resize handle, header, content padding and mobile tab bar — only the
+destinations change. The shell lives in the page, so route-level loading and
+error states show bare skeleton or message cards inside the same zinc palette.
+
+- **Views** — `/non-dev`, `/non-dev/contacts`, `/non-dev/lists`,
+  `/non-dev/compose`, `/non-dev/messages`, `/non-dev/messages/[id]` and
+  `/non-dev/analytics` share one read model. Transport settings never appear;
+  delivery status is read-only and "Managed by your workspace" is the standing
+  explanation. Every view is gated by the account's non-developer interest plus
+  the normal workspace role.
+- **Compose** — a centred two-column workbench (`max-w-6xl`): the editor on the
+  left and a 20rem audience rail on the right, collapsing to one column below
+  `lg`. Audience picking and sandboxed preview are focused `Layout` modals;
+  the preview uses a `sandbox=""` iframe so HTML never runs scripts in the app.
+  Queueing writes to the same `email_deliveries` worker as form submissions,
+  with the workspace default sender and then environment SMTP.
+- **Analytics** — delivery outcomes only: message counts by status, recipient
+  sent/pending/failed counts and the last delivery time. Open and click tracking
+  does not exist yet, so the copy says so plainly rather than implying
+  engagement data.
+- **Onboarding** — `/signup/select-interest` has four skippable steps: View,
+  Role, Goals, Team. `interest` (`developer` or `non_developer`) routes to the
+  matching shell; answers are stored under the stable `User.onboarding` keys
+  `role`, `goals` and `teamSize` so later features can read them without a
+  schema change.

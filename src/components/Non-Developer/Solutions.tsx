@@ -28,7 +28,7 @@ return(
                     <div className="grid grid-cols-3 gap-5">
                     <DetailCard title="Easy Template Builder" icon="Palette" desc="Drag-and-drop or edit pre-built designs. No designer needed." />
                      <DetailCard title="Audience Management" icon="Users" desc="Organize contacts, apply tags, and send personalized campaigns." />
-                      <DetailCard title="Delivery & Tracking" icon="BarChart3" desc="Track opens, clicks, and bounces in real time" />
+                      <DetailCard title="Delivery Outcomes" icon="BarChart3" desc="See delivery outcomes and failures in one place." />
                        <DetailCard title="Total Privacy" icon="ShieldCheck" desc="Your data stays on your server — no spying, no selling." />
 
                     </div>
