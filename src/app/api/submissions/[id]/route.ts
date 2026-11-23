@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { jsonErrorResponse, requireActiveWorkspace } from "@/server/auth/authorization";
+import { jsonErrorResponse, requireDeveloperWorkspace } from "@/server/auth/authorization";
 import { getSubmissionDetail } from "@/server/services/submission-reads.service";
 import { deleteSubmission } from "@/server/services/submission-delete.service";
 
@@ -12,7 +12,7 @@ export async function GET(
 ) {
   try {
     const { id } = await context.params;
-    const workspace = await requireActiveWorkspace("member");
+    const workspace = await requireDeveloperWorkspace("member");
     const includeDeleted = new URL(request.url).searchParams.get("includeDeleted") === "1";
     return NextResponse.json(
       await getSubmissionDetail(id, workspace.organization.id, includeDeleted)
@@ -29,7 +29,7 @@ export async function DELETE(
 ) {
   try {
     const { id } = await context.params;
-    const workspace = await requireActiveWorkspace("admin");
+    const workspace = await requireDeveloperWorkspace("admin");
     return NextResponse.json(
       await deleteSubmission({
         id,

@@ -11,7 +11,6 @@ const HELP_LINKS: { href: string; label: string; icon: LucideIconName }[] = [
   { href: "/non-dev/compose", label: "Compose", icon: "Send" },
   { href: "/non-dev/contacts", label: "Contacts", icon: "Users" },
   { href: "/non-dev/messages", label: "Messages", icon: "Mail" },
-  { href: "/developer/forms", label: "Forms", icon: "SquareCode" },
   { href: "/privacy", label: "Privacy Policy", icon: "ShieldCheck" },
   { href: "/terms", label: "Terms of Service", icon: "FileText" },
 ];

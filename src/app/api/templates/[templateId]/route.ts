@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createEmailTemplateSchema } from "@/lib/validation/forms";
-import { jsonErrorResponse, requireActiveWorkspace , validationErrorResponse} from "@/server/auth/authorization";
+import { jsonErrorResponse, requireDeveloperWorkspace , validationErrorResponse} from "@/server/auth/authorization";
 import { deleteWorkspaceEmailTemplate } from "@/server/services/forms.service";
 import {
   getWorkspaceEmailTemplate,
@@ -18,7 +18,7 @@ export async function GET(
   context: { params: Promise<{ templateId: string }> }
 ) {
   try {
-    const workspace = await requireActiveWorkspace("member");
+    const workspace = await requireDeveloperWorkspace("member");
     const { templateId } = await context.params;
     const template = await getWorkspaceEmailTemplate(templateId, workspace.organization.id);
     return NextResponse.json({ template });
@@ -32,7 +32,7 @@ export async function PATCH(
   context: { params: Promise<{ templateId: string }> }
 ) {
   try {
-    const workspace = await requireActiveWorkspace("admin");
+    const workspace = await requireDeveloperWorkspace("admin");
     const { templateId } = await context.params;
     const parsed = updateSchema.safeParse(await request.json());
     if (!parsed.success) {
@@ -56,7 +56,7 @@ export async function DELETE(
   context: { params: Promise<{ templateId: string }> }
 ) {
   try {
-    const workspace = await requireActiveWorkspace("admin");
+    const workspace = await requireDeveloperWorkspace("admin");
     const { templateId } = await context.params;
     const deleted = await deleteWorkspaceEmailTemplate({
       templateId,

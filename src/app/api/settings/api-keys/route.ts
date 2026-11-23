@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createApiKeySchema } from "@/lib/validation/forms";
-import { jsonErrorResponse, requireActiveWorkspace , validationErrorResponse} from "@/server/auth/authorization";
+import { jsonErrorResponse, requireDeveloperWorkspace , validationErrorResponse} from "@/server/auth/authorization";
 import {
   createWorkspaceApiKey,
   listWorkspaceApiKeys,
@@ -10,7 +10,7 @@ export const dynamic = "force-dynamic";
 
 export async function GET() {
   try {
-    const workspace = await requireActiveWorkspace("admin");
+    const workspace = await requireDeveloperWorkspace("admin");
     const apiKeys = await listWorkspaceApiKeys(workspace.organization.id);
     return NextResponse.json({ apiKeys });
   } catch (error) {
@@ -20,7 +20,7 @@ export async function GET() {
 
 export async function POST(request: NextRequest) {
   try {
-    const workspace = await requireActiveWorkspace("admin");
+    const workspace = await requireDeveloperWorkspace("admin");
     const body = await request.json();
     const parsed = createApiKeySchema.safeParse(body);
 

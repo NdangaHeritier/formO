@@ -37,9 +37,12 @@ delivery path.
 | `/non-dev` | Marketer / non-developer | Forms, recipients, templates, read-only delivery status, "Managed by your workspace" | Host, port, credentials, endpoints, API keys, system transport |
 | System SMTP | Platform fallback | Used automatically when a form has no sender and no workspace default | Exposed in any user-facing UI |
 
-If a non-developer is also a workspace admin/owner, `/non-dev` shows an explicit
-**"Switch to developer view"** link to `/developer` rather than silently
-granting config access on the marketing surface.
+The audience is chosen once at onboarding and is **locked**: a non-developer
+account can never render `/developer` or call developer APIs, even if it also
+holds an admin/owner workspace role. Server layouts in `src/app/developer` and
+`src/app/non-dev` enforce this with a forbidden view, and `requireDeveloperWorkspace`
+/ `requireNonDeveloperWorkspace` enforce it on API routes. There is no
+"Switch view" control.
 
 ### Non-developer surfaces
 

@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
-import { jsonErrorResponse, requireActiveWorkspace, validationErrorResponse } from "@/server/auth/authorization";
+import { jsonErrorResponse, requireDeveloperWorkspace, validationErrorResponse } from "@/server/auth/authorization";
 import { prisma } from "@/lib/prisma";
 import { setWorkspaceRetention } from "@/server/services/retention.service";
 
@@ -12,7 +12,7 @@ const bodySchema = z.object({
 
 export async function GET() {
   try {
-    const workspace = await requireActiveWorkspace("member");
+    const workspace = await requireDeveloperWorkspace("member");
     const organization = await prisma.organization.findUnique({
       where: { id: workspace.organization.id },
       select: { retentionDays: true },
@@ -25,7 +25,7 @@ export async function GET() {
 
 export async function PUT(request: Request) {
   try {
-    const workspace = await requireActiveWorkspace("admin");
+    const workspace = await requireDeveloperWorkspace("admin");
     const parsed = bodySchema.safeParse(await request.json());
     if (!parsed.success) return validationErrorResponse(parsed.error, "Invalid retention setting");
 

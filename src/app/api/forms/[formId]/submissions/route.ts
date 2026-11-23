@@ -4,7 +4,7 @@ import { requireFormAccess } from "@/server/auth/authorization";
 import { listSubmissionsSchema, parseListQuery } from "@/lib/validation/query";
 import { listFormSubmissions } from "@/server/services/submission-reads.service";
 import { deleteFormSubmissions } from "@/server/services/submission-delete.service";
-import { requireActiveWorkspace } from "@/server/auth/authorization";
+import { requireDeveloperWorkspace } from "@/server/auth/authorization";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -40,7 +40,7 @@ export async function DELETE(
 ) {
   try {
     const { formId } = await context.params;
-    const workspace = await requireActiveWorkspace("admin");
+    const workspace = await requireDeveloperWorkspace("admin");
     return NextResponse.json(
       await deleteFormSubmissions({
         formId,

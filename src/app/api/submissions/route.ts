@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
-import { jsonErrorResponse, requireActiveWorkspace, validationErrorResponse } from "@/server/auth/authorization";
+import { jsonErrorResponse, requireDeveloperWorkspace, validationErrorResponse } from "@/server/auth/authorization";
 import { listWorkspaceSubmissions } from "@/server/services/submission-reads.service";
 
 export const runtime = "nodejs";
@@ -17,7 +17,7 @@ const querySchema = z.object({
 /** Workspace-wide submission inbox, audience-safe (no SMTP data). */
 export async function GET(request: NextRequest) {
   try {
-    const workspace = await requireActiveWorkspace("member");
+    const workspace = await requireDeveloperWorkspace("member");
     const parsed = querySchema.safeParse({
       formId: request.nextUrl.searchParams.get("formId") ?? undefined,
       status: request.nextUrl.searchParams.get("status") ?? undefined,

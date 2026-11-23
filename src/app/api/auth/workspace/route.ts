@@ -37,10 +37,22 @@ export async function PATCH(request: NextRequest) {
       return validationErrorResponse(parsed.error, "Invalid interest selection");
     }
 
+    // The audience choice is made once at onboarding. Once answers exist it is
+    // locked, so an admin cannot use this endpoint to switch into the other view.
+    const existing = await prisma.user.findUnique({
+      where: { id: user.id },
+      select: { interest: true, onboarding: true },
+    });
+    const onboardingCompleted =
+      existing?.onboarding !== null && existing?.onboarding !== undefined;
+    const interest = onboardingCompleted
+      ? existing!.interest
+      : parsed.data.interest;
+
     const updated = await prisma.user.update({
       where: { id: user.id },
       data: {
-        interest: parsed.data.interest,
+        interest,
         onboarding: parsed.data.onboarding
           ? (parsed.data.onboarding as Prisma.InputJsonValue)
           : Prisma.JsonNull,

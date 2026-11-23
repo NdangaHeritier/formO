@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { readJson } from "@/lib/json";
 import { createEmailTemplateSchema } from "@/lib/validation/forms";
-import { jsonErrorResponse, requireActiveWorkspace , validationErrorResponse} from "@/server/auth/authorization";
+import { jsonErrorResponse, requireDeveloperWorkspace , validationErrorResponse} from "@/server/auth/authorization";
 import {
   createWorkspaceEmailTemplate,
   listWorkspaceEmailTemplates,
@@ -11,7 +11,7 @@ export const dynamic = "force-dynamic";
 
 export async function GET() {
   try {
-    const workspace = await requireActiveWorkspace("member");
+    const workspace = await requireDeveloperWorkspace("member");
     const templates = await listWorkspaceEmailTemplates(workspace.organization.id);
     return NextResponse.json({ templates });
   } catch (error) {
@@ -21,7 +21,7 @@ export async function GET() {
 
 export async function POST(request: NextRequest) {
   try {
-    const workspace = await requireActiveWorkspace("member");
+    const workspace = await requireDeveloperWorkspace("member");
     const body = await readJson(request);
     const parsed = createEmailTemplateSchema.safeParse(body);
 

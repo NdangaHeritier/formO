@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { readJson } from "@/lib/json";
 import { createProjectSchema } from "@/lib/validation/projects";
-import { jsonErrorResponse, requireActiveWorkspace , validationErrorResponse} from "@/server/auth/authorization";
+import { jsonErrorResponse, requireDeveloperWorkspace , validationErrorResponse} from "@/server/auth/authorization";
 import {
   createWorkspaceProject,
   listWorkspaceProjects,
@@ -11,7 +11,7 @@ export const dynamic = "force-dynamic";
 
 export async function GET() {
   try {
-    const workspace = await requireActiveWorkspace("member");
+    const workspace = await requireDeveloperWorkspace("member");
     const projects = await listWorkspaceProjects(workspace.organization.id);
     return NextResponse.json({
       projects,
@@ -24,7 +24,7 @@ export async function GET() {
 
 export async function POST(request: NextRequest) {
   try {
-    const workspace = await requireActiveWorkspace("member");
+    const workspace = await requireDeveloperWorkspace("member");
     const body = await readJson(request);
     const parsed = createProjectSchema.safeParse(body);
 

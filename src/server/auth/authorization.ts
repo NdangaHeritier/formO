@@ -269,6 +269,21 @@ export async function requireActiveWorkspace(
 }
 
 /**
+ * Guard for developer-only routes and APIs. `interest` is chosen once during
+ * onboarding, so a non-developer account can never reach the developer surface
+ * even if it also holds an admin/owner workspace role.
+ */
+export async function requireDeveloperWorkspace(
+  minRole: OrgRole = "member"
+): Promise<ActiveWorkspaceContext> {
+  const workspace = await requireActiveWorkspace(minRole);
+  if (workspace.user.interest !== "developer") {
+    throw new HttpError(403, "Developer view required");
+  }
+  return workspace;
+}
+
+/**
  * Guard for the non-developer surface. `interest` is a view preference, not a
  * privilege: this gate stops developer-view accounts from reading audience
  * data, while normal workspace roles still decide who may mutate it.
@@ -295,6 +310,9 @@ export async function requireProjectAccess(
   role: OrgRole;
 }> {
   const { user, activeOrganizationId } = await requireUser();
+  if (user.interest !== "developer") {
+    throw new HttpError(403, "Developer view required");
+  }
   const isUuid = UUID_REGEX.test(projectIdOrSlug);
 
   // Prefer the active workspace; fall back to the oldest membership when none
@@ -374,6 +392,9 @@ export async function requireFormAccess(
   role: OrgRole;
 }> {
   const { user } = await requireUser();
+  if (user.interest !== "developer") {
+    throw new HttpError(403, "Developer view required");
+  }
 
   const form = await prisma.projectForm.findFirst({
     where: {

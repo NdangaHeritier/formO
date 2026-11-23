@@ -6,7 +6,7 @@ import LinkButton from "./Global/LinkButton";
 import { signOut, useSession } from "@/lib/auth-client";
 import { useEffect, useState, useSyncExternalStore } from "react";
 import { createPortal } from "react-dom";
-import { usePathname, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { canManageWorkspace, useWorkspaceRole } from "@/lib/hooks/use-workspace-role";
 import SkeletonBox from "./skeleton";
 import UserAvatar from "./Global/UserAvatar";
@@ -45,6 +45,8 @@ export default function Header({ border = "border-b", py = "py-3" }: prop) {
     // and showing login and signup if not logged in...
     const { data: session, isPending: authLoading } = useSession();
     const currentUser = session?.user ?? null;
+    const isDeveloper =
+        (currentUser as { interest?: string } | null)?.interest !== "non_developer";
     const [isOpeningUserMenu, setIsOpeningUserMenu] = useState(false);
     const [isNavOpen, setIsNavOpen] = useState(false);
     const mounted = useSyncExternalStore(
@@ -53,19 +55,15 @@ export default function Header({ border = "border-b", py = "py-3" }: prop) {
         () => false,
     );
     const router = useRouter();
-    const pathname = usePathname();
     const role = useWorkspaceRole(Boolean(currentUser));
     const canManage = canManageWorkspace(role);
-    const workspaceLinks = MENU_LINKS.filter(
-        (item) => !("adminOnly" in item && item.adminOnly) || canManage
-    );
+    const workspaceLinks = isDeveloper
+        ? MENU_LINKS.filter(
+            (item) => !("adminOnly" in item && item.adminOnly) || canManage
+        )
+        : [];
 
     const closeNav = () => setIsNavOpen(false);
-
-    const switchView = () => {
-        router.push(pathname.startsWith("/developer") ? "/non-dev" : "/developer");
-        setIsOpeningUserMenu(false);
-    };
 
     useEffect(() => {
         if (!isOpeningUserMenu) return;
@@ -158,14 +156,18 @@ export default function Header({ border = "border-b", py = "py-3" }: prop) {
                         <>
 
                         <div className="hidden items-center gap-3 sm:flex">
-                            <LinkButton href="/developer" variant="primary">
-                                <Icon name="Webhook" size={15} className="text-zinc-500 dark:text-zinc-400" />
-                                Get API
-                            </LinkButton>
-                            <LinkButton href="/non-dev" variant="secondary">
-                                <Icon name="Text" size={15} className="text-zinc-500 dark:text-zinc-400" />
-                                Send Emails
-                            </LinkButton>
+                            {isDeveloper && (
+                                <LinkButton href="/developer" variant="primary">
+                                    <Icon name="Webhook" size={15} className="text-zinc-500 dark:text-zinc-400" />
+                                    Get API
+                                </LinkButton>
+                            )}
+                            {!isDeveloper && (
+                                <LinkButton href="/non-dev" variant="secondary">
+                                    <Icon name="Text" size={15} className="text-zinc-500 dark:text-zinc-400" />
+                                    Send Emails
+                                </LinkButton>
+                            )}
                         </div>
 
                         <Tooltip label="Account menu">
@@ -202,7 +204,7 @@ export default function Header({ border = "border-b", py = "py-3" }: prop) {
                                     </div>
                                 </div>
 
-                                <div className="grid grid-cols-1 gap-1">
+                                <div className={`grid grid-cols-1 gap-1 ${workspaceLinks.length === 0 ? "hidden" : ""}`}>
                                     <p className="px-2 pt-1 text-[11px] font-semibold uppercase tracking-wide text-zinc-400">Workspace</p>
                                     {workspaceLinks.map((item) => (
                                         <Link
@@ -222,7 +224,7 @@ export default function Header({ border = "border-b", py = "py-3" }: prop) {
                                     {ACCOUNT_LINKS.map((item) => (
                                         <Link
                                             key={item.label}
-                                            href={item.href}
+                                            href={isDeveloper ? item.href : "/non-dev/account"}
                                             onClick={() => setIsOpeningUserMenu(false)}
                                             className="flex items-center gap-2 rounded-lg p-2 text-sm text-zinc-600 hover:bg-zinc-100 dark:text-zinc-300 dark:hover:bg-zinc-900"
                                         >
@@ -232,14 +234,7 @@ export default function Header({ border = "border-b", py = "py-3" }: prop) {
                                     ))}
                                 </div>
 
-                                <div className="grid grid-cols-2 gap-2 border-t border-zinc-200 pt-2 dark:border-zinc-800">
-                                    <button
-                                        onClick={switchView}
-                                        className="flex cursor-pointer items-center justify-center gap-2 rounded-lg bg-zinc-100 p-2 text-xs font-semibold text-zinc-900 hover:bg-zinc-200 dark:bg-zinc-800 dark:text-zinc-100 dark:hover:bg-zinc-700"
-                                    >
-                                        <Icon name="ArrowRightLeft" strokeWidth={2} size={15} />
-                                        Switch view
-                                    </button>
+                                <div className="grid grid-cols-1 gap-2 border-t border-zinc-200 pt-2 dark:border-zinc-800">
                                     <button
                                         onClick={handleSignOut}
                                         className="flex cursor-pointer items-center justify-center gap-2 rounded-lg bg-red-500/10 p-2 text-xs font-semibold text-red-600 hover:bg-red-500/20 dark:text-red-400"

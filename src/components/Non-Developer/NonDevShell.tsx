@@ -85,7 +85,7 @@ export default function NonDevShell({ children }: { children: React.ReactNode })
                   <button
                     type="button"
                     aria-label="Account settings"
-                    onClick={() => router.push("/developer/account")}
+                    onClick={() => router.push("/non-dev/account")}
                     className="flex h-11 w-11 cursor-pointer items-center justify-center rounded-full bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-900 dark:hover:bg-zinc-800"
                   >
                     <UserAvatar

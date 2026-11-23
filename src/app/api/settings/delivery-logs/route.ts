@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
-import { jsonErrorResponse, requireActiveWorkspace, validationErrorResponse } from "@/server/auth/authorization";
+import { jsonErrorResponse, requireDeveloperWorkspace, validationErrorResponse } from "@/server/auth/authorization";
 import { prisma } from "@/lib/prisma";
 
 export const runtime = "nodejs";
@@ -14,7 +14,7 @@ const querySchema = z.object({
 /** Recent delivery attempts for the workspace (read-only). */
 export async function GET(request: NextRequest) {
   try {
-    const workspace = await requireActiveWorkspace("member");
+    const workspace = await requireDeveloperWorkspace("member");
     const parsed = querySchema.safeParse({
       status: request.nextUrl.searchParams.get("status") ?? undefined,
       limit: request.nextUrl.searchParams.get("limit") ?? undefined,

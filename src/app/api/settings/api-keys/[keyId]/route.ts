@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { jsonErrorResponse, requireActiveWorkspace } from "@/server/auth/authorization";
+import { jsonErrorResponse, requireDeveloperWorkspace } from "@/server/auth/authorization";
 import { revokeWorkspaceApiKey } from "@/server/services/forms.service";
 
 export const dynamic = "force-dynamic";
@@ -10,7 +10,7 @@ export async function DELETE(
 ) {
   try {
     const { keyId } = await context.params;
-    const workspace = await requireActiveWorkspace("admin");
+    const workspace = await requireDeveloperWorkspace("admin");
     const revoked = await revokeWorkspaceApiKey({
       keyId,
       organizationId: workspace.organization.id,

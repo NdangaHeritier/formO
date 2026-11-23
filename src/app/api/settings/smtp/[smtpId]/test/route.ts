@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { jsonErrorResponse, requireActiveWorkspace } from "@/server/auth/authorization";
+import { jsonErrorResponse, requireDeveloperWorkspace } from "@/server/auth/authorization";
 import { verifyWorkspaceSmtpConfig } from "@/server/services/forms.service";
 
 export const dynamic = "force-dynamic";
@@ -10,7 +10,7 @@ export async function POST(
 ) {
   try {
     const { smtpId } = await context.params;
-    const workspace = await requireActiveWorkspace("admin");
+    const workspace = await requireDeveloperWorkspace("admin");
     const result = await verifyWorkspaceSmtpConfig({
       smtpId,
       organizationId: workspace.organization.id,

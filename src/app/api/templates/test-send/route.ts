@@ -1,6 +1,6 @@
-﻿import { NextRequest, NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
-import { jsonErrorResponse, HttpError, requireActiveWorkspace , validationErrorResponse} from "@/server/auth/authorization";
+import { jsonErrorResponse, HttpError, requireDeveloperWorkspace , validationErrorResponse} from "@/server/auth/authorization";
 import { sendTemplateTestEmail } from "@/server/services/forms.service";
 import { consumeBucket } from "@/server/submissions/rate-limit";
 import { templateSchemaParameters } from "@/lib/template-design";
@@ -16,7 +16,7 @@ const testSendSchema = z.union([
 
 export async function POST(request: NextRequest) {
   try {
-    const workspace = await requireActiveWorkspace("admin");
+    const workspace = await requireDeveloperWorkspace("admin");
     if (!workspace.user.emailVerified) {
       throw new HttpError(403, "Verify your email address before sending test messages");
     }

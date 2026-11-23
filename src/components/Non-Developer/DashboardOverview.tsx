@@ -22,7 +22,6 @@ const statusLabels: Record<Overview["forms"][number]["delivery"]["status"], stri
 export default function DashboardOverview() {
   const toast = useToast();
   const [overview, setOverview] = useState<Overview | null>(null);
-  const [canSwitch, setCanSwitch] = useState(false);
   const [error, setError] = useState(false);
 
   useEffect(() => {
@@ -33,13 +32,6 @@ export default function DashboardOverview() {
         setError(true);
         toast.error("Could not load your delivery overview.");
       });
-
-    fetch("/api/auth/workspace")
-      .then((res) => (res.ok ? res.json() : null))
-      .then((data: { role?: string } | null) =>
-        setCanSwitch(data?.role === "admin" || data?.role === "owner")
-      )
-      .catch(() => {});
   }, [toast]);
 
   const metrics = overview
@@ -60,14 +52,6 @@ export default function DashboardOverview() {
             Forms, audience and delivery at a glance. Email transport is managed by your workspace — nothing to configure here.
           </p>
         </div>
-        {canSwitch && (
-          <Link
-            href="/developer"
-            className="inline-flex items-center gap-2 text-sm font-medium text-zinc-700 underline dark:text-zinc-300"
-          >
-            Switch to developer view <Icon name="ArrowRight" size={14} />
-          </Link>
-        )}
       </div>
 
       <div className="flex flex-wrap gap-2">
