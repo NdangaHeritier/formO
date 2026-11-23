@@ -36,48 +36,23 @@ export default function EmbedCodeModal({ endpoint, title, onClick }: Props) {
     const html =
       `<!-- Paste into your site. Add your website origin in FormO form settings,\n` +
       `     otherwise the request will be blocked. -->\n` +
-      `<form id="contact-form" action="${url}" method="POST">\n` +
+      `<!-- On success FormO opens its own thank-you page, which returns the\n` +
+      `     visitor to your site automatically after 3 seconds. -->\n` +
+      `<form action="${url}" method="POST">\n` +
       `  <input name="email" type="email" required />\n` +
       `  <textarea name="message" required></textarea>\n` +
       `\n` +
       `  <!-- Honeypot — keep hidden. Bots that fill it are rejected. -->\n` +
       `  <input name="_gotcha" type="text" tabindex="-1" autocomplete="off" hidden />\n` +
       `\n` +
-      `  <p id="form-status" role="status" aria-live="polite"></p>\n` +
       `  <button type="submit">Send</button>\n` +
-      `</form>\n` +
-      `\n` +
-      `<script>\n` +
-      `  // Edit REDIRECT_URL to the page visitors should see after 3 seconds.\n` +
-      `  const REDIRECT_URL = "https://your-site.com/thank-you";\n` +
-      `  const form = document.getElementById("contact-form");\n` +
-      `  const status = document.getElementById("form-status");\n` +
-      `  form.addEventListener("submit", async (event) => {\n` +
-      `    event.preventDefault();\n` +
-      `    status.textContent = "Sending…";\n` +
-      `    try {\n` +
-      `      const res = await fetch(form.action, {\n` +
-      `        method: "POST",\n` +
-      `        headers: { "Accept": "application/json" },\n` +
-      `        body: new FormData(form),\n` +
-      `      });\n` +
-      `      const data = await res.json();\n` +
-      `      if (!res.ok) throw new Error(data?.error ?? "Submission failed");\n` +
-      `      status.textContent = data.duplicate\n` +
-      `        ? "Already sent — redirecting…"\n` +
-      `        : "Message sent — redirecting…";\n` +
-      `      setTimeout(() => { window.location.href = REDIRECT_URL; }, 3000);\n` +
-      `    } catch (error) {\n` +
-      `      status.textContent = error?.message || "Could not send. Please try again.";\n` +
-      `    }\n` +
-      `  });\n` +
-      `</script>`;
+      `</form>`;
 
     const js =
       `const url = "${url}";\n` +
-      `// Edit REDIRECT_URL to the page visitors should see after 3 seconds.\n` +
-      `const REDIRECT_URL = "https://your-site.com/thank-you";\n` +
-      `const status = document.getElementById("form-status"); // <p id="form-status" role="status">\n` +
+      `// FormO's thank-you page shows the confirmation and returns the visitor\n` +
+      `// to your site after 3 seconds.\n` +
+      `const THANKS_URL = "${origin}/f/thanks";\n` +
       `\n` +
       `try {\n` +
       `  const res = await fetch(url, {\n` +
@@ -98,18 +73,12 @@ export default function EmbedCodeModal({ endpoint, title, onClick }: Props) {
       `    throw new Error(data?.error ?? "Submission failed");\n` +
       `  }\n` +
       `\n` +
-      `  // Success (duplicates included): confirm, wait 3s, then redirect.\n` +
-      `  if (status) {\n` +
-      `    status.textContent = data.duplicate\n` +
-      `      ? "Already sent — redirecting…"\n` +
-      `      : "Message sent — redirecting…";\n` +
-      `  }\n` +
-      `  await new Promise((resolve) => setTimeout(resolve, 3000));\n` +
-      `  window.location.href = REDIRECT_URL;\n` +
+      `  // Success (duplicates included): land on the FormO thank-you page.\n` +
+      `  window.location.assign(THANKS_URL);\n` +
       `} catch (error) {\n` +
       `  const message = error instanceof Error ? error.message : "Could not submit the form";\n` +
-      `  if (status) status.textContent = message;\n` +
       `  console.error(message);\n` +
+      `  alert(message);\n` +
       `}`;
 
     const curl =
@@ -160,9 +129,9 @@ export default function EmbedCodeModal({ endpoint, title, onClick }: Props) {
 
           <p className="rounded-lg border border-amber-200 bg-amber-50 p-3 text-xs leading-5 text-amber-900 dark:border-amber-500/30 dark:bg-amber-500/10 dark:text-amber-200">
             Allow your website origin in the form settings, otherwise the browser will block the
-            request. Empty allowlist currently permits any origin. The HTML and JavaScript examples
-            show a confirmation for 3 seconds, then redirect to <code>REDIRECT_URL</code> — edit that
-            value to your own thank-you page.
+            request. Empty allowlist currently permits any origin. On success the visitor lands on
+            FormO&apos;s thank-you page, which waits 3 seconds and then sends them back to the page
+            that hosted your form.
           </p>
 
           <div role="tablist" aria-label="Embed code examples" className="flex flex-wrap gap-1 border-b border-zinc-200 dark:border-zinc-800">
