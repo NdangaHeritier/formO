@@ -45,6 +45,15 @@ type EmailTemplate = {
   createdAt: string;
 };
 
+type Tab = "senders" | "delivery" | "apiKeys" | "templates";
+
+const TABS: Array<{ key: Tab; label: string }> = [
+  { key: "senders", label: "Senders" },
+  { key: "delivery", label: "Delivery" },
+  { key: "apiKeys", label: "API keys" },
+  { key: "templates", label: "Templates" },
+];
+
 type SectionProps = {
   title: string;
   icon: LucideIconName;
@@ -105,6 +114,7 @@ const SettingsPage = () => {
   const [editingSender, setEditingSender] = useState<SmtpConfig | null>(null);
   const [verifyingId, setVerifyingId] = useState<string | null>(null);
   const [showKeyModal, setShowKeyModal] = useState(false);
+  const [tab, setTab] = useState<Tab>("senders");
 
   const reload = () => {
     Promise.all([
@@ -222,6 +232,32 @@ const SettingsPage = () => {
             </span>
           </div>
 
+          <div
+            role="tablist"
+            aria-label="Workspace settings sections"
+            className="flex flex-wrap items-center gap-1 border-b border-zinc-200 dark:border-zinc-800"
+          >
+            {TABS.map((item) => (
+              <button
+                key={item.key}
+                type="button"
+                role="tab"
+                aria-selected={tab === item.key}
+                onClick={() => setTab(item.key)}
+                className={`cursor-pointer border-b-2 px-4 py-2 text-sm font-medium ${
+                  tab === item.key
+                    ? "border-zinc-900 text-zinc-900 dark:border-zinc-100 dark:text-zinc-100"
+                    : "border-transparent text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-zinc-200"
+                }`}
+              >
+                {item.label}
+              </button>
+            ))}
+          </div>
+
+          <div role="tabpanel" className="grid grid-cols-1 gap-card">
+          {tab === "senders" && (
+          <>
           {/* Developer-only transport configuration. Non-admins never reach
               this data: the SMTP API requires workspace admin. */}
           {canManageSenders && (
@@ -322,7 +358,11 @@ const SettingsPage = () => {
               </li>
             ))}
           </Section>
+          </>
+          )}
 
+          {tab === "delivery" && (
+          <>
           {/* Delivery logs */}
           <div className="grid grid-cols-1 gap-3 rounded-3xl border border-zinc-200 bg-zinc-50/60 p-5 dark:border-zinc-800 dark:bg-zinc-900/30">
             <h2 className="text-lg font-semibold text-zinc-900 dark:text-zinc-100">Delivery logs</h2>
@@ -334,7 +374,11 @@ const SettingsPage = () => {
             <h2 className="text-lg font-semibold text-zinc-900 dark:text-zinc-100">Retention</h2>
             <RetentionSetting />
           </div>
+          </>
+          )}
 
+          {tab === "apiKeys" && (
+          <>
           {/* API keys — listing and management are admin-only. */}
           {canManageSenders ? (
             <>
@@ -389,7 +433,11 @@ const SettingsPage = () => {
               </p>
             </div>
           )}
+          </>
+          )}
 
+          {tab === "templates" && (
+          <>
           {/* Email templates */}
           <div className="flex justify-end">
             <LinkButton href="/developer/templates" variant="secondary">
@@ -422,6 +470,9 @@ const SettingsPage = () => {
               </li>
             ))}
           </Section>
+          </>
+          )}
+          </div>
 
           <p className="text-xs text-zinc-500 dark:text-zinc-400">
             SMTP senders and API keys are managed here. Template editing happens in the
