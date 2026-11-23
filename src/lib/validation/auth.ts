@@ -21,9 +21,21 @@ export const resetPasswordSchema = z.object({
   newPassword: z.string().min(8, "Password must be at least 8 characters").max(128),
 });
 
-export const interestSchema = z.object({
-  interest: z.enum(["developer", "non_developer"]),
-}).strict();
+/** Stable keys so onboarding answers can be consumed by future features. */
+export const onboardingSchema = z
+  .object({
+    role: z.string().trim().max(80).optional(),
+    goals: z.array(z.string().trim().max(80)).max(8).optional(),
+    teamSize: z.string().trim().max(40).optional(),
+  })
+  .strict();
+
+export const interestSchema = z
+  .object({
+    interest: z.enum(["developer", "non_developer"]),
+    onboarding: onboardingSchema.optional(),
+  })
+  .strict();
 
 /**
  * Prevents open redirects after authentication by permitting only relative internal paths.

@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { Prisma } from "@/generated/prisma/client";
 import { prisma } from "@/lib/prisma";
 import { interestSchema } from "@/lib/validation/auth";
 import { jsonErrorResponse, requireActiveWorkspace, requireUser , validationErrorResponse} from "@/server/auth/authorization";
@@ -12,6 +13,7 @@ export async function GET() {
         name: workspace.user.name,
         email: workspace.user.email,
         interest: workspace.user.interest,
+        onboarding: workspace.user.onboarding ?? null,
       },
       organization: {
         id: workspace.organization.id,
@@ -37,17 +39,23 @@ export async function PATCH(request: NextRequest) {
 
     const updated = await prisma.user.update({
       where: { id: user.id },
-      data: { interest: parsed.data.interest },
+      data: {
+        interest: parsed.data.interest,
+        onboarding: parsed.data.onboarding
+          ? (parsed.data.onboarding as Prisma.InputJsonValue)
+          : Prisma.JsonNull,
+      },
       select: {
         id: true,
         interest: true,
+        onboarding: true,
       },
     });
 
     const redirectTo = updated.interest === "non_developer" ? "/non-dev" : "/developer";
 
     return NextResponse.json({
-      user: updated,
+      user: { id: updated.id, interest: updated.interest, onboarding: updated.onboarding ?? null },
       redirectTo,
     });
   } catch (error) {

@@ -8,6 +8,7 @@ import { Icon } from "@/components/Global/Icon";
 import ThemeSync from "@/components/Global/ThemeSync";
 import { ToastProvider } from "@/components/Global/Toast";
 import Tooltip from "@/components/Global/Tooltip";
+import Script from "next/script";
 
 export const metadata: Metadata = {
   title: 'FormO — Effortless Form Submission and Email Handling',
@@ -46,7 +47,7 @@ export const metadata: Metadata = {
     siteName: 'Formo',
     images: [
       {
-        url: '/Twitter-card.png', 
+        url: '/Twitter-card.png',
         width: 1200,
         height: 630,
         alt: 'FormO – Simplified Form Submission',
@@ -100,11 +101,9 @@ export default function RootLayout({
     <html lang="en" className={`${generalSans.variable} ${jetBrainsMono.variable}`} suppressHydrationWarning>
       <head>
         {/* Set the theme before first paint so there is no light/dark flash. */}
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `try{var m=localStorage.getItem('formo-theme');var d=m==='dark'||(m!=='light'&&window.matchMedia('(prefers-color-scheme: dark)').matches);document.documentElement.classList.toggle('dark',d);document.documentElement.dataset.theme=d?'dark':'light';document.documentElement.style.colorScheme=d?'dark':'light';}catch(e){}`,
-          }}
-        />
+        <Script id="formo-theme-init" strategy="beforeInteractive">
+          {`try{var m=localStorage.getItem('formo-theme');var d=m==='dark'||(m!=='light'&&window.matchMedia('(prefers-color-scheme: dark)').matches);document.documentElement.classList.toggle('dark',d);document.documentElement.dataset.theme=d?'dark':'light';document.documentElement.style.colorScheme=d?'dark':'light';}catch(e){}`}
+        </Script>
       </head>
       <body className="min-h-screen bg-background font-sans text-foreground antialiased">
         <ThemeSync />

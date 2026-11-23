@@ -137,6 +137,7 @@ export interface AuthenticatedUser {
   emailVerified: boolean;
   image: string | null;
   interest: UserInterest;
+  onboarding: unknown;
   role: string;
 }
 
@@ -172,6 +173,7 @@ export async function requireUser(): Promise<{
       emailVerified: true,
       image: true,
       interest: true,
+      onboarding: true,
       role: true,
     },
   });
