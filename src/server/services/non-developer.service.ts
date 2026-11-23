@@ -13,7 +13,8 @@ export async function getNonDeveloperOverview(organizationId: string) {
     project: { organizationId, deletedAt: null },
   } as const;
 
-  const [forms, counts, lastSent, templates] = await Promise.all([
+  const [forms, counts, lastSent, templates, contactCount, listCount, messageCounts] =
+    await Promise.all([
     prisma.projectForm.findMany({
       where: formScope,
       select: {
@@ -44,6 +45,13 @@ export async function getNonDeveloperOverview(organizationId: string) {
       where: { organizationId },
       select: { id: true, name: true },
       orderBy: { createdAt: "desc" },
+    }),
+    prisma.contact.count({ where: { organizationId, isActive: true } }),
+    prisma.contactList.count({ where: { organizationId } }),
+    prisma.outboundMessage.groupBy({
+      by: ["status"],
+      where: { organizationId },
+      _count: { _all: true },
     }),
   ]);
 
@@ -93,9 +101,23 @@ export async function getNonDeveloperOverview(organizationId: string) {
     };
   });
 
+  const messages = Object.fromEntries(
+    messageCounts.map((row) => [row.status, row._count._all])
+  ) as Record<string, number>;
+
   return {
     forms: formViews,
     templates,
+    audience: {
+      contacts: contactCount,
+      lists: listCount,
+    },
+    messages: {
+      total: Object.values(messages).reduce((sum, count) => sum + count, 0),
+      queued: messages.queued ?? 0,
+      sent: messages.sent ?? 0,
+      failed: messages.failed ?? 0,
+    },
     delivery: {
       managedBy: "workspace" as const,
       ...total,

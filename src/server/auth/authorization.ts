@@ -266,6 +266,21 @@ export async function requireActiveWorkspace(
   };
 }
 
+/**
+ * Guard for the non-developer surface. `interest` is a view preference, not a
+ * privilege: this gate stops developer-view accounts from reading audience
+ * data, while normal workspace roles still decide who may mutate it.
+ */
+export async function requireNonDeveloperWorkspace(
+  minRole: OrgRole = "member"
+): Promise<ActiveWorkspaceContext> {
+  const workspace = await requireActiveWorkspace(minRole);
+  if (workspace.user.interest !== "non_developer") {
+    throw new HttpError(403, "This endpoint is only available in the non-developer view");
+  }
+  return workspace;
+}
+
 const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 export async function requireProjectAccess(
