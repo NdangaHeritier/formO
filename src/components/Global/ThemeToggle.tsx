@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import { Moon, ScreenShare, Sun } from "lucide-react";
+import Tooltip from "@/components/Global/Tooltip";
 import {
   getStoredTheme,
   setTheme,
@@ -38,20 +39,21 @@ export default function ThemeToggle() {
         {options.map(({ mode: value, label, Icon }) => {
           const active = mode === value;
           return (
-            <button
-              key={value}
-              type="button"
-              aria-label={label}
-              aria-pressed={active}
-              onClick={() => setTheme(value)}
-              className={`flex h-8 w-8 cursor-pointer items-center justify-center rounded-md transition-all duration-200 active:scale-95 ${
-                active
-                  ? "bg-white text-zinc-900 shadow-sm ring-1 ring-zinc-300 dark:bg-zinc-800 dark:text-zinc-100 dark:ring-zinc-600"
-                  : "bg-transparent text-zinc-600 hover:bg-zinc-200/70 hover:text-zinc-900 dark:text-zinc-400 dark:hover:bg-zinc-800/70 dark:hover:text-zinc-100"
-              }`}
-            >
-              <Icon size={16} />
-            </button>
+            <Tooltip key={value} label={label}>
+              <button
+                type="button"
+                aria-label={label}
+                aria-pressed={active}
+                onClick={() => setTheme(value)}
+                className={`flex h-8 w-8 cursor-pointer items-center justify-center rounded-md transition-all duration-200 active:scale-95 ${
+                  active
+                    ? "bg-white text-zinc-900 shadow-sm ring-1 ring-zinc-300 dark:bg-zinc-800 dark:text-zinc-100 dark:ring-zinc-600"
+                    : "bg-transparent text-zinc-600 hover:bg-zinc-200/70 hover:text-zinc-900 dark:text-zinc-400 dark:hover:bg-zinc-800/70 dark:hover:text-zinc-100"
+                }`}
+              >
+                <Icon size={16} />
+              </button>
+            </Tooltip>
           );
         })}
       </div>

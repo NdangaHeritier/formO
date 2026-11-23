@@ -2,10 +2,12 @@
 import { useCallback, useEffect, useState } from "react";
 import DeveloperShell from "@/components/Developer/DeveloperShell";
 import Layout from "@/components/Developer/Modals/Layout";
+import ConfirmDialog from "@/components/Global/ConfirmDialog";
 import FormButton from "@/components/Global/FormButton";
 import { Icon } from "@/components/Global/Icon";
-import { SkeletonTableRows } from "@/components/Global/Skeleton";
+import { SkeletonLine, SkeletonSubmissionDetail, SkeletonTableRows } from "@/components/Global/Skeleton";
 import { useToast } from "@/components/Global/Toast";
+import Tooltip from "@/components/Global/Tooltip";
 import { relativeTime } from "@/lib/format";
 import { canManageWorkspace, useWorkspaceRole } from "@/lib/hooks/use-workspace-role";
 
@@ -16,6 +18,7 @@ type SubmissionItem = {
   sentAt: string | null;
   formId: string;
   formTitle: string;
+  formDeleted: boolean;
   projectName: string;
   projectSlug: string;
   deliveryCount: number;
@@ -34,6 +37,7 @@ type Delivery = {
 type SubmissionDetail = {
   id: string;
   form: { title: string; endpoint: string };
+  formDeleted: boolean;
   status: string;
   data: Record<string, unknown>;
   origin: string | null;
@@ -62,7 +66,9 @@ export default function SubmissionsPage() {
   const [forms, setForms] = useState<Array<{ id: string; title: string; project: { name: string } }>>([]);
   const [formId, setFormId] = useState("");
   const [status, setStatus] = useState("");
+  const [deletedForms, setDeletedForms] = useState("include");
   const [items, setItems] = useState<SubmissionItem[]>([]);
+  const [total, setTotal] = useState(0);
   const [cursor, setCursor] = useState<string | null>(null);
   const [hasMore, setHasMore] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -71,7 +77,11 @@ export default function SubmissionsPage() {
   const [detailId, setDetailId] = useState<string | null>(null);
   const [detail, setDetail] = useState<SubmissionDetail | null>(null);
   const [detailLoading, setDetailLoading] = useState(false);
+  const [detailError, setDetailError] = useState(false);
   const [retrying, setRetrying] = useState(false);
+  const [pendingDelete, setPendingDelete] = useState<SubmissionItem | null>(null);
+  const [pendingBulkDelete, setPendingBulkDelete] = useState(false);
+  const [deleting, setDeleting] = useState(false);
 
   useEffect(() => {
     fetch("/api/forms")
@@ -87,16 +97,19 @@ export default function SubmissionsPage() {
       const params = new URLSearchParams();
       if (formId) params.set("formId", formId);
       if (status) params.set("status", status);
+      params.set("deletedForms", deletedForms);
       if (nextCursor) params.set("cursor", nextCursor);
       fetch(`/api/submissions?${params.toString()}`)
         .then((res) => (res.ok ? res.json() : Promise.reject(new Error("submissions"))))
         .then(
           (data: {
             items: SubmissionItem[];
+            total: number;
             nextCursor: string | null;
             hasMore: boolean;
           }) => {
             setItems((current) => (nextCursor ? [...current, ...data.items] : data.items));
+            setTotal(data.total);
             setCursor(data.nextCursor);
             setHasMore(data.hasMore);
           }
@@ -104,7 +117,7 @@ export default function SubmissionsPage() {
         .catch(() => setLoadError(true))
         .finally(() => setLoading(false));
     },
-    [formId, status]
+    [formId, status, deletedForms]
   );
 
   useEffect(() => {
@@ -114,11 +127,16 @@ export default function SubmissionsPage() {
   const openDetail = (id: string) => {
     setDetailId(id);
     setDetail(null);
+    setDetailError(false);
     setDetailLoading(true);
-    fetch(`/api/submissions/${id}`)
+    const includeDeleted = deletedForms !== "exclude" ? "?includeDeleted=1" : "";
+    fetch(`/api/submissions/${id}${includeDeleted}`)
       .then((res) => (res.ok ? res.json() : Promise.reject(new Error("detail"))))
       .then((data: SubmissionDetail) => setDetail(data))
-      .catch(() => toast.error("Could not load this submission."))
+      .catch(() => {
+        setDetailError(true);
+        toast.error("Could not load this submission.");
+      })
       .finally(() => setDetailLoading(false));
   };
 
@@ -135,6 +153,40 @@ export default function SubmissionsPage() {
       toast.error("Could not requeue this submission.");
     } finally {
       setRetrying(false);
+    }
+  };
+
+  const confirmDelete = async () => {
+    if (!pendingDelete) return;
+    setDeleting(true);
+    try {
+      const res = await fetch(`/api/submissions/${pendingDelete.id}`, { method: "DELETE" });
+      if (!res.ok) throw new Error("delete");
+      toast.success("Submission and its delivery logs deleted.");
+      if (detailId === pendingDelete.id) setDetailId(null);
+      setPendingDelete(null);
+      load();
+    } catch {
+      toast.error("Could not delete this submission.");
+    } finally {
+      setDeleting(false);
+    }
+  };
+
+  const confirmBulkDelete = async () => {
+    if (!formId) return;
+    setDeleting(true);
+    try {
+      const res = await fetch(`/api/forms/${formId}/submissions`, { method: "DELETE" });
+      if (!res.ok) throw new Error("delete");
+      toast.success(`Deleted ${total} submission(s).`);
+      setPendingBulkDelete(false);
+      setDetailId(null);
+      load();
+    } catch {
+      toast.error("Could not delete these submissions.");
+    } finally {
+      setDeleting(false);
     }
   };
 
@@ -178,6 +230,25 @@ export default function SubmissionsPage() {
               <option value="pending">Pending</option>
               <option value="spam">Spam</option>
             </select>
+            <select
+              aria-label="Filter deleted forms"
+              className={FILTER_CLASS}
+              value={deletedForms}
+              onChange={(event) => {
+                setLoading(true);
+                setLoadError(false);
+                setDeletedForms(event.target.value);
+              }}
+            >
+              <option value="include">All forms (incl. deleted)</option>
+              <option value="exclude">Active forms only</option>
+              <option value="only">Deleted forms only</option>
+            </select>
+            {canRetry && formId && !status && !loading && (
+              <FormButton variant="secondary" onClick={() => setPendingBulkDelete(true)}>
+                Delete all {total} for this form
+              </FormButton>
+            )}
           </div>
         </div>
 
@@ -204,6 +275,11 @@ export default function SubmissionsPage() {
                   <tr key={item.id} className="border-b border-zinc-100 dark:border-zinc-900">
                     <td className="px-4 py-3">
                       <span className="font-medium text-zinc-800 dark:text-zinc-200">{item.formTitle}</span>
+                      {item.formDeleted && (
+                        <span className="ml-2 rounded-full bg-zinc-200/70 px-2 py-0.5 text-[10px] font-medium text-zinc-600 dark:bg-zinc-800 dark:text-zinc-300">
+                          Form deleted
+                        </span>
+                      )}
                       <span className="block text-xs text-zinc-500 dark:text-zinc-400">{item.projectName}</span>
                     </td>
                     <td className="px-4 py-3">
@@ -221,6 +297,18 @@ export default function SubmissionsPage() {
                       >
                         View <Icon name="ArrowRight" size={14} />
                       </button>
+                      {canRetry && (
+                        <Tooltip label="Delete submission" placement="left">
+                          <button
+                            type="button"
+                            aria-label={`Delete submission from ${item.formTitle}`}
+                            onClick={() => setPendingDelete(item)}
+                            className="ml-3 cursor-pointer rounded-lg p-1.5 text-zinc-400 hover:bg-red-500/10 hover:text-red-600 dark:hover:text-red-400"
+                          >
+                            <Icon name="Trash" size={14} />
+                          </button>
+                        </Tooltip>
+                      )}
                     </td>
                   </tr>
                 ))
@@ -243,12 +331,21 @@ export default function SubmissionsPage() {
           <section className="grid max-h-[85vh] w-full max-w-2xl grid-cols-1 gap-4 overflow-y-auto rounded-3xl bg-white p-6 shadow-2xl dark:bg-zinc-950 sm:p-8">
             <div className="flex flex-wrap items-start justify-between gap-3">
               <div className="grid grid-cols-1 gap-1">
-                <h2 className="text-lg font-semibold text-zinc-900 dark:text-zinc-100">{detail?.form.title ?? "Submission"}</h2>
-                <p className="text-xs text-zinc-500 dark:text-zinc-400">
-                  {detail ? relativeTime(detail.createdAt) : "Loading…"}
-                </p>
+                {detailLoading ? (
+                  <>
+                    <SkeletonLine width="w-40" className="h-5" />
+                    <SkeletonLine width="w-24" className="h-3" />
+                  </>
+                ) : (
+                  <>
+                    <h2 className="text-lg font-semibold text-zinc-900 dark:text-zinc-100">{detail?.form.title ?? "Submission"}</h2>
+                    <p className="text-xs text-zinc-500 dark:text-zinc-400">
+                      {detail ? relativeTime(detail.createdAt) : ""}
+                    </p>
+                  </>
+                )}
               </div>
-              {canRetry && detail && detail.deliveries.some((d) => d.status === "failed" || d.status === "dead_letter") && (
+              {canRetry && detail && !detail.formDeleted && detail.deliveries.some((d) => d.status === "failed" || d.status === "dead_letter") && (
                 <FormButton variant="secondary" disabled={retrying} onClick={retry}>
                   {retrying ? <><Icon name="Loader" size={15} className="animate-spin" /> Requeueing…</> : "Retry delivery"}
                 </FormButton>
@@ -256,7 +353,12 @@ export default function SubmissionsPage() {
             </div>
 
             {detailLoading ? (
-              <p className="text-sm text-zinc-500 dark:text-zinc-400">Loading submission…</p>
+              <SkeletonSubmissionDetail />
+            ) : detailError ? (
+              <div className="grid grid-cols-1 justify-items-start gap-3 rounded-2xl bg-zinc-50 p-4 dark:bg-zinc-900/40">
+                <p className="text-sm text-zinc-600 dark:text-zinc-300">Could not load this submission.</p>
+                <FormButton variant="secondary" onClick={() => openDetail(detailId)}>Try again</FormButton>
+              </div>
             ) : detail ? (
               <>
                 <div className="rounded-2xl bg-zinc-50 p-4 dark:bg-zinc-900/40">
@@ -291,6 +393,23 @@ export default function SubmissionsPage() {
           </section>
         </Layout>
       )}
+
+      <ConfirmDialog
+        open={pendingDelete !== null}
+        title="Delete this submission?"
+        description={`This permanently deletes the submission from ${pendingDelete?.formTitle ?? "this form"} and all of its delivery logs and events. This cannot be undone.`}
+        confirmLabel={deleting ? "Deleting…" : "Delete submission"}
+        onCancel={() => setPendingDelete(null)}
+        onConfirm={confirmDelete}
+      />
+      <ConfirmDialog
+        open={pendingBulkDelete}
+        title={`Delete ${total} submission(s)?`}
+        description="Every submission for this form will be permanently deleted, along with its delivery logs and events. This cannot be undone."
+        confirmLabel={deleting ? "Deleting…" : "Delete all submissions"}
+        onCancel={() => setPendingBulkDelete(false)}
+        onConfirm={confirmBulkDelete}
+      />
     </DeveloperShell>
   );
 }

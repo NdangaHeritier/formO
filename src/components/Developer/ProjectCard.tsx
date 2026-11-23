@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import EditProject from "./Modals/Forms/EditProject";
 import ConfirmDialog from "@/components/Global/ConfirmDialog";
 import { toast } from "@/components/Global/Toast";
+import Tooltip from "@/components/Global/Tooltip";
 
 type cardProps = {
     id: ProjectType['id'];
@@ -121,16 +122,18 @@ export default function ProjectCard ({name, description, forms, formsCount, subm
                     className="relative"
                     onClick={(e) => e.stopPropagation()}
                 >
-                    <button
-                        type="button"
-                        aria-label="Project menu"
-                        aria-haspopup="menu"
-                        aria-expanded={menuOpen}
-                        className="flex items-center h-10 w-10 justify-center rounded-full cursor-pointer hover:bg-zinc-100/50 dark:hover:bg-zinc-900/50"
-                        onClick={() => setMenuOpen((v) => !v)}
-                    >
-                        <Icon name='MoreHorizontal' size={16} className="" />
-                    </button>
+                    <Tooltip label="Project actions">
+                        <button
+                            type="button"
+                            aria-label="Project menu"
+                            aria-haspopup="menu"
+                            aria-expanded={menuOpen}
+                            className="flex items-center h-10 w-10 justify-center rounded-full cursor-pointer hover:bg-zinc-100/50 dark:hover:bg-zinc-900/50"
+                            onClick={() => setMenuOpen((v) => !v)}
+                        >
+                            <Icon name='MoreHorizontal' size={16} className="" />
+                        </button>
+                    </Tooltip>
                     {menuOpen && (
                         <div
                             ref={menuRef}
@@ -220,12 +223,14 @@ export default function ProjectCard ({name, description, forms, formsCount, subm
                 <div className="title-and-copy-endpoint-icon flex items-center justify-between py-3">
                     <h4 className="text-sm font-semibold text-zinc-800 dark:text-zinc-200">Latest Endpoint</h4>
                     {endpoint && (
-                        <button className="flex items-center justify-center h-10 w-10 cursor-pointer rounded-full hover:bg-zinc-100 dark:hover:bg-zinc-900/50 transition">
-                            <Icon name="Copy" size={16} className="text-zinc-600 hover:text-zinc-800 dark:text-zinc-500 dark:hover:text-zinc-300 transition" onClick={() => {
+                        <Tooltip label="Copy endpoint">
+                            <button type="button" aria-label="Copy endpoint" className="flex items-center justify-center h-10 w-10 cursor-pointer rounded-full hover:bg-zinc-100 dark:hover:bg-zinc-900/50 transition" onClick={() => {
                                 navigator.clipboard.writeText(endpoint);
                                 toast.success("Endpoint copied to clipboard", { duration: 2000 });
-                            }} />
-                        </button>
+                            }}>
+                                <Icon name="Copy" size={16} className="text-zinc-600 hover:text-zinc-800 dark:text-zinc-500 dark:hover:text-zinc-300 transition" />
+                            </button>
+                        </Tooltip>
                     )}
                 </div>
                 <div className="flex items-center gap-2 bg-zinc-100/50 dark:bg-zinc-900/70 p-3 rounded-lg">

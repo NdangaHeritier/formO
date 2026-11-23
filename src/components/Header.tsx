@@ -10,6 +10,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { canManageWorkspace, useWorkspaceRole } from "@/lib/hooks/use-workspace-role";
 import SkeletonBox from "./skeleton";
 import UserAvatar from "./Global/UserAvatar";
+import Tooltip from "./Global/Tooltip";
 
 type prop = { border?: string; py?: string };
 
@@ -165,18 +166,20 @@ export default function Header({ border = "border-b", py = "py-3" }: prop) {
                         Send Emails
                     </LinkButton>
 
-                        <button
-                            onClick={() => setIsOpeningUserMenu(!isOpeningUserMenu)}
-                            type="button"
-                            aria-label="Open account menu"
-                            aria-expanded={isOpeningUserMenu}
-                            className="user-menu-trigger h-10 w-10 cursor-pointer rounded-full bg-zinc-100 p-0.5 transition-colors duration-200 hover:bg-zinc-200 dark:bg-zinc-800 dark:hover:bg-zinc-700">
-                            <UserAvatar
-                                src={currentUser.image}
-                                size={36}
-                                className="h-9 w-9"
-                            />
-                        </button>
+                        <Tooltip label="Account menu">
+                            <button
+                                onClick={() => setIsOpeningUserMenu(!isOpeningUserMenu)}
+                                type="button"
+                                aria-label="Open account menu"
+                                aria-expanded={isOpeningUserMenu}
+                                className="user-menu-trigger h-10 w-10 cursor-pointer rounded-full bg-zinc-100 p-0.5 transition-colors duration-200 hover:bg-zinc-200 dark:bg-zinc-800 dark:hover:bg-zinc-700">
+                                <UserAvatar
+                                    src={currentUser.image}
+                                    size={36}
+                                    className="h-9 w-9"
+                                />
+                            </button>
+                        </Tooltip>
                         </>
                     ) : null}
 
@@ -250,9 +253,11 @@ export default function Header({ border = "border-b", py = "py-3" }: prop) {
                 </div>
             </div>
             <div className={`navbar-toogle ${currentUser ? `hidden` : `hidden max-sm:flex`}`}>
-                <button type="button" className="toggleNav rounded-md p-2 hover:bg-zinc-100 dark:hover:bg-zinc-900" onClick={() => setIsNavOpen(!isNavOpen)}>
-                    <Icon name={!isNavOpen ? "PanelRightOpen" : "X"} className="cursor-pointer text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-200" size={20} strokeWidth={2} />
-                </button>
+                <Tooltip label={isNavOpen ? "Close menu" : "Open menu"}>
+                    <button type="button" aria-label={isNavOpen ? "Close menu" : "Open menu"} className="toggleNav rounded-md p-2 hover:bg-zinc-100 dark:hover:bg-zinc-900" onClick={() => setIsNavOpen(!isNavOpen)}>
+                        <Icon name={!isNavOpen ? "PanelRightOpen" : "X"} className="cursor-pointer text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-200" size={20} strokeWidth={2} />
+                    </button>
+                </Tooltip>
             </div>
         </header>
     );

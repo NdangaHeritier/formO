@@ -12,6 +12,7 @@ import FormButton from "@/components/Global/FormButton";
 import { Icon } from "@/components/Global/Icon";
 import ConfirmDialog from "@/components/Global/ConfirmDialog";
 import { SkeletonGrid, SkeletonTableRows } from "@/components/Global/Skeleton";
+import Tooltip from "@/components/Global/Tooltip";
 import { ProjectType } from "@/types/Project";
 
 type StatusTab = "all" | "active" | "archived";
@@ -245,24 +246,28 @@ const Projects = () => {
 
                 {/* grid / list toggle */}
                 <div className="flex items-center gap-1 border border-zinc-200 dark:border-zinc-800 rounded-md p-1">
-                  <button
-                    type="button"
-                    onClick={() => setView("grid")}
-                    aria-label="Grid view"
-                    aria-pressed={view === "grid"}
-                    className={viewButtonClass("grid")}
-                  >
-                    <Icon name="LayoutGrid" size={16} strokeWidth={2} />
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setView("list")}
-                    aria-label="List view"
-                    aria-pressed={view === "list"}
-                    className={viewButtonClass("list")}
-                  >
-                    <Icon name="List" size={16} strokeWidth={2} />
-                  </button>
+                  <Tooltip label="Grid view">
+                    <button
+                      type="button"
+                      onClick={() => setView("grid")}
+                      aria-label="Grid view"
+                      aria-pressed={view === "grid"}
+                      className={viewButtonClass("grid")}
+                    >
+                      <Icon name="LayoutGrid" size={16} strokeWidth={2} />
+                    </button>
+                  </Tooltip>
+                  <Tooltip label="List view">
+                    <button
+                      type="button"
+                      onClick={() => setView("list")}
+                      aria-label="List view"
+                      aria-pressed={view === "list"}
+                      className={viewButtonClass("list")}
+                    >
+                      <Icon name="List" size={16} strokeWidth={2} />
+                    </button>
+                  </Tooltip>
                 </div>
 
                 <FormButton type='button' variant='primary' onClick={() => setCreateOpen(true)}>
@@ -393,18 +398,20 @@ const Projects = () => {
                         </td>
                         <td className="px-5 py-4 text-end" onClick={(e) => e.stopPropagation()}>
                           <div className="relative inline-block text-left" ref={menuProjectId === project.id ? menuRef : undefined}>
-                            <button
-                              type="button"
-                              aria-label={`Project menu for ${project.name}`}
-                              aria-haspopup="menu"
-                              aria-expanded={menuProjectId === project.id}
-                              className="h-8 w-8 flex items-center justify-center rounded-full cursor-pointer text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-900 transition"
-                              onClick={() =>
-                                setMenuProjectId((current) => (current === project.id ? null : project.id))
-                              }
-                            >
-                              <Icon name="MoreHorizontal" size={16} />
-                            </button>
+                            <Tooltip label="Project actions">
+                              <button
+                                type="button"
+                                aria-label={`Project menu for ${project.name}`}
+                                aria-haspopup="menu"
+                                aria-expanded={menuProjectId === project.id}
+                                className="h-8 w-8 flex items-center justify-center rounded-full cursor-pointer text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-900 transition"
+                                onClick={() =>
+                                  setMenuProjectId((current) => (current === project.id ? null : project.id))
+                                }
+                              >
+                                <Icon name="MoreHorizontal" size={16} />
+                              </button>
+                            </Tooltip>
                             {menuProjectId === project.id && (
                               <div
                                 role="menu"

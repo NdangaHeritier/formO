@@ -7,6 +7,7 @@ import { InputField } from "@/components/Global/InputField";
 import { TextAreaField } from "@/components/Global/TextAreaField";
 import { SelectField } from "@/components/Global/SelectField";
 import { useToast } from "@/components/Global/Toast";
+import Tooltip from "@/components/Global/Tooltip";
 
 type Props = {
   /** Project id. When set, the form is created in this project and the picker is hidden. */
@@ -192,14 +193,16 @@ export default function NewForm({ project, projectName, onClick, onSuccess }: Pr
                   <option value="cc">CC</option>
                   <option value="bcc">BCC</option>
                 </select>
-                <button
-                  type="button"
-                  aria-label={`Remove recipient ${index + 1}`}
-                  onClick={() => setRecipients((current) => current.filter((_, i) => i !== index))}
-                  className="p-2 text-zinc-500 hover:text-red-600 cursor-pointer"
-                >
-                  <Icon name="X" size={15} />
-                </button>
+                <Tooltip label="Remove recipient">
+                  <button
+                    type="button"
+                    aria-label={`Remove recipient ${index + 1}`}
+                    onClick={() => setRecipients((current) => current.filter((_, i) => i !== index))}
+                    className="p-2 text-zinc-500 hover:text-red-600 cursor-pointer"
+                  >
+                    <Icon name="X" size={15} />
+                  </button>
+                </Tooltip>
               </div>
             ))}
             <button

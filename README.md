@@ -29,17 +29,17 @@ FormO is a self-hosted, developer-grade form backend. Projects contain forms; fo
 | `/developer/projects` | Projects list, create/edit/archive/delete |
 | `/developer/projects/[slug]` | Project detail: stats, forms, recent submissions |
 | `/developer/forms` | Workspace-wide form list, endpoint utilities and endpoint rotation |
-| `/developer/submissions` | Submission inbox, detail and delivery attempts |
+| `/developer/submissions` | Submission inbox, detail, delivery attempts and admin-only deletion |
 | `/developer/analytics` | Submission and delivery analytics |
 | `/developer/settings` | SMTP senders, delivery logs, retention, API keys, email templates |
 | `/developer/templates` | Template library and presets |
 | `/developer/account` | Profile, credentials, sessions and account deletion |
 | `/api/f/{endpoint}` | **Public** form submission endpoint |
 | `/api/forms`, `/api/forms/{id}` | List, read, update, delete forms |
-| `/api/forms/{id}/submissions`, `/api/forms/{id}/rotate-endpoint` | Form submissions, endpoint rotation |
+| `/api/forms/{id}/submissions`, `/api/forms/{id}/rotate-endpoint` | List form submissions, **DELETE all submissions for a form**, rotate endpoint |
 | `/api/projects`, `/api/projects/{id}`, `/api/projects/slug/{slug}` | Project management |
 | `/api/projects/{id}/forms` | Create and list a project's forms |
-| `/api/submissions`, `/api/submissions/{id}`, `/api/submissions/{id}/retry` | Workspace inbox, submission detail and delivery retry |
+| `/api/submissions`, `/api/submissions/{id}`, `/api/submissions/{id}/retry` | Workspace inbox, submission detail, **DELETE one submission**, delivery retry |
 | `/api/developer/overview` | Workspace overview: attention counts and recent submissions |
 | `/api/settings/*`, `/api/templates/*`, `/api/analytics` | Workspace settings (SMTP, delivery logs, retention, API keys), templates, analytics |
 | `/api/auth/*` | Better Auth handlers |

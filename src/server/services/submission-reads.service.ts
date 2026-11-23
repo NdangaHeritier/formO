@@ -87,11 +87,35 @@ export async function listFormSubmissions(params: {
   };
 }
 
+export type DeletedFormsScope = "include" | "exclude" | "only";
+
+/**
+ * Form/project soft-deletes must not hide submissions from the inbox — hidden
+ * records cannot be inspected or deleted by an admin.
+ */
+function workspaceSubmissionWhere(params: {
+  organizationId: string;
+  formId?: string;
+  status?: SubmissionStatus;
+  deletedForms: DeletedFormsScope;
+}) {
+  return {
+    form: {
+      project: { organizationId: params.organizationId },
+      ...(params.deletedForms === "exclude" ? { deletedAt: null } : {}),
+      ...(params.deletedForms === "only" ? { deletedAt: { not: null } } : {}),
+      ...(params.formId ? { id: params.formId } : {}),
+    },
+    ...(params.status ? { status: params.status } : {}),
+  };
+}
+
 /** Workspace-wide submission list for the developer inbox. */
 export async function listWorkspaceSubmissions(params: {
   organizationId: string;
   formId?: string;
   status?: SubmissionStatus;
+  deletedForms?: DeletedFormsScope;
   limit: number;
   cursor?: string;
 }) {
@@ -100,41 +124,47 @@ export async function listWorkspaceSubmissions(params: {
     throw new HttpError(400, "Invalid cursor", { code: "BAD_REQUEST" });
   }
   const cursorDate = cursor ? new Date(cursor.createdAt) : null;
-
-  const rows = await prisma.formSubmission.findMany({
-    where: {
-      form: {
-        deletedAt: null,
-        project: { organizationId: params.organizationId, deletedAt: null },
-        ...(params.formId ? { id: params.formId } : {}),
-      },
-      ...(params.status ? { status: params.status } : {}),
-      ...(cursor && cursorDate
-        ? {
-            OR: [
-              { createdAt: { lt: cursorDate } },
-              { createdAt: cursorDate, id: { lt: cursor.id } },
-            ],
-          }
-        : {}),
-    },
-    orderBy: [{ createdAt: "desc" }, { id: "desc" }],
-    take: params.limit + 1,
-    select: {
-      id: true,
-      status: true,
-      createdAt: true,
-      sentAt: true,
-      form: {
-        select: {
-          id: true,
-          title: true,
-          project: { select: { name: true, slug: true } },
-        },
-      },
-      _count: { select: { deliveries: true } },
-    },
+  const deletedForms = params.deletedForms ?? "exclude";
+  const where = workspaceSubmissionWhere({
+    organizationId: params.organizationId,
+    formId: params.formId,
+    status: params.status,
+    deletedForms,
   });
+
+  const [rows, total] = await Promise.all([
+    prisma.formSubmission.findMany({
+      where: {
+        ...where,
+        ...(cursor && cursorDate
+          ? {
+              OR: [
+                { createdAt: { lt: cursorDate } },
+                { createdAt: cursorDate, id: { lt: cursor.id } },
+              ],
+            }
+          : {}),
+      },
+      orderBy: [{ createdAt: "desc" }, { id: "desc" }],
+      take: params.limit + 1,
+      select: {
+        id: true,
+        status: true,
+        createdAt: true,
+        sentAt: true,
+        form: {
+          select: {
+            id: true,
+            title: true,
+            deletedAt: true,
+            project: { select: { name: true, slug: true } },
+          },
+        },
+        _count: { select: { deliveries: true } },
+      },
+    }),
+    prisma.formSubmission.count({ where }),
+  ]);
 
   const hasMore = rows.length > params.limit;
   const page = rows.slice(0, params.limit);
@@ -147,10 +177,12 @@ export async function listWorkspaceSubmissions(params: {
       sentAt: iso(row.sentAt),
       formId: row.form.id,
       formTitle: row.form.title,
+      formDeleted: row.form.deletedAt !== null,
       projectName: row.form.project.name,
       projectSlug: row.form.project.slug,
       deliveryCount: row._count.deliveries,
     })),
+    total,
     nextCursor:
       hasMore && last
         ? encodeCursor({ createdAt: last.createdAt.toISOString(), id: last.id })
@@ -159,13 +191,17 @@ export async function listWorkspaceSubmissions(params: {
   };
 }
 
-export async function getSubmissionDetail(id: string, organizationId: string) {
+export async function getSubmissionDetail(
+  id: string,
+  organizationId: string,
+  includeDeleted = false
+) {
   const submission = await prisma.formSubmission.findFirst({
     where: {
       id,
       form: {
-        deletedAt: null,
-        project: { organizationId, deletedAt: null },
+        ...(includeDeleted ? {} : { deletedAt: null }),
+        project: { organizationId },
       },
     },
     select: {
@@ -179,7 +215,7 @@ export async function getSubmissionDetail(id: string, organizationId: string) {
       sentAt: true,
       errorMessage: true,
       createdAt: true,
-      form: { select: { id: true, title: true, endpoint: true } },
+      form: { select: { id: true, title: true, endpoint: true, deletedAt: true } },
       deliveries: {
         orderBy: { createdAt: "asc" },
         select: {
@@ -205,7 +241,12 @@ export async function getSubmissionDetail(id: string, organizationId: string) {
   return {
     id: submission.id,
     formId: submission.formId,
-    form: submission.form,
+    form: {
+      id: submission.form.id,
+      title: submission.form.title,
+      endpoint: submission.form.endpoint,
+    },
+    formDeleted: submission.form.deletedAt !== null,
     status: submission.status,
     data: submission.data,
     origin: submission.origin,

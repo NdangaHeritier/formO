@@ -240,3 +240,14 @@ loading, empty and error text. No card links to a route that does not exist.
 - **Retention** is a workspace setting, not a hidden job: leaving it unset keeps
   data forever, and only an explicit value (or `FORMO_SUBMISSION_RETENTION_DAYS`)
   causes the maintenance worker to prune old submissions.
+- **Deletion** is always explicit and admin-only. Forms stay soft-deleted so an
+  accidental click is recoverable, but their submissions remain visible in the
+  inbox behind a "Form deleted" badge. Deleting a submission hard-deletes it and
+  cascades to its delivery logs and events; the confirmation names the target and
+  count, and the action is written to the audit log. Never auto-delete on form
+  deletion.
+- **Tooltips** are supplementary labels for icon-only controls only, built with
+  `@heroui/react`'s `Tooltip` via `components/Global/Tooltip.tsx`. The trigger's
+  `aria-label` remains the accessible name. Never use a tooltip for form errors,
+  feedback or information required to complete a task — use a toast or visible
+  text. No second tooltip library is installed.

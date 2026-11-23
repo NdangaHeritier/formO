@@ -4,6 +4,7 @@ import Layout from "../Layout";
 import { Icon } from "@/components/Global/Icon";
 import { InputField } from "@/components/Global/InputField";
 import { useToast } from "@/components/Global/Toast";
+import Tooltip from "@/components/Global/Tooltip";
 import { TextAreaField } from "@/components/Global/TextAreaField";
 import React, { useState } from "react";
 import { FormType } from "@/types/Project";
@@ -149,14 +150,16 @@ export default function EditForm({ form, onClick, onSuccess }: Props) {
                   <option value="cc">CC</option>
                   <option value="bcc">BCC</option>
                 </select>
-                <button
-                  type="button"
-                  aria-label={`Remove recipient ${index + 1}`}
-                  onClick={() => setRecipients((current) => current.filter((_, i) => i !== index))}
-                  className="p-2 text-zinc-500 hover:text-red-600 cursor-pointer"
-                >
-                  <Icon name="X" size={15} />
-                </button>
+                <Tooltip label="Remove recipient">
+                  <button
+                    type="button"
+                    aria-label={`Remove recipient ${index + 1}`}
+                    onClick={() => setRecipients((current) => current.filter((_, i) => i !== index))}
+                    className="p-2 text-zinc-500 hover:text-red-600 cursor-pointer"
+                  >
+                    <Icon name="X" size={15} />
+                  </button>
+                </Tooltip>
               </div>
             ))}
             <button

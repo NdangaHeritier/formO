@@ -83,6 +83,39 @@ export function SkeletonTableRows({ rows = 5 }: { rows?: number }) {
   );
 }
 
+/** Submission detail dialog: header, data payload and delivery attempts. */
+export function SkeletonSubmissionDetail() {
+  return (
+    <div aria-hidden="true" className="grid grid-cols-1 gap-4">
+      <div className="grid grid-cols-1 gap-2">
+        <SkeletonLine width="w-40" className="h-5" />
+        <SkeletonLine width="w-24" className="h-3" />
+      </div>
+      <div className="grid grid-cols-1 gap-3 rounded-2xl bg-zinc-50 p-4 dark:bg-zinc-900/40">
+        <SkeletonLine width="w-28" className="h-4" />
+        <SkeletonLine width="w-4/5" />
+        <SkeletonLine width="w-3/5" />
+        <SkeletonLine width="w-2/3" />
+      </div>
+      <div className="grid grid-cols-1 gap-2">
+        <SkeletonLine width="w-32" className="h-4" />
+        {[0, 1].map((index) => (
+          <div
+            key={index}
+            className="grid grid-cols-1 gap-2 rounded-xl border border-zinc-200 p-3 dark:border-zinc-800"
+          >
+            <div className="flex items-center justify-between gap-2">
+              <SkeletonLine width="w-44" />
+              <Skeleton className="h-5 w-16 rounded-full" />
+            </div>
+            <SkeletonLine width="w-1/2" className="h-2" />
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 /** Project card silhouette. */
 export function SkeletonProjectCard() {
   return (
