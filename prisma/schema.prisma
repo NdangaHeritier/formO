@@ -69,6 +69,18 @@ enum EmailEventType {
   @@map("email_event_type")
 }
 
+/// Lifecycle of a user-initiated (non-developer) broadcast.
+enum MessageStatus {
+  draft
+  queued
+  sending
+  sent
+  failed
+  canceled
+
+  @@map("message_status")
+}
+
 model User {
   id            String       @id @default(dbgenerated("uuidv7()")) @db.Uuid
   name          String
@@ -80,13 +92,14 @@ model User {
   createdAt     DateTime     @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt     DateTime     @updatedAt @map("updated_at") @db.Timestamptz(6)
 
-  sessions       Session[]
-  accounts       Account[]
-  memberships    Member[]
-  invitations    Invitation[]
-  createdProjects Project[]   @relation("ProjectCreator")
-  createdApiKeys ApiKey[]     @relation("ApiKeyCreator")
-  auditLogs      AuditLog[]   @relation("AuditActor")
+  sessions                Session[]
+  accounts                Account[]
+  memberships             Member[]
+  invitations             Invitation[]
+  createdProjects         Project[]         @relation("ProjectCreator")
+  createdApiKeys          ApiKey[]          @relation("ApiKeyCreator")
+  createdOutboundMessages OutboundMessage[] @relation("OutboundMessageCreator")
+  auditLogs               AuditLog[]        @relation("AuditActor")
 
   @@map("users")
 }
@@ -143,24 +156,27 @@ model Verification {
 }
 
 model Organization {
-  id        String   @id @default(dbgenerated("uuidv7()")) @db.Uuid
-  name      String
-  slug      String   @unique
-  logo      String?
-  metadata  String?
+  id            String   @id @default(dbgenerated("uuidv7()")) @db.Uuid
+  name          String
+  slug          String   @unique
+  logo          String?
+  metadata      String?
   /// Submission retention in days. NULL keeps data forever (or uses the
   /// env-level default). Managed by workspace admins.
-  retentionDays Int?   @map("retention_days")
-  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
-  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+  retentionDays Int?     @map("retention_days")
+  createdAt     DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt     DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
 
-  members        Member[]
-  invitations    Invitation[]
-  projects       Project[]
-  smtpConfigs    SmtpConfig[]
-  emailTemplates EmailTemplate[]
-  apiKeys        ApiKey[]
-  auditLogs      AuditLog[]
+  members          Member[]
+  invitations      Invitation[]
+  projects         Project[]
+  smtpConfigs      SmtpConfig[]
+  emailTemplates   EmailTemplate[]
+  contacts         Contact[]
+  contactLists     ContactList[]
+  outboundMessages OutboundMessage[]
+  apiKeys          ApiKey[]
+  auditLogs        AuditLog[]
 
   @@map("organizations")
 }
@@ -257,11 +273,90 @@ model EmailTemplate {
   createdAt       DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt       DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
 
-  organization Organization  @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  organization Organization      @relation(fields: [organizationId], references: [id], onDelete: Cascade)
   forms        ProjectForm[]
+  messages     OutboundMessage[]
 
   @@index([organizationId], map: "email_templates_org_idx")
   @@map("email_templates")
+}
+
+/// A reusable recipient. Never stores SMTP credentials or delivery config.
+model Contact {
+  id             String   @id @default(dbgenerated("uuidv7()")) @db.Uuid
+  organizationId String   @map("organization_id") @db.Uuid
+  /// citext gives case-insensitive uniqueness for email addresses.
+  email          String   @db.Citext
+  name           String?
+  metadata       Json?    @db.JsonB
+  isActive       Boolean  @default(true) @map("is_active")
+  createdAt      DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt      DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  organization Organization        @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  lists        ContactListMember[]
+  deliveries   EmailDeliveryLog[]
+
+  @@unique([organizationId, email], map: "contacts_org_email_key")
+  @@index([organizationId, isActive, createdAt(sort: Desc)], map: "contacts_org_active_created_idx")
+  @@map("contacts")
+}
+
+/// A named audience. Membership is explicit via ContactListMember.
+model ContactList {
+  id             String   @id @default(dbgenerated("uuidv7()")) @db.Uuid
+  organizationId String   @map("organization_id") @db.Uuid
+  name           String
+  description    String?
+  createdAt      DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt      DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  organization Organization        @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  members      ContactListMember[]
+
+  @@unique([organizationId, name], map: "contact_lists_org_name_key")
+  @@index([organizationId], map: "contact_lists_org_idx")
+  @@map("contact_lists")
+}
+
+model ContactListMember {
+  listId    String   @map("list_id") @db.Uuid
+  contactId String   @map("contact_id") @db.Uuid
+  addedAt   DateTime @default(now()) @map("added_at") @db.Timestamptz(6)
+
+  list    ContactList @relation(fields: [listId], references: [id], onDelete: Cascade)
+  contact Contact     @relation(fields: [contactId], references: [id], onDelete: Cascade)
+
+  @@id([listId, contactId])
+  @@index([contactId], map: "contact_list_members_contact_idx")
+  @@map("contact_list_members")
+}
+
+/// Root of a user-initiated broadcast. Recipients live as email_deliveries rows,
+/// which keeps the single delivery pipeline and worker.
+model OutboundMessage {
+  id             String        @id @default(dbgenerated("uuidv7()")) @db.Uuid
+  organizationId String        @map("organization_id") @db.Uuid
+  createdById    String?       @map("created_by_id") @db.Uuid
+  templateId     String?       @map("template_id") @db.Uuid
+  name           String
+  subject        String
+  htmlBody       String        @map("html_body") @db.Text
+  textBody       String?       @map("text_body") @db.Text
+  status         MessageStatus @default(queued)
+  scheduledAt    DateTime?     @map("scheduled_at") @db.Timestamptz(6)
+  sentAt         DateTime?     @map("sent_at") @db.Timestamptz(6)
+  createdAt      DateTime      @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt      DateTime      @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  organization Organization       @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  createdBy    User?              @relation("OutboundMessageCreator", fields: [createdById], references: [id], onDelete: SetNull)
+  template     EmailTemplate?     @relation(fields: [templateId], references: [id], onDelete: SetNull)
+  deliveries   EmailDeliveryLog[]
+
+  @@index([organizationId, createdAt(sort: Desc)], map: "outbound_messages_org_created_idx")
+  @@index([status, scheduledAt], map: "outbound_messages_status_scheduled_idx")
+  @@map("outbound_messages")
 }
 
 model ProjectForm {
@@ -285,9 +380,9 @@ model ProjectForm {
   createdAt        DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt        DateTime  @updatedAt @map("updated_at") @db.Timestamptz(6)
 
-  project         Project          @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  smtpConfig      SmtpConfig?      @relation(fields: [smtpConfigId], references: [id], onDelete: SetNull)
-  emailTemplate   EmailTemplate?   @relation(fields: [emailTemplateId], references: [id], onDelete: SetNull)
+  project         Project                    @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  smtpConfig      SmtpConfig?                @relation(fields: [smtpConfigId], references: [id], onDelete: SetNull)
+  emailTemplate   EmailTemplate?             @relation(fields: [emailTemplateId], references: [id], onDelete: SetNull)
   recipients      FormRecipient[]
   submissions     FormSubmission[]
   dailyStats      FormDailyStat[]
@@ -335,8 +430,11 @@ model FormSubmission {
 
 model EmailDeliveryLog {
   id                  String         @default(dbgenerated("uuidv7()")) @db.Uuid
-  submissionId        String         @map("submission_id") @db.Uuid
-  submissionCreatedAt DateTime       @map("submission_created_at") @db.Timestamptz(6)
+  /// Exactly one of submission or message must be set (DB CHECK in 0007).
+  submissionId        String?        @map("submission_id") @db.Uuid
+  submissionCreatedAt DateTime?      @map("submission_created_at") @db.Timestamptz(6)
+  messageId           String?        @map("message_id") @db.Uuid
+  contactId           String?        @map("contact_id") @db.Uuid
   recipientEmail      String         @map("recipient_email")
   status              DeliveryStatus @default(pending)
   attemptCount        Int            @default(0) @map("attempt_count")
@@ -347,11 +445,15 @@ model EmailDeliveryLog {
   createdAt           DateTime       @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt           DateTime       @updatedAt @map("updated_at") @db.Timestamptz(6)
 
-  submission FormSubmission @relation(fields: [submissionId, submissionCreatedAt], references: [id, createdAt], onDelete: Cascade)
+  submission FormSubmission?  @relation(fields: [submissionId, submissionCreatedAt], references: [id, createdAt], onDelete: Cascade)
+  message    OutboundMessage? @relation(fields: [messageId], references: [id], onDelete: Restrict)
+  contact    Contact?         @relation(fields: [contactId], references: [id], onDelete: SetNull)
   events     EmailEvent[]
 
   @@id([id, createdAt])
   @@index([submissionId, submissionCreatedAt], map: "email_deliveries_submission_idx")
+  @@index([messageId, status], map: "email_deliveries_message_status_idx")
+  @@index([contactId], map: "email_deliveries_contact_idx")
   @@index([status, nextRetryAt], map: "email_deliveries_queue_idx")
   @@map("email_deliveries")
 }

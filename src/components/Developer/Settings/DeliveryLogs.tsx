@@ -84,7 +84,7 @@ export default function DeliveryLogs() {
                 <span className="flex flex-col min-w-0">
                   <span className="font-medium text-zinc-800 dark:text-zinc-200 truncate">{log.recipientEmail}</span>
                   <span className="text-xs text-zinc-500 dark:text-zinc-400 truncate">
-                    {log.formTitle} · {log.projectName} · {relativeTime(log.createdAt)}
+                    {log.formTitle}{log.projectName ? ` · ${log.projectName}` : ""} · {relativeTime(log.createdAt)}
                   </span>
                 </span>
               </span>

@@ -56,8 +56,8 @@ export async function GET(request: NextRequest) {
         attemptCount: log.attemptCount,
         errorMessage: log.errorMessage,
         createdAt: log.createdAt.toISOString(),
-        formTitle: log.submission.form.title,
-        projectName: log.submission.form.project.name,
+        formTitle: log.submission?.form.title ?? "Broadcast",
+        projectName: log.submission?.form.project.name ?? "",
       })),
     });
   } catch (error) {
