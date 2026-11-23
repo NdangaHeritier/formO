@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import ForbiddenView from "@/components/Global/ForbiddenView";
-import { requireUser } from "@/server/auth/authorization";
+import { AudienceProvider } from "@/components/Header/audience-context";
+import { requireActiveWorkspace } from "@/server/auth/authorization";
 
 /** Audience boundary: a developer account can never render this surface. */
 export default async function NonDevLayout({
@@ -8,10 +9,10 @@ export default async function NonDevLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const session = await requireUser().catch(() => null);
-  if (!session) redirect("/login");
+  const workspace = await requireActiveWorkspace("member").catch(() => null);
+  if (!workspace) redirect("/login");
 
-  if (session.user.interest !== "non_developer") {
+  if (workspace.user.interest !== "non_developer") {
     return (
       <ForbiddenView
         title="Workspace view unavailable"
@@ -22,5 +23,12 @@ export default async function NonDevLayout({
     );
   }
 
-  return <>{children}</>;
+  return (
+    <AudienceProvider
+      audience="nonDeveloper"
+      canManage={workspace.role === "admin" || workspace.role === "owner"}
+    >
+      {children}
+    </AudienceProvider>
+  );
 }
