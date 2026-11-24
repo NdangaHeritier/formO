@@ -2,7 +2,7 @@ import LoginForm from "./loginForm";
 import { authErrorMessage, type AuthErrorParams } from "@/lib/auth-error";
 
 export const metadata = {
-  title: 'Welcome back | Start creating beautiful emails',
+  title: 'Welcome back | Sign in to FormO',
   description: 'Sign in to FormO and continue inventing your email workflows.',
 };
 

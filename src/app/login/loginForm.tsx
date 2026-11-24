@@ -10,7 +10,6 @@ import Header from "@/components/Header";
 import { signIn, useSession } from "@/lib/auth-client";
 import Image from "next/image";
 import Link from "next/link";
-import { BackGraphicsLayout } from "./BackGraphicsLayout";
 import { useRouter } from "next/navigation";
 
 
@@ -124,15 +123,10 @@ export default function LoginForm({ authError }: { authError?: string }) {
 
     return (
         <div className="app-viewport h-dvh overflow-y-auto">
-            <title>Login</title>
             <Header />
-            <section className="grid grid-cols-1 grid-row-1 sm:grid-cols-3 min-h-[80vh] my-6 ">
-                <div className="hidden sm:flex relative -z-1">
-                    <div className="absolute inset-0 bg-linear-to-r from-white to-white dark:from-black dark:to-black via-transparent z-1"></div>
-                    <BackGraphicsLayout />
-                </div>
+            <section className="grid grid-cols-1 place-items-center min-h-[80vh] my-6">
                 {isSignedIn ? (
-                    <div className="flex items-center justify-center sm:col-span-2">
+                    <div className="flex items-center justify-center">
                         <div
                             role="status"
                             aria-live="polite"
@@ -157,7 +151,7 @@ export default function LoginForm({ authError }: { authError?: string }) {
                         </div>
                     </div>
                 ) : (
-                    <div className="border-none overflow-hidden bg-white flex-col dark:bg-zinc-950 gap-5 p-5 sm:p-8 rounded-3xl">
+                    <div className="w-full max-w-md border-none overflow-hidden bg-white flex-col dark:bg-zinc-950 gap-5 p-5 sm:p-8 rounded-3xl">
                         <div className="w-full flex p-5 items-start justify-start border-b-zinc-200 dark:border-b-zinc-700 gap-4">
                             <div className="">
                                 <Image
