@@ -289,11 +289,6 @@ export default function LoginForm({ authError }: { authError?: string }) {
                         </div>
                     </div>
                 )}
-                <div className="hidden sm:flex items-center justify-center">
-                    <div className="w-full text-7xl text-zinc-200 dark:text-zinc-700 uppercase font-extralight transform rotate-90 opacity-50">
-                        <span className="text-yellow-500 dark:text-yellow-200">All</span> Beautful.
-                    </div>
-                </div>
             </section>
         </div>
     );
