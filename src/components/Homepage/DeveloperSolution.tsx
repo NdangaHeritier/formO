@@ -12,7 +12,7 @@ const capabilities: Array<{
   },
   {
     title: "Workspace & Collaboration",
-    icon: "Users",
+    icon: "UsersRound",
     body: "Forms, submissions and delivery live in one workspace, with invitations and role-based access.",
   },
   {
@@ -73,13 +73,13 @@ const DeveloperSolutions: React.FC = () => {
             ))}
           </ul>
 
-          <div className="rounded-xl border border-zinc-200 bg-white p-5 transition-colors duration-300 ease-out hover:border-zinc-300 dark:border-zinc-800 dark:bg-zinc-950 dark:hover:border-zinc-700 sm:p-6">
+          <div className="rounded-3xl border border-zinc-200 bg-white p-5 transition-colors duration-300 ease-out hover:border-zinc-300 dark:border-zinc-900 dark:bg-zinc-950 dark:hover:border-zinc-700 sm:p-6">
             <div className="flex items-center gap-2 text-sm font-semibold text-zinc-800 dark:text-zinc-200">
               <Icon name="Terminal" size={16} className="text-amber-700 dark:text-amber-500" />
               Public form endpoint
             </div>
 
-            <div className="mt-4 overflow-x-auto rounded-lg bg-zinc-50 p-4 dark:bg-zinc-900/50">
+            <div className="mt-4 overflow-x-auto rounded-3xl bg-zinc-50 p-4 dark:bg-zinc-900/50">
               <pre className="font-mono text-xs leading-6 text-zinc-700 dark:text-zinc-300">
                 <code>{requestExample}</code>
               </pre>
@@ -89,7 +89,7 @@ const DeveloperSolutions: React.FC = () => {
               <span className="text-[11px] font-semibold uppercase tracking-wide text-zinc-500 dark:text-zinc-400">
                 Response
               </span>
-              <div className="overflow-x-auto rounded-lg bg-zinc-50 p-4 dark:bg-zinc-900/50">
+              <div className="overflow-x-auto rounded-3xl bg-zinc-50 p-4 dark:bg-zinc-900/50">
                 <pre className="font-mono text-xs leading-6 text-zinc-700 dark:text-zinc-300">
                   <code>{responseExample}</code>
                 </pre>
