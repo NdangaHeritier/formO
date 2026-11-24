@@ -1,30 +1,37 @@
 import { Icon, type LucideIconName } from "../Global/Icon";
 
-const solutions: Array<{
+const capabilities: Array<{
   title: string;
   icon: LucideIconName;
-  desc: string;
-  detail: string;
+  body: string;
 }> = [
   {
     title: "Plug & Play API",
     icon: "PlugZap",
-    desc: "Integrate in minutes with a generated form endpoint and a documented JSON API.",
-    detail: "Clear responses, idempotency keys and CORS support are built in.",
+    body: "A generated endpoint accepts JSON or HTML form posts with CORS and idempotency keys built in.",
   },
   {
     title: "Workspace & Collaboration",
     icon: "Users",
-    desc: "Team dashboards for forms, submissions and delivery.",
-    detail: "Invite members and manage roles from one workspace.",
+    body: "Forms, submissions and delivery live in one workspace, with invitations and role-based access.",
   },
   {
     title: "Developer Tools",
     icon: "Terminal",
-    desc: "Test submissions, delivery logs and API keys in one place.",
-    detail: "Rotate endpoints and manage senders without leaving the dashboard.",
+    body: "Test submissions, delivery logs, sender management and endpoint rotation from the dashboard.",
   },
 ];
+
+const requestExample = [
+  "POST /api/f/{endpoint}",
+  "Accept: application/json",
+  "Content-Type: application/json",
+  "Idempotency-Key: <uuid>",
+  "",
+  '{ "email": "visitor@example.com", "message": "Hello" }',
+].join("\n");
+
+const responseExample = ['200 OK', '{ "ok": true, "id": "fmo_submission_id" }'].join("\n");
 
 const DeveloperSolutions: React.FC = () => {
   return (
@@ -44,26 +51,55 @@ const DeveloperSolutions: React.FC = () => {
           </p>
         </div>
 
-        <div className="mt-12 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {solutions.map((solution) => (
-            <article
-              key={solution.title}
-              className="grid content-start gap-3 rounded-xl border border-zinc-200 bg-white p-5 transition-colors duration-300 ease-out hover:border-zinc-300 dark:border-zinc-800 dark:bg-zinc-950 dark:hover:border-zinc-700"
-            >
-              <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-amber-50 text-amber-700 dark:bg-amber-500/10 dark:text-amber-500">
-                <Icon name={solution.icon} size={18} strokeWidth={2} />
+        <div className="mt-12 grid grid-cols-1 items-start gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.05fr)] lg:gap-14">
+          <ul className="border-t border-zinc-200 dark:border-zinc-800">
+            {capabilities.map((capability) => (
+              <li
+                key={capability.title}
+                className="flex gap-4 border-b border-zinc-200 py-5 dark:border-zinc-800 sm:gap-5"
+              >
+                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-amber-50 text-amber-700 dark:bg-amber-500/10 dark:text-amber-500">
+                  <Icon name={capability.icon} size={18} strokeWidth={2} />
+                </span>
+                <div className="grid min-w-0 grid-cols-1 gap-1.5">
+                  <h3 className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">
+                    {capability.title}
+                  </h3>
+                  <p className="max-w-[52ch] text-sm leading-6 text-zinc-600 dark:text-zinc-400">
+                    {capability.body}
+                  </p>
+                </div>
+              </li>
+            ))}
+          </ul>
+
+          <div className="rounded-xl border border-zinc-200 bg-white p-5 transition-colors duration-300 ease-out hover:border-zinc-300 dark:border-zinc-800 dark:bg-zinc-950 dark:hover:border-zinc-700 sm:p-6">
+            <div className="flex items-center gap-2 text-sm font-semibold text-zinc-800 dark:text-zinc-200">
+              <Icon name="Terminal" size={16} className="text-amber-700 dark:text-amber-500" />
+              Public form endpoint
+            </div>
+
+            <div className="mt-4 overflow-x-auto rounded-lg bg-zinc-50 p-4 dark:bg-zinc-900/50">
+              <pre className="font-mono text-xs leading-6 text-zinc-700 dark:text-zinc-300">
+                <code>{requestExample}</code>
+              </pre>
+            </div>
+
+            <div className="mt-4 grid grid-cols-1 gap-2">
+              <span className="text-[11px] font-semibold uppercase tracking-wide text-zinc-500 dark:text-zinc-400">
+                Response
               </span>
-              <h3 className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">
-                {solution.title}
-              </h3>
-              <p className="text-sm leading-6 text-zinc-700 dark:text-zinc-300">
-                {solution.desc}
-              </p>
-              <p className="text-xs leading-5 text-zinc-500 dark:text-zinc-400">
-                {solution.detail}
-              </p>
-            </article>
-          ))}
+              <div className="overflow-x-auto rounded-lg bg-zinc-50 p-4 dark:bg-zinc-900/50">
+                <pre className="font-mono text-xs leading-6 text-zinc-700 dark:text-zinc-300">
+                  <code>{responseExample}</code>
+                </pre>
+              </div>
+            </div>
+
+            <p className="mt-4 text-xs leading-5 text-zinc-500 dark:text-zinc-400">
+              Submissions are queued here; the delivery worker sends them on a schedule.
+            </p>
+          </div>
         </div>
       </div>
     </section>
