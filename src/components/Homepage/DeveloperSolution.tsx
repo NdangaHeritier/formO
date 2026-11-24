@@ -1,44 +1,73 @@
-import FeatureCard from "../Global/FeatureCard";
-import YellowBorderedSpan from "../Global/YellowBorderedSpan";
+import { Icon, type LucideIconName } from "../Global/Icon";
+
+const solutions: Array<{
+  title: string;
+  icon: LucideIconName;
+  desc: string;
+  detail: string;
+}> = [
+  {
+    title: "Plug & Play API",
+    icon: "PlugZap",
+    desc: "Integrate in minutes with a generated form endpoint and a documented JSON API.",
+    detail: "Clear responses, idempotency keys and CORS support are built in.",
+  },
+  {
+    title: "Workspace & Collaboration",
+    icon: "Users",
+    desc: "Team dashboards for forms, submissions and delivery.",
+    detail: "Invite members and manage roles from one workspace.",
+  },
+  {
+    title: "Developer Tools",
+    icon: "Terminal",
+    desc: "Test submissions, delivery logs and API keys in one place.",
+    detail: "Rotate endpoints and manage senders without leaving the dashboard.",
+  },
+];
 
 const DeveloperSolutions: React.FC = () => {
-    return (
-    <section id="docs" className="relative bg-zinc-50 dark:bg-zinc-950/20 border border-zinc-300 dark:border-zinc-900 border-t-0 p-10 max-sm:px-4">
-      <div className="flex items-center justify-center flex-col gap-y-6">
-        <YellowBorderedSpan title="Built for Developers and Teams" />
-        <div className="min-md:w-2/3">
-          <h1 className="text-6xl max-sm:text-4xl font-extrabold dark:text-zinc-300 text-zinc-900 pb-5 tracking-tight text-center">
-            Developer-First, Always
-          </h1>
-          <p className="text-zinc-600 dark:text-zinc-400 text-xl max-sm:text-lg py-7 text-center">
-            Formo is built with <span className="text-yellow-200 font-mono">developer love</span> in mind. Easily plug-and-play APIs, workspaces designed to reduce backend stress, and tools that scale with your team and project.
+  return (
+    <section
+      id="docs"
+      className="bg-zinc-50 px-5 py-20 dark:bg-black sm:px-8 lg:px-12 lg:py-28"
+    >
+      <div className="mx-auto w-full max-w-6xl">
+        <div className="grid grid-cols-1 gap-8 lg:grid-cols-2 lg:gap-16">
+          <h2 className="max-w-[18ch] text-balance text-3xl font-semibold tracking-tight text-zinc-900 dark:text-zinc-100 sm:text-4xl">
+            Developer-first, always.
+          </h2>
+          <p className="max-w-[52ch] text-base leading-7 text-zinc-600 dark:text-zinc-400">
+            Formo is built with developer love in mind. Plug-and-play endpoints,
+            a workspace that keeps the backend work contained, and tools that
+            scale with your team and project.
           </p>
         </div>
-      </div>
-      <div className="cards py-5">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-          <FeatureCard 
-            title="Plug & Play API" 
-            icon="PlugZap" 
-            desc="Integrate in minutes with our simple, robust developer-first API." 
-            subDesc="You get clear docs, predictable responses, and instant delivery. Your devs will thank you." 
-          />
-          <FeatureCard 
-            title="Workspace & Collaboration" 
-            icon="Users" 
-            desc="Team-friendly dashboards for managing forms, emails, and flows together." 
-            subDesc="Invite team members, manage roles, and work in sync across departments." 
-          />
-          <FeatureCard 
-            title="Developer Tools" 
-            icon="Terminal" 
-            desc="Debug logs, testing environments, and version control out of the box." 
-            subDesc="We handle all the backend stress so you can focus on building the next big thing." 
-          />
+
+        <div className="mt-12 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {solutions.map((solution) => (
+            <article
+              key={solution.title}
+              className="grid content-start gap-3 rounded-xl border border-zinc-200 bg-white p-5 transition-colors duration-300 ease-out hover:border-zinc-300 dark:border-zinc-800 dark:bg-zinc-950 dark:hover:border-zinc-700"
+            >
+              <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-amber-50 text-amber-700 dark:bg-amber-500/10 dark:text-amber-500">
+                <Icon name={solution.icon} size={18} strokeWidth={2} />
+              </span>
+              <h3 className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">
+                {solution.title}
+              </h3>
+              <p className="text-sm leading-6 text-zinc-700 dark:text-zinc-300">
+                {solution.desc}
+              </p>
+              <p className="text-xs leading-5 text-zinc-500 dark:text-zinc-400">
+                {solution.detail}
+              </p>
+            </article>
+          ))}
         </div>
       </div>
     </section>
-    );
-}
+  );
+};
 
 export default DeveloperSolutions;
