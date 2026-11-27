@@ -1,15 +1,29 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import Layout from "@/components/Developer/Modals/Layout";
-import FormButton from "@/components/Global/FormButton";
 import { Icon } from "@/components/Global/Icon";
 import Tooltip from "@/components/Global/Tooltip";
-import { faqs, type Faq, type FaqAudience } from "./assistant-faq";
+import { useToast } from "@/components/Global/Toast";
+import type { FaqAudience } from "@/lib/assistant/knowledge";
+import type { AssistantReply } from "@/server/services/assistant.service";
 
-type RankedFaq = Faq & { rank: number };
+type Message = {
+  id: string;
+  role: "user" | "assistant";
+  text: string;
+  href?: string;
+  hrefLabel?: string;
+  suggestions?: string[];
+};
+
+const STARTERS = [
+  "Why are my submissions pending?",
+  "How do I embed a form on my website?",
+  "How do I verify SMTP?",
+];
 
 function audienceFor(pathname: string): FaqAudience {
   if (pathname.startsWith("/non-dev")) return "nonDeveloper";
@@ -19,28 +33,79 @@ function audienceFor(pathname: string): FaqAudience {
 
 export default function AssistantButton() {
   const pathname = usePathname();
-  const audience = audienceFor(pathname);
+  const toast = useToast();
   const [isOpen, setIsOpen] = useState(false);
-  const [query, setQuery] = useState("");
-  const [openId, setOpenId] = useState<string | null>(null);
+  const [messages, setMessages] = useState<Message[]>([]);
+  const [input, setInput] = useState("");
+  const [sending, setSending] = useState(false);
+  const endRef = useRef<HTMLDivElement | null>(null);
+  const textareaRef = useRef<HTMLTextAreaElement | null>(null);
 
-  const results = useMemo<RankedFaq[]>(() => {
-    const needle = query.trim().toLowerCase();
-    const items: RankedFaq[] = [];
-    for (const faq of faqs) {
-      const haystack = [faq.question, faq.answer, ...faq.keywords].join(" ").toLowerCase();
-      if (needle && !haystack.includes(needle)) continue;
-      const relevant = faq.audiences.includes(audience);
-      const titleMatch = needle && faq.question.toLowerCase().includes(needle);
-      items.push({ ...faq, rank: (relevant ? 0 : 2) + (titleMatch ? -1 : 0) });
-    }
-    return items.sort((a, b) => a.rank - b.rank);
-  }, [query, audience]);
+  useEffect(() => {
+    endRef.current?.scrollIntoView({ block: "end" });
+  }, [messages, sending]);
+
+  useEffect(() => {
+    const element = textareaRef.current;
+    if (!element) return;
+    element.style.height = "auto";
+    element.style.height = `${Math.min(element.scrollHeight, 160)}px`;
+  }, [input, isOpen]);
 
   const close = () => {
     setIsOpen(false);
-    setQuery("");
-    setOpenId(null);
+    setInput("");
+    setSending(false);
+  };
+
+  const send = async (raw: string) => {
+    const question = raw.trim();
+    if (!question || sending) return;
+
+    setMessages((current) => [
+      ...current,
+      { id: crypto.randomUUID(), role: "user", text: question },
+    ]);
+    setInput("");
+    setSending(true);
+
+    try {
+      await new Promise((resolve) => setTimeout(resolve, 350));
+      const res = await fetch("/api/assistant", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          question,
+          audience: audienceFor(pathname),
+          pathname,
+        }),
+      });
+      if (!res.ok) throw new Error("assistant");
+      const data = (await res.json()) as { reply: AssistantReply };
+      setMessages((current) => [
+        ...current,
+        {
+          id: crypto.randomUUID(),
+          role: "assistant",
+          text: data.reply.text,
+          suggestions: data.reply.suggestions,
+          href: data.reply.href,
+          hrefLabel: data.reply.hrefLabel,
+        },
+      ]);
+    } catch {
+      toast.error("The assistant could not answer right now.");
+      setMessages((current) => [
+        ...current,
+        {
+          id: crypto.randomUUID(),
+          role: "assistant",
+          text: "I couldn't reach the answer right now. Please try again.",
+        },
+      ]);
+    } finally {
+      setSending(false);
+    }
   };
 
   return (
@@ -59,100 +124,167 @@ export default function AssistantButton() {
 
       {isOpen ? (
         <Layout onClick={close} label="FormO assistant">
-          <section className="grid max-h-[85vh] w-full max-w-xl grid-cols-1 gap-4 overflow-y-auto rounded-3xl bg-white p-5 shadow-2xl dark:bg-zinc-950 sm:p-6">
-            <div className="grid grid-cols-1 gap-1">
-              <h2 className="flex items-center gap-2 text-lg font-semibold text-zinc-900 dark:text-zinc-100">
-                <Icon name="Bot" size={18} className="text-amber-700 dark:text-amber-500" />
-                FormO assistant
-              </h2>
-              <p className="text-sm text-zinc-500 dark:text-zinc-400">
-                Search common questions. Answers are specific to this workspace.
-              </p>
-            </div>
-
-            <div className="relative">
-              <Icon
-                name="Search"
-                size={16}
-                className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400"
-              />
-              <input
-                type="search"
-                value={query}
-                onChange={(event) => {
-                  setQuery(event.target.value);
-                  setOpenId(null);
-                }}
-                aria-label="Search FormO help"
-                placeholder="Try SMTP, embed, pending…"
-                className="w-full rounded-2xl border border-zinc-200 bg-zinc-50 py-2.5 pl-10 pr-3 text-sm text-zinc-800 outline-none placeholder:text-zinc-400 focus-visible:border-zinc-400 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-600 dark:border-zinc-800 dark:bg-zinc-900/50 dark:text-zinc-100"
-              />
-            </div>
-
-            {results.length === 0 ? (
-              <div className="grid grid-cols-1 justify-items-center gap-2 py-6 text-center">
-                <Icon name="Search" size={22} className="text-zinc-400" />
-                <p className="text-sm text-zinc-600 dark:text-zinc-300">
-                  No answer found. Try a different word.
-                </p>
+          <section className="flex h-[86dvh] w-[calc(100%-1rem)] max-w-6xl flex-col overflow-hidden rounded-[28px] bg-white shadow-[0_30px_90px_-20px_rgba(0,0,0,0.35)] dark:bg-zinc-950 sm:w-5/6">
+            <header className="flex flex-wrap items-center justify-between gap-3 px-5 pb-4 pt-5 sm:px-7">
+              <div className="flex items-center gap-3">
+                <span className="flex h-10 w-10 items-center justify-center rounded-2xl bg-amber-50 text-amber-700 dark:bg-amber-500/10 dark:text-amber-500">
+                  <Icon name="Bot" size={19} />
+                </span>
+                <div className="grid grid-cols-1 gap-0.5">
+                  <h2 className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">
+                    FormO assistant
+                  </h2>
+                  <p className="text-xs text-zinc-500 dark:text-zinc-400">
+                    Ask about delivery, forms, SMTP and your workspace
+                  </p>
+                </div>
               </div>
-            ) : (
-              <ul className="grid grid-cols-1 border-t border-zinc-200 dark:border-zinc-800">
-                {results.map((faq) => {
-                  const expanded = openId === faq.id;
-                  return (
-                    <li key={faq.id} className="border-b border-zinc-200 dark:border-zinc-800">
+              <div className="flex items-center gap-3">
+                <span className="rounded-full bg-zinc-100 px-2.5 py-1 text-[10px] font-medium uppercase tracking-wide text-zinc-500 dark:bg-zinc-900 dark:text-zinc-400">
+                  Local answers
+                </span>
+                {messages.length > 0 && (
+                  <button
+                    type="button"
+                    onClick={() => setMessages([])}
+                    className="cursor-pointer text-xs font-medium text-zinc-600 underline dark:text-zinc-300"
+                  >
+                    New chat
+                  </button>
+                )}
+              </div>
+            </header>
+
+            <div className="min-h-0 flex-1 overflow-y-auto px-5 py-5 sm:px-7">
+              {messages.length === 0 ? (
+                <div className="grid h-full content-center justify-items-center gap-5 text-center">
+                  <span className="flex h-14 w-14 items-center justify-center rounded-3xl bg-amber-50 text-amber-700 dark:bg-amber-500/10 dark:text-amber-500">
+                    <Icon name="Bot" size={26} />
+                  </span>
+                  <div className="grid grid-cols-1 gap-2">
+                    <h3 className="text-xl font-semibold tracking-tight text-zinc-900 dark:text-zinc-100">
+                      What can I help with?
+                    </h3>
+                    <p className="max-w-[48ch] text-sm text-zinc-500 dark:text-zinc-400">
+                      Answers come from your workspace documentation. Try one of these to start.
+                    </p>
+                  </div>
+                  <div className="flex flex-wrap justify-center gap-2">
+                    {STARTERS.map((starter) => (
                       <button
+                        key={starter}
                         type="button"
-                        aria-expanded={expanded}
-                        onClick={() => setOpenId(expanded ? null : faq.id)}
-                        className="flex w-full cursor-pointer items-center justify-between gap-3 py-3 text-left text-sm font-medium text-zinc-800 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-600 dark:text-zinc-100"
+                        onClick={() => void send(starter)}
+                        className="cursor-pointer rounded-full bg-zinc-100 px-4 py-2 text-xs text-zinc-700 transition-colors hover:bg-zinc-200 dark:bg-zinc-900 dark:text-zinc-200 dark:hover:bg-zinc-800"
                       >
-                        <span className="min-w-0 break-words">{faq.question}</span>
-                        <Icon
-                          name="ChevronDown"
-                          size={16}
-                          className={`shrink-0 text-zinc-400 transition-transform duration-200 ${expanded ? "rotate-180" : ""}`}
-                        />
+                        {starter}
                       </button>
-                      {expanded && (
-                        <div className="grid grid-cols-1 gap-3 pb-4">
-                          <p className="text-sm leading-6 text-zinc-600 dark:text-zinc-400">
-                            {faq.answer}
+                    ))}
+                  </div>
+                </div>
+              ) : (
+                <div className="mx-auto grid w-full max-w-3xl grid-cols-1 gap-5">
+                  {messages.map((message) =>
+                    message.role === "user" ? (
+                      <div key={message.id} className="flex justify-end">
+                        <p className="max-w-[80%] rounded-[22px] rounded-br-md bg-zinc-900 px-4 py-3 text-sm leading-6 text-white dark:bg-zinc-100 dark:text-zinc-900">
+                          {message.text}
+                        </p>
+                      </div>
+                    ) : (
+                      <div key={message.id} className="flex items-start gap-3">
+                        <span className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-amber-50 text-amber-700 dark:bg-amber-500/10 dark:text-amber-500">
+                          <Icon name="Bot" size={16} />
+                        </span>
+                        <div className="grid min-w-0 max-w-[80%] grid-cols-1 gap-3 rounded-[22px] rounded-bl-md bg-zinc-100 px-4 py-3 dark:bg-zinc-900/70">
+                          <p className="whitespace-pre-wrap text-sm leading-6 text-zinc-700 dark:text-zinc-200">
+                            {message.text}
                           </p>
-                          {faq.href && faq.hrefLabel && (
+                          {message.href && message.hrefLabel && (
                             <Link
-                              href={faq.href}
+                              href={message.href}
                               onClick={close}
-                              className="inline-flex w-fit items-center gap-1 text-sm font-medium text-zinc-800 underline dark:text-zinc-100"
+                              className="inline-flex w-fit items-center gap-1 text-sm font-medium text-zinc-900 underline dark:text-zinc-100"
                             >
-                              {faq.hrefLabel} <Icon name="ArrowRight" size={14} />
+                              {message.hrefLabel} <Icon name="ArrowRight" size={14} />
                             </Link>
                           )}
+                          {message.suggestions && message.suggestions.length > 0 && (
+                            <div className="flex flex-wrap gap-2">
+                              {message.suggestions.map((suggestion) => (
+                                <button
+                                  key={suggestion}
+                                  type="button"
+                                  onClick={() => void send(suggestion)}
+                                  className="cursor-pointer rounded-full bg-white px-3 py-1.5 text-xs text-zinc-600 transition-colors hover:bg-zinc-200 dark:bg-zinc-800 dark:text-zinc-200 dark:hover:bg-zinc-700"
+                                >
+                                  {suggestion}
+                                </button>
+                              ))}
+                            </div>
+                          )}
                         </div>
-                      )}
-                    </li>
-                  );
-                })}
-              </ul>
-            )}
+                      </div>
+                    )
+                  )}
+                  {sending && (
+                    <div className="flex items-start gap-3">
+                      <span className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-amber-50 text-amber-700 dark:bg-amber-500/10 dark:text-amber-500">
+                        <Icon name="Bot" size={16} />
+                      </span>
+                      <div className="flex items-center gap-1.5 rounded-[22px] rounded-bl-md bg-zinc-100 px-4 py-4 dark:bg-zinc-900/70">
+                        {[0, 1, 2].map((dot) => (
+                          <span
+                            key={dot}
+                            className="h-1.5 w-1.5 animate-pulse rounded-full bg-zinc-400"
+                            style={{ animationDelay: `${dot * 150}ms` }}
+                          />
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                  <div ref={endRef} />
+                </div>
+              )}
+            </div>
 
-            <div className="flex flex-wrap items-center justify-between gap-3">
-              <p className="text-xs text-zinc-500 dark:text-zinc-400">
-                {results.length} answer{results.length === 1 ? "" : "s"}
-              </p>
-              <div className="flex items-center gap-2">
-                <Link
-                  href="/#docs"
-                  onClick={close}
-                  className="text-xs font-medium text-zinc-600 underline dark:text-zinc-300"
-                >
-                  Browse docs
-                </Link>
-                <FormButton variant="secondary" onClick={close}>
-                  Close
-                </FormButton>
-              </div>
+            <div className="px-5 pb-5 pt-1 sm:px-7">
+              <form
+                onSubmit={(event) => {
+                  event.preventDefault();
+                  void send(input);
+                }}
+                className="mx-auto w-full max-w-3xl rounded-[24px] bg-zinc-100 px-4 py-3 dark:bg-zinc-900"
+              >
+                <textarea
+                  ref={textareaRef}
+                  value={input}
+                  rows={1}
+                  onChange={(event) => setInput(event.target.value)}
+                  onKeyDown={(event) => {
+                    if (event.key === "Enter" && !event.shiftKey) {
+                      event.preventDefault();
+                      void send(input);
+                    }
+                  }}
+                  aria-label="Message the FormO assistant"
+                  placeholder="Ask FormO anything…"
+                  className="max-h-40 w-full resize-none bg-transparent text-sm leading-6 text-zinc-800 outline-none placeholder:text-zinc-400 dark:text-zinc-100"
+                />
+                <div className="flex items-center justify-between gap-3 pt-2">
+                  <p className="text-[11px] text-zinc-500 dark:text-zinc-400">
+                    Enter to send · Shift + Enter for a new line
+                  </p>
+                  <button
+                    type="submit"
+                    disabled={sending || !input.trim()}
+                    aria-label="Send message"
+                    className="flex h-9 w-9 shrink-0 cursor-pointer items-center justify-center rounded-full bg-zinc-900 text-white transition-colors hover:bg-zinc-700 disabled:cursor-not-allowed disabled:opacity-40 dark:bg-zinc-100 dark:text-zinc-900"
+                  >
+                    <Icon name="Send" size={16} />
+                  </button>
+                </div>
+              </form>
             </div>
           </section>
         </Layout>

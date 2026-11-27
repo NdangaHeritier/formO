@@ -67,7 +67,7 @@ export default function Header({ border = "border-b", py = "py-3" }: prop) {
     );
 
     return (
-        <header className={`sticky top-0 left-0 right-0 z-40 w-full ${border} border-zinc-200 bg-white ${py} px-10 max-sm:px-5 flex items-center justify-between gap-5 dark:border-zinc-800 dark:bg-zinc-950`}>
+        <header className={`sticky top-0 left-0 right-0 z-40 w-full ${border} border-zinc-200 bg-white ${py} px-10 max-sm:px-5 flex items-center justify-between gap-5 dark:border-zinc-900 dark:bg-zinc-950`}>
             <div className="">
                 {mounted ? (
                     <Image src="/Assets/formo-coloured.png" alt="logo" className="w-10 h-10" height={50} width={50} />
