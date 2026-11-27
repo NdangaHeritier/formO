@@ -96,10 +96,18 @@ const SignupForm = ({ authError }: { authError?: string }) => {
 
     return (
         <div className="app-viewport h-dvh overflow-y-auto">
-            <title>Create Free Account | Start creating beautifull emails.</title>
             <Header />
-            <section className="grid grid-cols-1 grid-row-1 sm:grid-cols-3 min-h-[80vh] my-6">
-                <div className="hidden sm:block"></div>
+            <section className="mx-auto grid w-full max-w-6xl grid-cols-1 items-center gap-10 py-10 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] lg:gap-16">
+                <div className="hidden justify-center lg:flex">
+                    <Image
+                        src="/Assets/Brand/formo-auth-graphic.svg"
+                        alt="FormO account security and email delivery"
+                        width={640}
+                        height={640}
+                        priority
+                        className="w-full max-w-lg"
+                    />
+                </div>
                 <div className="border-none overflow-hidden  bg-white flex-col dark:bg-zinc-950 gap-5 p-5 sm:p-8 rounded-3xl">
                     <div className="w-full flex p-5 items-start justify-start border-b-zinc-200 dark:border-b-zinc-700 gap-4">
                         <div className="">
@@ -246,7 +254,6 @@ const SignupForm = ({ authError }: { authError?: string }) => {
                         By signing up, you agree to our <Link href="/terms" className="text-zinc-700 dark:text-gray-300 hover:underline">Terms of Service</Link> and <Link href="/privacy" className="text-zinc-700 dark:text-gray-300 hover:underline">Privacy Policy</Link>.
                     </div>
                 </div>
-                <div className="hidden sm:block"></div>
             </section>
         </div>
     );

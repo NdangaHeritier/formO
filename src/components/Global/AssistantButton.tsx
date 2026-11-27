@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import Layout from "@/components/Developer/Modals/Layout";
@@ -158,8 +159,21 @@ export default function AssistantButton() {
             <div className="min-h-0 flex-1 overflow-y-auto px-5 py-5 sm:px-7">
               {messages.length === 0 ? (
                 <div className="grid h-full content-center justify-items-center gap-5 text-center">
-                  <span className="flex h-14 w-14 items-center justify-center rounded-3xl bg-amber-50 text-amber-700 dark:bg-amber-500/10 dark:text-amber-500">
-                    <Icon name="Bot" size={26} />
+                  <span className="relative block h-20 w-20">
+                    <Image
+                      src="/Assets/Brand/formo-envelope-plane.svg"
+                      alt=""
+                      fill
+                      sizes="80px"
+                      className="object-contain dark:opacity-0"
+                    />
+                    <Image
+                      src="/Assets/Brand/formo-envelope-plane-dark.svg"
+                      alt=""
+                      fill
+                      sizes="80px"
+                      className="object-contain opacity-0 dark:opacity-100"
+                    />
                   </span>
                   <div className="grid grid-cols-1 gap-2">
                     <h3 className="text-xl font-semibold tracking-tight text-zinc-900 dark:text-zinc-100">

@@ -2,7 +2,7 @@ import SignupForm from "./signupForm";
 import { authErrorMessage, type AuthErrorParams } from "@/lib/auth-error";
 
 export const metadata = {
-  title: 'Create Free Account | Start creating beautifull emails.',
+  title: 'Create Free Account | Sign up to FormO',
   description: 'Sign up to FormO and simplify your email workflows.',
 };
 
