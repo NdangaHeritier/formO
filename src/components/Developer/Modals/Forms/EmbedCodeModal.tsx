@@ -4,6 +4,7 @@ import Layout from "@/components/Developer/Modals/Layout";
 import { Icon, type LucideIconName } from "@/components/Global/Icon";
 import FormButton from "@/components/Global/FormButton";
 import Tooltip from "@/components/Global/Tooltip";
+import HighlightedCode from "@/components/Global/HighlightedCode";
 import { useToast } from "@/components/Global/Toast";
 
 type Props = {
@@ -171,9 +172,13 @@ export default function EmbedCodeModal({ endpoint, title, onClick }: Props) {
                 Copy
               </FormButton>
             </div>
-            <pre className="max-h-72 max-w-full overflow-auto rounded-xl bg-zinc-900 p-4 text-xs leading-5 text-zinc-100 dark:bg-black">
-              <code className="whitespace-pre font-mono">{current.code}</code>
-            </pre>
+            <div className="max-h-72 max-w-full overflow-auto rounded-xl bg-zinc-900 p-4 dark:bg-black">
+              <HighlightedCode
+                code={current.code}
+                language={current.id === "html" ? "markup" : current.id === "js" ? "javascript" : "bash"}
+                className="text-xs leading-5"
+              />
+            </div>
           </div>
 
           <div className="flex justify-end">

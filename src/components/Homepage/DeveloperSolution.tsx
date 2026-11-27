@@ -1,4 +1,5 @@
 import { Icon, type LucideIconName } from "../Global/Icon";
+import HighlightedCode from "../Global/HighlightedCode";
 
 const capabilities: Array<{
   title: string;
@@ -79,20 +80,16 @@ const DeveloperSolutions: React.FC = () => {
               Public form endpoint
             </div>
 
-            <div className="mt-4 overflow-x-auto rounded-3xl bg-zinc-50 p-4 dark:bg-zinc-900/50">
-              <pre className="font-mono text-xs leading-6 text-zinc-700 dark:text-zinc-300">
-                <code>{requestExample}</code>
-              </pre>
+            <div className="mt-4 rounded-3xl bg-zinc-900 p-4">
+              <HighlightedCode code={requestExample} language="bash" className="text-xs leading-6" />
             </div>
 
             <div className="mt-4 grid grid-cols-1 gap-2">
               <span className="text-[11px] font-semibold uppercase tracking-wide text-zinc-500 dark:text-zinc-400">
                 Response
               </span>
-              <div className="overflow-x-auto rounded-3xl bg-zinc-50 p-4 dark:bg-zinc-900/50">
-                <pre className="font-mono text-xs leading-6 text-zinc-700 dark:text-zinc-300">
-                  <code>{responseExample}</code>
-                </pre>
+              <div className="rounded-3xl bg-zinc-900 p-4">
+                <HighlightedCode code={responseExample} language="json" className="text-xs leading-6" />
               </div>
             </div>
 

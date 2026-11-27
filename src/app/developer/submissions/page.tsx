@@ -8,6 +8,7 @@ import { Icon } from "@/components/Global/Icon";
 import { SkeletonLine, SkeletonSubmissionDetail, SkeletonTableRows } from "@/components/Global/Skeleton";
 import { useToast } from "@/components/Global/Toast";
 import Tooltip from "@/components/Global/Tooltip";
+import HighlightedCode from "@/components/Global/HighlightedCode";
 import { relativeTime } from "@/lib/format";
 import { canManageWorkspace, useWorkspaceRole } from "@/lib/hooks/use-workspace-role";
 
@@ -363,9 +364,13 @@ export default function SubmissionsPage() {
               <>
                 <div className="rounded-2xl bg-zinc-50 p-4 dark:bg-zinc-900/40">
                   <h3 className="text-sm font-semibold text-zinc-800 dark:text-zinc-200">Submitted data</h3>
-                  <pre className="mt-2 overflow-x-auto text-xs text-zinc-600 dark:text-zinc-300">
-                    {JSON.stringify(detail.data, null, 2)}
-                  </pre>
+                  <div className="mt-2 rounded-xl bg-zinc-900 p-3">
+                    <HighlightedCode
+                      code={JSON.stringify(detail.data, null, 2)}
+                      language="json"
+                      className="text-xs leading-5"
+                    />
+                  </div>
                 </div>
                 <div className="grid grid-cols-1 gap-2">
                   <h3 className="text-sm font-semibold text-zinc-800 dark:text-zinc-200">Delivery attempts</h3>

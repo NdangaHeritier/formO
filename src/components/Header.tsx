@@ -10,6 +10,7 @@ import LinkButton from "./Global/LinkButton";
 import SkeletonBox from "./skeleton";
 import UserAvatar from "./Global/UserAvatar";
 import Tooltip from "./Global/Tooltip";
+import SearchDialog from "./Global/SearchDialog";
 import { useAudience } from "./Header/audience-context";
 import { headerConfig } from "./Header/config";
 
@@ -20,7 +21,7 @@ const SIGNUP_HREF = "/signup";
 
 const NAV_LINKS = [
     { label: "Home", href: "/#about" },
-    { label: "Docs", href: "/#docs" },
+    { label: "Docs", href: "/docs" },
     { label: "Team", href: "/#team" },
     { label: "Integrations", href: "/#integrations" },
     { label: "Career", href: "/#team" },
@@ -70,12 +71,17 @@ export default function Header({ border = "border-b", py = "py-3" }: prop) {
         <header className={`sticky top-0 left-0 right-0 z-40 w-full ${border} border-zinc-200 bg-white ${py} px-10 max-sm:px-5 flex items-center justify-between gap-5 dark:border-zinc-900 dark:bg-zinc-950`}>
             <div className="">
                 {mounted ? (
-                    <Image src="/Assets/formo-coloured.png" alt="logo" className="w-10 h-10" height={50} width={50} />
+                    <span className="relative block h-10 w-10">
+                        {/* Filled mark in light theme, outline mark in dark theme. */}
+                        <Image src="/Assets/formo-dark.png" alt="FormO" fill sizes="40px" className="object-contain dark:opacity-0" priority />
+                        <Image src="/Assets/formo.png" alt="" fill sizes="40px" className="object-contain opacity-0 dark:opacity-100" priority />
+                    </span>
                 ) : (
                     <SkeletonBox customStyle="w-10 h-10 rounded-md" />
                 )}
             </div>
             <div className="links flex items-center justify-end gap-8 max-sm:gap-3 flex-1 overflow-hidden">
+                <SearchDialog />
                 {authLoading ? (
                     <div className="grid-cols-4 max-sm:grid-cols-1 gap-2 hidden sm:grid">
                         <SkeletonBox customStyle="w-20 h-6 rounded-md" shown={authLoading} />
