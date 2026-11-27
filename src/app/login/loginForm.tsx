@@ -124,18 +124,7 @@ export default function LoginForm({ authError }: { authError?: string }) {
     return (
         <div className="app-viewport h-dvh overflow-y-auto">
             <Header />
-            <section className="mx-auto grid w-full max-w-6xl grid-cols-1 items-center gap-10 py-10 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] lg:gap-16">
-                <div className="hidden justify-center lg:flex">
-                    <Image
-                        src="/Assets/Brand/formo-auth-graphic.svg"
-                        alt="FormO account security and email delivery"
-                        width={640}
-                        height={640}
-                        priority
-                        className="w-full max-w-lg"
-                    />
-                </div>
-                <div className="grid grid-cols-1 place-items-center">
+            <section className="grid grid-cols-1 place-items-center min-h-[80vh] my-6">
                 {isSignedIn ? (
                     <div className="flex items-center justify-center">
                         <div
@@ -300,7 +289,6 @@ export default function LoginForm({ authError }: { authError?: string }) {
                         </div>
                     </div>
                 )}
-                </div>
             </section>
         </div>
     );

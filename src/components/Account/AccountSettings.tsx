@@ -1,7 +1,6 @@
 "use client";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import Image from "next/image";
 import ConfirmDialog from "@/components/Global/ConfirmDialog";
 import FormButton from "@/components/Global/FormButton";
 import { Icon } from "@/components/Global/Icon";
@@ -286,15 +285,6 @@ export default function AccountSettings({ Shell }: { Shell: React.ComponentType<
 
           {tab === "security" && (
             <>
-              <div className="flex justify-center">
-                <Image
-                  src="/Assets/Brand/formo-auth-graphic.svg"
-                  alt="FormO account security"
-                  width={260}
-                  height={260}
-                  className="w-full max-w-[260px]"
-                />
-              </div>
               <h2 className="text-lg font-semibold text-zinc-900 dark:text-zinc-100">Credentials</h2>
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <InputField type="password" name="currentPassword" id="account-current-password" label="Current password" placeholder="Current password" value={currentPassword} onChange={(e) => setCurrentPassword(e.target.value)} />

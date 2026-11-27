@@ -125,7 +125,7 @@ export default function AssistantButton() {
 
       {isOpen ? (
         <Layout onClick={close} label="FormO assistant">
-          <section className="flex h-[86dvh] w-[calc(100%-1rem)] max-w-6xl flex-col overflow-hidden rounded-[28px] bg-white shadow-[0_30px_90px_-20px_rgba(0,0,0,0.35)] dark:bg-zinc-950 sm:w-5/6">
+          <section className="flex h-[86dvh] w-full max-w-6xl flex-col overflow-hidden rounded-[28px] bg-white shadow-[0_30px_90px_-20px_rgba(0,0,0,0.35)] dark:bg-zinc-950 sm:w-5/6">
             <header className="flex flex-wrap items-center justify-between gap-3 px-5 pb-4 pt-5 sm:px-7">
               <div className="flex items-center gap-3">
                 <span className="flex h-10 w-10 items-center justify-center rounded-2xl bg-amber-50 text-amber-700 dark:bg-amber-500/10 dark:text-amber-500">
