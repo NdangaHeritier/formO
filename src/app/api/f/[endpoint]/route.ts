@@ -1,5 +1,6 @@
-﻿import { NextRequest, NextResponse } from "next/server";
+﻿import { after, NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { runDeliveryBatch } from "@/server/services/delivery.service";
 import { acceptSubmission } from "@/server/services/submissions.service";
 import {
   corsHeaders,
@@ -9,6 +10,7 @@ import {
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
+export const maxDuration = 60;
 
 type RouteContext = { params: Promise<{ endpoint: string }> };
 
@@ -28,6 +30,20 @@ export async function POST(request: NextRequest, { params }: RouteContext) {
   const origin = getRequestOrigin(request.headers);
   try {
     const result = await acceptSubmission(request, endpoint);
+    // Drain the same delivery queue after the visitor gets their response, so
+    // normal submissions send immediately instead of waiting for the cron tick.
+    // The cron job remains the safety net for retries and stuck rows.
+    if (result.status === 200 || result.status === 303) {
+      after(async () => {
+        try {
+          await runDeliveryBatch({ maxBatches: 1, batchSize: 10 });
+        } catch (error) {
+          console.error("[submissions] immediate delivery failed", {
+            reason: error instanceof Error ? error.message : "unknown",
+          });
+        }
+      });
+    }
     if (result.location) {
       return new NextResponse(null, {
         status: result.status,

@@ -353,7 +353,10 @@ export function retryDelayMinutes(attempt: number): number {
  * Claims and sends one batch. The caller may invoke this repeatedly until it
  * returns zero claims, subject to an overall time budget.
  */
-export async function runDeliveryBatch(): Promise<DeliveryBatchResult> {
+export async function runDeliveryBatch(options?: {
+  maxBatches?: number;
+  batchSize?: number;
+}): Promise<DeliveryBatchResult> {
   const result: DeliveryBatchResult = {
     claimed: 0,
     sent: 0,
@@ -363,12 +366,16 @@ export async function runDeliveryBatch(): Promise<DeliveryBatchResult> {
   };
   const deadline = Date.now() + TIME_BUDGET_MS;
   const transporters = new Map<string, Transporter>();
+  const maxBatches = options?.maxBatches ?? Infinity;
+  const batchSize = options?.batchSize ?? BATCH_SIZE;
+  let batches = 0;
 
   try {
     for (;;) {
-      if (Date.now() >= deadline) break;
+      if (Date.now() >= deadline || batches >= maxBatches) break;
+      batches += 1;
       await recoverStaleClaims();
-      const claimed = await claimBatch(BATCH_SIZE);
+      const claimed = await claimBatch(batchSize);
       if (claimed.length === 0) break;
       result.claimed += claimed.length;
 
